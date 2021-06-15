@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using FinancialTransactionsApi.V1.Controllers;
+using TransactionsApi.V1.Controllers;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
-using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1.Infrastructure;
-using FinancialTransactionsApi.V1.UseCase;
-using FinancialTransactionsApi.V1.UseCase.Interfaces;
-using FinancialTransactionsApi.Versioning;
+using TransactionsApi.V1.Gateways;
+using TransactionsApi.V1.Infrastructure;
+using TransactionsApi.V1.UseCase;
+using TransactionsApi.V1.UseCase.Interfaces;
+using TransactionsApi.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +22,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using FinancialTransactionsApi.V1.UseCase.Interfaces;
+using FinancialTransactionsApi.V1.UseCase;
 
-namespace FinancialTransactionsApi
+namespace TransactionsApi
 {
     public class Startup
     {
@@ -113,9 +115,9 @@ namespace FinancialTransactionsApi
 
             ConfigureLogging(services, Configuration);
 
-            ConfigureDbContext(services);
+            //ConfigureDbContext(services);
             //TODO: For DynamoDb, remove the line above and uncomment the line below.
-            // services.ConfigureDynamoDB();
+             services.ConfigureDynamoDB();
 
             RegisterGateways(services);
             RegisterUseCases(services);
@@ -151,16 +153,15 @@ namespace FinancialTransactionsApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddScoped<IExampleGateway, ExampleGateway>();
-
-            //TODO: For DynamoDb, remove the line above and uncomment the line below.
-            //services.AddScoped<IExampleGateway, DynamoDbGateway>();
+            //services.AddScoped<ITransactionGateway, TransactionGateway>();
+            services.AddScoped<ITransactionGateway, DynamoDbGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
             services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
+            services.AddScoped<IAddUseCase, AddUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -2,29 +2,33 @@ using Amazon.DynamoDBv2.DataModel;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FinancialTransactionsApi.V1.Infrastructure
+namespace TransactionsApi.V1.Infrastructure
 {
-    //TODO: rename table and add needed fields relating to the table columns.
-    // There's an example of this in the wiki https://github.com/LBHackney-IT/lbh-base-api/wiki/DatabaseContext
-
-    //TODO: Pick the attributes for the required data source, delete the others as appropriate
-    // Postgres will use the "Table" and "Column" attributes
-    // DynamoDB will use the "DynamoDBTable", "DynamoDBHashKey" and "DynamoDBProperty" attributes
-
-    //TODO: For DynamoDB...
-    // * The table name must match that specified in the terraform step that provisions the DynamoDb resource
-    // * The name of the hash key property must match that specified in the terraform step that provisions the DynamoDb resource
-
-    [Table("example_table")]
-    [DynamoDBTable("example_table", LowerCamelCaseProperties = true)]
-    public class DatabaseEntity
+    [Table("transactions")]
+    [DynamoDBTable("transactions", LowerCamelCaseProperties = true)]
+    public class TransactionDbEntity
     {
-        [Column("id")]
         [DynamoDBHashKey]
-        public int Id { get; set; }
-
-        [Column("created_at")]
-        [DynamoDBProperty]
-        public DateTime CreatedAt { get; set; }
+        [DynamoDBProperty(AttributeName ="id")]
+        public Guid Id { get; set; }
+        [DynamoDBProperty(AttributeName = "target_id")]
+        public Guid TargetId { get; set; }
+        [DynamoDBProperty(AttributeName = "period_no")]
+        public short PeriodNo { get; set; }
+        [DynamoDBProperty(AttributeName = "financial_year")]
+        public short FinancialYear { get; set; }
+        [DynamoDBProperty(AttributeName = "financial_month")]
+        public short FinancialMonth { get; set; }
+        [DynamoDBProperty(AttributeName = "transaction_type")]
+        public string TransactionType { get; set; }
+        [DynamoDBProperty(AttributeName = "transaction_date", Converter =(typeof(DynamoDbDateTimeConverter)))]
+        public DateTime TransactionDate { get; set; }
+        [DynamoDBProperty(AttributeName = "transaction_amount")]
+        public decimal TransactionAmount { get; set; }
+        /// <summary>
+        /// This is same as the Rent Account Number
+        /// </summary>
+        [DynamoDBProperty(AttributeName = "payment_reference")]
+        public string PaymentReference { get; set; }
     }
 }

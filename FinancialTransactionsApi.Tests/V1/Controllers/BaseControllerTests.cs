@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using FinancialTransactionsApi.V1.Controllers;
-using FinancialTransactionsApi.V1.Infrastructure;
+using TransactionsApi.V1.Controllers;
+using TransactionsApi.V1.Infrastructure;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests.V1.Controllers
+namespace TransactionsApi.Tests.V1.Controllers
 {
     [TestFixture]
     public class BaseControllerTests

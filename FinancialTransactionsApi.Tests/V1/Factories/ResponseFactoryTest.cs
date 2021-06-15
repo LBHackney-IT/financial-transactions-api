@@ -1,8 +1,8 @@
-using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Factories;
+using TransactionsApi.V1.Domain;
+using TransactionsApi.V1.Factories;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests.V1.Factories
+namespace TransactionsApi.Tests.V1.Factories
 {
     public class ResponseFactoryTest
     {

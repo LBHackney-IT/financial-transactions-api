@@ -1,19 +1,19 @@
-using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1.UseCase;
+using TransactionsApi.V1.Gateways;
+using TransactionsApi.V1.UseCase;
 using Moq;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests.V1.UseCase
+namespace TransactionsApi.Tests.V1.UseCase
 {
     public class GetByIdUseCaseTests
     {
-        private Mock<IExampleGateway> _mockGateway;
+        private Mock<ITransactionGateway> _mockGateway;
         private GetByIdUseCase _classUnderTest;
 
         [SetUp]
         public void SetUp()
         {
-            _mockGateway = new Mock<IExampleGateway>();
+            _mockGateway = new Mock<ITransactionGateway>();
             _classUnderTest = new GetByIdUseCase(_mockGateway.Object);
         }
 

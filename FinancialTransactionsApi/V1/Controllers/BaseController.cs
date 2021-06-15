@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using FinancialTransactionsApi.V1.Infrastructure;
+using TransactionsApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace FinancialTransactionsApi.V1.Controllers
+namespace TransactionsApi.V1.Controllers
 {
     public class BaseController : Controller
     {

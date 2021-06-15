@@ -1,23 +1,25 @@
-using FinancialTransactionsApi.V1.Boundary.Response;
-using FinancialTransactionsApi.V1.Factories;
-using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1.UseCase.Interfaces;
+using System;
+using System.Threading.Tasks;
+using TransactionsApi.V1.Boundary.Response;
+using TransactionsApi.V1.Factories;
+using TransactionsApi.V1.Gateways;
+using TransactionsApi.V1.UseCase.Interfaces;
 
-namespace FinancialTransactionsApi.V1.UseCase
+namespace TransactionsApi.V1.UseCase
 {
     //TODO: Rename class name and interface name to reflect the entity they are representing eg. GetClaimantByIdUseCase
     public class GetByIdUseCase : IGetByIdUseCase
     {
-        private IExampleGateway _gateway;
-        public GetByIdUseCase(IExampleGateway gateway)
+        private ITransactionGateway _gateway;
+        public GetByIdUseCase(ITransactionGateway gateway)
         {
             _gateway = gateway;
         }
 
-        //TODO: rename id to the name of the identifier that will be used for this API, the type may also need to change
-        public ResponseObject Execute(int id)
+        public async Task<TransactionResponseObject> ExecuteAsync(Guid id)
         {
-            return _gateway.GetEntityById(id).ToResponse();
+            var data =await _gateway.GetTransactionByIdAsync(id).ConfigureAwait(false);
+            return data?.ToResponse();
         }
     }
 }

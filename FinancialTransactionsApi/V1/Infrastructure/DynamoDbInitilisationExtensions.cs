@@ -3,7 +3,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace FinancialTransactionsApi.V1.Infrastructure
+namespace TransactionsApi.V1.Infrastructure
 {
     public static class DynamoDbInitilisationExtensions
     {

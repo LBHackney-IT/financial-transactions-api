@@ -1,11 +1,11 @@
 using System.Net.Http;
-using FinancialTransactionsApi.V1.Infrastructure;
+using TransactionsApi.V1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests
+namespace TransactionsApi.Tests
 {
     public class IntegrationTests<TStartup> where TStartup : class
     {

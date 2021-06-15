@@ -1,9 +1,9 @@
 using AutoFixture;
-using FinancialTransactionsApi;
-using FinancialTransactionsApi.Tests;
-using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Factories;
-using FinancialTransactionsApi.V1.Infrastructure;
+using TransactionsApi;
+using TransactionsApi.Tests;
+using TransactionsApi.V1.Domain;
+using TransactionsApi.V1.Factories;
+using TransactionsApi.V1.Infrastructure;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;

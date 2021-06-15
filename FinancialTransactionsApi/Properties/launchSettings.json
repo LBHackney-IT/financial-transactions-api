@@ -12,7 +12,7 @@
     "base_api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/v1/healthcheck/ping",
+      "launchUrl": "api/v1/transactions",
       "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",

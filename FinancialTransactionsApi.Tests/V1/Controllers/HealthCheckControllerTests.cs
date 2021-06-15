@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using FinancialTransactionsApi.V1.Controllers;
-using FinancialTransactionsApi.V1.UseCase;
+using TransactionsApi.V1.Controllers;
+using TransactionsApi.V1.UseCase;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests.V1.Controllers
+namespace TransactionsApi.Tests.V1.Controllers
 {
 
     [TestFixture]

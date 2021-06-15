@@ -1,6 +1,6 @@
 using System;
 
-namespace FinancialTransactionsApi.V1.UseCase
+namespace TransactionsApi.V1.UseCase
 {
     public class TestOpsErrorException : Exception
     {

@@ -1,21 +1,21 @@
 using AutoFixture;
-using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Infrastructure;
+using TransactionsApi.V1.Domain;
+using TransactionsApi.V1.Infrastructure;
 
-namespace FinancialTransactionsApi.Tests.V1.Helper
+namespace TransactionsApi.Tests.V1.Helper
 {
     public static class DatabaseEntityHelper
     {
-        public static DatabaseEntity CreateDatabaseEntity()
+        public static TransactionDbEntity CreateDatabaseEntity()
         {
             var entity = new Fixture().Create<Transaction>();
 
             return CreateDatabaseEntityFrom(entity);
         }
 
-        public static DatabaseEntity CreateDatabaseEntityFrom(Transaction entity)
+        public static TransactionDbEntity CreateDatabaseEntityFrom(Transaction entity)
         {
-            return new DatabaseEntity
+            return new TransactionDbEntity
             {
                 Id = entity.Id,
                 CreatedAt = entity.CreatedAt,

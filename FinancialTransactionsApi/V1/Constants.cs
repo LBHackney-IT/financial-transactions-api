@@ -1,4 +1,4 @@
-namespace FinancialTransactionsApi.V1.Controllers
+namespace TransactionsApi.V1.Controllers
 {
     public static class Constants
     {

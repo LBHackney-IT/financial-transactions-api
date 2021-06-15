@@ -1,22 +1,33 @@
-using FinancialTransactionsApi.V1.Boundary.Response;
-using FinancialTransactionsApi.V1.Factories;
-using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1.UseCase.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TransactionsApi.V1.Boundary.Response;
+using TransactionsApi.V1.Domain;
+using TransactionsApi.V1.Factories;
+using TransactionsApi.V1.Gateways;
+using TransactionsApi.V1.UseCase.Interfaces;
 
-namespace FinancialTransactionsApi.V1.UseCase
+namespace TransactionsApi.V1.UseCase
 {
     //TODO: Rename class name and interface name to reflect the entity they are representing eg. GetAllClaimantsUseCase
     public class GetAllUseCase : IGetAllUseCase
     {
-        private readonly IExampleGateway _gateway;
-        public GetAllUseCase(IExampleGateway gateway)
+        private readonly ITransactionGateway _gateway;
+        public GetAllUseCase(ITransactionGateway gateway)
         {
             _gateway = gateway;
         }
 
-        public ResponseObjectList Execute()
+        public async Task<TransactionResponseObjectList> ExecuteAsync(Guid targetId, string transactionType)
         {
-            return new ResponseObjectList { ResponseObjects = _gateway.GetAll().ToResponse() };
+            TransactionResponseObjectList transactionResponseObjectList = new TransactionResponseObjectList();
+            List<Transaction> transactions =
+                await _gateway.GetAllTransactionsAsync(targetId, transactionType).ConfigureAwait(false);
+
+            transactionResponseObjectList.ResponseObjects =
+                transactions.Select(p => p.ToResponse()).ToList();
+            return transactionResponseObjectList;
         }
     }
 }

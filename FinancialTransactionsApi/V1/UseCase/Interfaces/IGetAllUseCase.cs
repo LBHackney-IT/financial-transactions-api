@@ -1,9 +1,11 @@
-using FinancialTransactionsApi.V1.Boundary.Response;
+using System;
+using System.Threading.Tasks;
+using TransactionsApi.V1.Boundary.Response;
 
-namespace FinancialTransactionsApi.V1.UseCase.Interfaces
+namespace TransactionsApi.V1.UseCase.Interfaces
 {
     public interface IGetAllUseCase
     {
-        ResponseObjectList Execute();
+        public Task<TransactionResponseObjectList> ExecuteAsync(Guid targetId,string transactionType);
     }
 }

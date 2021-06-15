@@ -1,9 +1,9 @@
-using FinancialTransactionsApi.V1.Infrastructure;
+using TransactionsApi.V1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests
+namespace TransactionsApi.Tests
 {
     [TestFixture]
     public class DatabaseTests
