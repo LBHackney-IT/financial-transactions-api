@@ -5,19 +5,19 @@ namespace FinancialTransactionsApi.V1.Factories
 {
     public static class EntityFactory
     {
-        public static Entity ToDomain(this DatabaseEntity databaseEntity)
+        public static Transaction ToDomain(this DatabaseEntity databaseEntity)
         {
             //TODO: Map the rest of the fields in the domain object.
             // More information on this can be found here https://github.com/LBHackney-IT/lbh-base-api/wiki/Factory-object-mappings
 
-            return new Entity
+            return new Transaction
             {
                 Id = databaseEntity.Id,
                 CreatedAt = databaseEntity.CreatedAt
             };
         }
 
-        public static DatabaseEntity ToDatabase(this Entity entity)
+        public static DatabaseEntity ToDatabase(this Transaction entity)
         {
             //TODO: Map the rest of the fields in the database object.
 

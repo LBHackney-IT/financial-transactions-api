@@ -15,12 +15,12 @@ namespace FinancialTransactionsApi.V1.Gateways
             _dynamoDbContext = dynamoDbContext;
         }
 
-        public List<Entity> GetAll()
+        public List<Transaction> GetAll()
         {
-            return new List<Entity>();
+            return new List<Transaction>();
         }
 
-        public Entity GetEntityById(int id)
+        public Transaction GetEntityById(int id)
         {
             var result = _dynamoDbContext.LoadAsync<DatabaseEntity>(id).GetAwaiter().GetResult();
             return result?.ToDomain();

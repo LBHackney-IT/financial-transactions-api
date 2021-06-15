@@ -5,8 +5,8 @@ namespace FinancialTransactionsApi.V1.Gateways
 {
     public interface IExampleGateway
     {
-        Entity GetEntityById(int id);
+        Transaction GetEntityById(int id);
 
-        List<Entity> GetAll();
+        List<Transaction> GetAll();
     }
 }

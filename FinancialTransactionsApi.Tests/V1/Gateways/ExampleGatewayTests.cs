@@ -33,7 +33,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         [Test]
         public void GetEntityByIdReturnsTheEntityIfItExists()
         {
-            var entity = _fixture.Create<Entity>();
+            var entity = _fixture.Create<Transaction>();
             var databaseEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
 
             DatabaseContext.DatabaseEntities.Add(databaseEntity);

@@ -8,12 +8,12 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
     {
         public static DatabaseEntity CreateDatabaseEntity()
         {
-            var entity = new Fixture().Create<Entity>();
+            var entity = new Fixture().Create<Transaction>();
 
             return CreateDatabaseEntityFrom(entity);
         }
 
-        public static DatabaseEntity CreateDatabaseEntityFrom(Entity entity)
+        public static DatabaseEntity CreateDatabaseEntityFrom(Transaction entity)
         {
             return new DatabaseEntity
             {
