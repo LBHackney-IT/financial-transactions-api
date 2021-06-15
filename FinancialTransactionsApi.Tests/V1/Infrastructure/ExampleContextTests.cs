@@ -1,8 +1,8 @@
 using System.Linq;
-using FinancialTransactionsApi.Tests.V1.Helper;
+using TransactionsApi.Tests.V1.Helper;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests.V1.Infrastructure
+namespace TransactionsApi.Tests.V1.Infrastructure
 {
     //TODO: Remove this file if Postgres is not being used
     [TestFixture]
@@ -16,7 +16,7 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
             DatabaseContext.Add(databaseEntity);
             DatabaseContext.SaveChanges();
 
-            var result = DatabaseContext.DatabaseEntities.ToList().FirstOrDefault();
+            var result = DatabaseContext.TransactionEntities.ToList().FirstOrDefault();
 
             Assert.AreEqual(result, databaseEntity);
         }

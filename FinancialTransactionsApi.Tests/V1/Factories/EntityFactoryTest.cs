@@ -1,11 +1,11 @@
 using AutoFixture;
-using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Factories;
-using FinancialTransactionsApi.V1.Infrastructure;
+using TransactionsApi.V1.Domain;
+using TransactionsApi.V1.Factories;
+using TransactionsApi.V1.Infrastructure;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests.V1.Factories
+namespace TransactionsApi.Tests.V1.Factories
 {
     [TestFixture]
     public class EntityFactoryTest
@@ -17,7 +17,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
         [Test]
         public void CanMapADatabaseEntityToADomainObject()
         {
-            var databaseEntity = _fixture.Create<DatabaseEntity>();
+            var databaseEntity = _fixture.Create<TransactionDbEntity>();
             var entity = databaseEntity.ToDomain();
 
             databaseEntity.Id.Should().Be(entity.Id);

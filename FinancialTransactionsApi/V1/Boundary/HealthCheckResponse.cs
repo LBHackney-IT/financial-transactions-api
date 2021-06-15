@@ -1,4 +1,4 @@
-namespace FinancialTransactionsApi.V1.Boundary
+namespace TransactionsApi.V1.Boundary
 {
     public class HealthCheckResponse
     {

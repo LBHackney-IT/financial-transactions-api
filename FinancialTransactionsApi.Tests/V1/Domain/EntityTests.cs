@@ -1,9 +1,9 @@
 using System;
-using FinancialTransactionsApi.V1.Domain;
+using TransactionsApi.V1.Domain;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests.V1.Domain
+namespace TransactionsApi.Tests.V1.Domain
 {
     [TestFixture]
     public class EntityTests

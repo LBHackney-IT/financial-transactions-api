@@ -1,12 +1,12 @@
 using System.Threading;
-using FinancialTransactionsApi.V1.UseCase;
+using TransactionsApi.V1.UseCase;
 using Bogus;
 using FluentAssertions;
 using Microsoft.Extensions.HealthChecks;
 using Moq;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests.V1.UseCase
+namespace TransactionsApi.Tests.V1.UseCase
 {
     [TestFixture]
     public class DbHealthCheckUseCaseTests

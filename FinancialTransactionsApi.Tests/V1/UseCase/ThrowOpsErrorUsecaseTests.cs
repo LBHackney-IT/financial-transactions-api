@@ -1,8 +1,8 @@
-using FinancialTransactionsApi.V1.UseCase;
+using TransactionsApi.V1.UseCase;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests.V1.UseCase
+namespace TransactionsApi.Tests.V1.UseCase
 {
     [TestFixture]
     public class ThrowOpsErrorUsecaseTests

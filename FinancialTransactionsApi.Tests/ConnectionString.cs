@@ -1,6 +1,6 @@
 using System;
 
-namespace FinancialTransactionsApi.Tests
+namespace TransactionsApi.Tests
 {
     public static class ConnectionString
     {

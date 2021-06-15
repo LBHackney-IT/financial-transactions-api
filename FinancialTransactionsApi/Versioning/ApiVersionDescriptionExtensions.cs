@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
-namespace FinancialTransactionsApi.Versioning
+namespace TransactionsApi.Versioning
 {
     public static class ApiVersionDescriptionExtensions
     {

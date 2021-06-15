@@ -1,14 +1,14 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
-using FinancialTransactionsApi.Tests.V1.Helper;
-using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1.Infrastructure;
+using TransactionsApi.Tests.V1.Helper;
+using TransactionsApi.V1.Domain;
+using TransactionsApi.V1.Gateways;
+using TransactionsApi.V1.Infrastructure;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
-namespace FinancialTransactionsApi.Tests.V1.Gateways
+namespace TransactionsApi.Tests.V1.Gateways
 {
     //TODO: Remove this file if DynamoDb gateway not being used
     //TODO: Rename Tests to match gateway name
@@ -41,12 +41,12 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
             var entity = _fixture.Create<Transaction>();
             var dbEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
 
-            _dynamoDb.Setup(x => x.LoadAsync<DatabaseEntity>(entity.Id, default))
+            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(entity.Id, default))
                      .ReturnsAsync(dbEntity);
 
             var response = _classUnderTest.GetEntityById(entity.Id);
 
-            _dynamoDb.Verify(x => x.LoadAsync<DatabaseEntity>(entity.Id, default), Times.Once);
+            _dynamoDb.Verify(x => x.LoadAsync<TransactionDbEntity>(entity.Id, default), Times.Once);
 
             entity.Id.Should().Be(response.Id);
             entity.CreatedAt.Should().BeSameDateAs(response.CreatedAt);

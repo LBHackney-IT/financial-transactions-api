@@ -1,12 +1,12 @@
 using System.Data.Common;
-using FinancialTransactionsApi.V1.Infrastructure;
+using TransactionsApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FinancialTransactionsApi.Tests
+namespace TransactionsApi.Tests
 {
     public class MockWebApplicationFactory<TStartup>
         : WebApplicationFactory<TStartup> where TStartup : class

@@ -1,5 +1,5 @@
 
-namespace FinancialTransactionsApi.V1.UseCase
+namespace TransactionsApi.V1.UseCase
 {
     public static class ThrowOpsErrorUsecase
     {

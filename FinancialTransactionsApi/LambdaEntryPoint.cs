@@ -1,7 +1,7 @@
 using Amazon.Lambda.AspNetCoreServer;
 using Microsoft.AspNetCore.Hosting;
 
-namespace FinancialTransactionsApi
+namespace TransactionsApi
 {
     public class LambdaEntryPoint : APIGatewayProxyFunction
     {

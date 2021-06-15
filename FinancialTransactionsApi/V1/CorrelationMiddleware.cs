@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace FinancialTransactionsApi.V1.Controllers
+namespace TransactionsApi.V1.Controllers
 {
     public class CorrelationMiddleware
     {

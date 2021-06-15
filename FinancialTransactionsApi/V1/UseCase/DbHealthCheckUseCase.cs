@@ -1,7 +1,7 @@
-using FinancialTransactionsApi.V1.Boundary;
+using TransactionsApi.V1.Boundary;
 using Microsoft.Extensions.HealthChecks;
 
-namespace FinancialTransactionsApi.V1.UseCase
+namespace TransactionsApi.V1.UseCase
 {
     public class DbHealthCheckUseCase
     {

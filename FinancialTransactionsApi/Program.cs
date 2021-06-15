@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace FinancialTransactionsApi
+namespace TransactionsApi
 {
     public static class Program
     {
