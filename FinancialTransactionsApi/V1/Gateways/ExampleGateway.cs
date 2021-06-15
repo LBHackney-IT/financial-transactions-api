@@ -15,16 +15,16 @@ namespace FinancialTransactionsApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
-        public Entity GetEntityById(int id)
+        public Transaction GetEntityById(int id)
         {
             var result = _databaseContext.DatabaseEntities.Find(id);
 
             return result?.ToDomain();
         }
 
-        public List<Entity> GetAll()
+        public List<Transaction> GetAll()
         {
-            return new List<Entity>();
+            return new List<Transaction>();
         }
     }
 }

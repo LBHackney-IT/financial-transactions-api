@@ -38,7 +38,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         [Test]
         public void GetEntityByIdReturnsTheEntityIfItExists()
         {
-            var entity = _fixture.Create<Entity>();
+            var entity = _fixture.Create<Transaction>();
             var dbEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
 
             _dynamoDb.Setup(x => x.LoadAsync<DatabaseEntity>(entity.Id, default))

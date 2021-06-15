@@ -29,7 +29,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
         [Test]
         public void CanMapADomainEntityToADatabaseObject()
         {
-            var entity = _fixture.Create<Entity>();
+            var entity = _fixture.Create<Transaction>();
             var databaseEntity = entity.ToDatabase();
 
             entity.Id.Should().Be(databaseEntity.Id);
