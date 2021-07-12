@@ -162,6 +162,7 @@ namespace TransactionsApi
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
             services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
             services.AddScoped<IAddUseCase, AddUseCase>();
+            services.AddScoped<IGetAllSummaryUseCase, GetAllSummaryUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
