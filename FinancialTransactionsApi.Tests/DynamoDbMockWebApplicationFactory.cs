@@ -51,8 +51,9 @@ namespace TransactionsApi.Tests
                         new ProvisionedThroughput(3, 3));
                     _ = dynamoDb.CreateTableAsync(request).GetAwaiter().GetResult();
                 }
-                catch (ResourceInUseException)
+                catch (ResourceInUseException ex)
                 {
+                    var msg = ex.Message;
                     // It already exists :-)
                 }
             }

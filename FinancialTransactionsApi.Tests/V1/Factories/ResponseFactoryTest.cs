@@ -1,19 +1,50 @@
+using AutoFixture;
+using FluentAssertions;
+using System.Collections.Generic;
 using TransactionsApi.V1.Domain;
 using TransactionsApi.V1.Factories;
-using NUnit.Framework;
+using Xunit;
 
 namespace TransactionsApi.Tests.V1.Factories
 {
+
     public class ResponseFactoryTest
     {
-        //TODO: add assertions for all the fields being mapped in `ResponseFactory.ToResponse()`. Also be sure to add test cases for
-        // any edge cases that might exist.
-        [Test]
-        public void CanMapADatabaseEntityToADomainObject()
+        private readonly Fixture _fixture = new Fixture();
+        [Fact]
+        public void CanMapANullTransactionResponseObjectToAResponseObject()
         {
-            var domain = new Transaction();
+            Transaction domain = null;
             var response = domain.ToResponse();
-            //TODO: check here that all of the fields have been mapped correctly. i.e. response.fieldOne.Should().Be("one")
+
+            response.Should().BeNull();
+        }
+
+        [Fact]
+        public void CanMapATransactionResponseObjectToAResponseObject()
+        {
+            var domain = _fixture.Create<Transaction>();
+            var response = domain.ToResponse();
+            domain.Should().BeEquivalentTo(response);
+
+        }
+
+        [Fact]
+        public void CanMapDomainTransactionResponseObjectListToAResponsesList()
+        {
+            var list = _fixture.CreateMany<Transaction>(10);
+            var responseNotes = list.ToResponse();
+
+            responseNotes.Should().BeEquivalentTo(list);
+        }
+
+        [Fact]
+        public void CanMapNullDomainTransactionResponseObjectListToAnEmptyResponsesList()
+        {
+            List<Transaction> list = null;
+            var responseNotes = list.ToResponse();
+
+            responseNotes.Should().BeEmpty();
         }
     }
 }

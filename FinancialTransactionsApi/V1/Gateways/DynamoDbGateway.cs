@@ -6,17 +6,20 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
-using Amazon.DynamoDBv2.DocumentModel;
+using FinancialTransactionsApi.V1.Gateways;
 
 namespace TransactionsApi.V1.Gateways
 {
     public class DynamoDbGateway : ITransactionGateway
     {
         private readonly IDynamoDBContext _dynamoDbContext;
+       private readonly DynamoDbContextWrapper _wrapper;
 
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext)
+
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, DynamoDbContextWrapper wrapper)
         {
             _dynamoDbContext = dynamoDbContext;
+            _wrapper = wrapper;
         }
 
         public async Task AddAsync(Transaction transaction)
@@ -34,45 +37,40 @@ namespace TransactionsApi.V1.Gateways
 
         public async Task<List<Transaction>> GetAllTransactionsAsync(Guid targetid, string transactionType, DateTime? startDate, DateTime? endDate)
         {
-            var scanConditions = new List<ScanCondition>();
-            scanConditions.Add(new ScanCondition("Id", Amazon.DynamoDBv2.DocumentModel.ScanOperator.GreaterThan, Guid.Parse("00000000-0000-0000-0000-000000000000")));
+            //string DATEFORMAT = "yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ";
+            List<ScanCondition> scanConditions = new List<ScanCondition>
+            {
+                new ScanCondition("Id", Amazon.DynamoDBv2.DocumentModel.ScanOperator.GreaterThan, Guid.Parse("00000000-0000-0000-0000-000000000000"))
+            };
 
             if (transactionType != null)
                 scanConditions.Add(new ScanCondition("TransactionType", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, transactionType));
             if (targetid != Guid.Parse("00000000-0000-0000-0000-000000000000"))
                 scanConditions.Add(new ScanCondition("TargetId", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, targetid));
-            if (startDate.HasValue && endDate.HasValue)
+           
+            if (startDate.HasValue)
             {
-                scanConditions.Add(new ScanCondition("TransactionDate", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Between, startDate, endDate));
+                if (endDate == null)
+                    endDate = DateTime.Now;
+                scanConditions.Add(new ScanCondition("TransactionDate", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Between, startDate.Value, endDate.Value));
             }
-            
+
+                
+
+            //List<TransactionDbEntity> data =
+            //    await _dynamoDbContext
+            //    .ScanAsync<TransactionDbEntity>(scanConditions)
+            //    .GetRemainingAsync()
+            //    .ConfigureAwait(false);
+
             List<TransactionDbEntity> data =
-                await _dynamoDbContext
-                .ScanAsync<TransactionDbEntity>(scanConditions)
-                .GetRemainingAsync()
-                .ConfigureAwait(false);
+              await _wrapper
+              .ScanAsync(_dynamoDbContext, scanConditions)
+              .ConfigureAwait(false);
 
             return data.Select(p => p.ToDomain()).ToList();
         }
-        public async Task<List<Transaction>> GetAllTransactionsSummaryAsync(Guid targetid, DateTime? startDate, DateTime? endDate)
-        {
-            var scanConditions = new List<ScanCondition>();
-            
-            if (targetid != Guid.Parse("00000000-0000-0000-0000-000000000000"))
-                scanConditions.Add(new ScanCondition("TargetId", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, targetid));
-            if (startDate.HasValue && endDate.HasValue)
-            {
-                scanConditions.Add(new ScanCondition("TransactionDate", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Between, startDate, endDate));
-            }
-            
-            List<TransactionDbEntity> data =
-                await _dynamoDbContext
-                .ScanAsync<TransactionDbEntity>(scanConditions)
-                .GetRemainingAsync()
-                .ConfigureAwait(false);
 
-            return data.Select(p => p.ToDomain()).OrderByDescending(x => x.TransactionDate).ToList();
-        }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {
             var data =  await _dynamoDbContext.LoadAsync<TransactionDbEntity>(id).ConfigureAwait(false);

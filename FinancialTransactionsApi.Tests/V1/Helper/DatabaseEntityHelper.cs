@@ -18,7 +18,28 @@ namespace TransactionsApi.Tests.V1.Helper
             return new TransactionDbEntity
             {
                 Id = entity.Id,
-                CreatedAt = entity.CreatedAt,
+                TransactionDate = entity.TransactionDate,
+            };
+        }
+        public static TransactionDbEntity MapDatabaseEntityFrom(Transaction entity)
+        {
+            return new TransactionDbEntity
+            {
+                Id = entity.Id,
+                TargetId = entity.TargetId,
+                TransactionType = entity.TransactionType,
+                TransactionDate = entity.TransactionDate,
+                PaymentReference =entity.PaymentReference,
+                PeriodNo = entity.PeriodNo,
+                FinancialMonth = entity.FinancialMonth,
+                FinancialYear =entity.FinancialYear,
+                TransactionAmount = entity.TransactionAmount,
+                PaidAmount = entity.PaidAmount,
+                ChargedAmount = entity.ChargedAmount,
+                BalanceAmount = entity.BalanceAmount,
+                HousingBenefitAmount = entity.HousingBenefitAmount,
+                AssetFullAddress = entity.AssetFullAddress
+
             };
         }
     }

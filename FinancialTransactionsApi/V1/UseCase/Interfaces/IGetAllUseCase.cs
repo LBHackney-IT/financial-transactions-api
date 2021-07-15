@@ -6,6 +6,6 @@ namespace TransactionsApi.V1.UseCase.Interfaces
 {
     public interface IGetAllUseCase
     {
-        public Task<TransactionResponseObjectList> ExecuteAsync(Guid targetId,string transactionType, string startDate, string endDate);
+        public Task<TransactionResponseObjectList> ExecuteAsync(Guid targetId,string transactionType, DateTime? startDate, DateTime? endDate);
     }
 }

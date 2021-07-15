@@ -2,27 +2,27 @@ using System;
 using TransactionsApi.V1.Domain;
 using FluentAssertions;
 using NUnit.Framework;
+using Xunit;
 
 namespace TransactionsApi.Tests.V1.Domain
 {
-    [TestFixture]
     public class EntityTests
     {
-        [Test]
+        [Fact]
         public void EntitiesHaveAnId()
         {
             var entity = new Transaction();
-            entity.Id.Should().BeGreaterOrEqualTo(0);
+            entity.Id.Should().Be(Guid.Parse("00000000-0000-0000-0000-000000000000"));
         }
 
-        [Test]
-        public void EntitiesHaveACreatedAt()
+        [Fact]
+        public void EntitiesHaveATransactionDate()
         {
             var entity = new Transaction();
             var date = new DateTime(2019, 02, 21);
-            entity.CreatedAt = date;
+            entity.TransactionDate = date;
 
-            entity.CreatedAt.Should().BeSameDateAs(date);
+            entity.TransactionDate.Should().BeSameDateAs(date);
         }
     }
 }

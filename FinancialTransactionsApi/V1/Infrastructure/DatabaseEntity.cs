@@ -30,5 +30,15 @@ namespace TransactionsApi.V1.Infrastructure
         /// </summary>
         [DynamoDBProperty(AttributeName = "payment_reference")]
         public string PaymentReference { get; set; }
+        [DynamoDBProperty(AttributeName = "paid_amount")]
+        public decimal PaidAmount { get; set; }
+        [DynamoDBProperty(AttributeName = "charged_amount")]
+        public decimal ChargedAmount { get; set; }
+        [DynamoDBProperty(AttributeName = "balance_amount")]
+        public decimal BalanceAmount { get; set; }
+        [DynamoDBProperty(AttributeName = "housing_benefit_amount")]
+        public decimal HousingBenefitAmount { get; set; }
+        [DynamoDBProperty(AttributeName = "asset_full_address")]
+        public string AssetFullAddress { get; set; }
     }
 }

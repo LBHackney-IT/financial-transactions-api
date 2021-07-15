@@ -24,6 +24,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.V1.UseCase;
+using FinancialTransactionsApi.V1.Gateways;
 
 namespace TransactionsApi
 {
@@ -39,7 +40,7 @@ namespace TransactionsApi
         public IConfiguration Configuration { get; }
         private static List<ApiVersionDescription> _apiVersions { get; set; }
         //TODO update the below to the name of your API
-        private const string ApiName = "Your API Name";
+        private const string ApiName = "financial-transaction";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -155,6 +156,7 @@ namespace TransactionsApi
         {
             //services.AddScoped<ITransactionGateway, TransactionGateway>();
             services.AddScoped<ITransactionGateway, DynamoDbGateway>();
+            services.AddSingleton<DynamoDbContextWrapper>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -162,7 +164,6 @@ namespace TransactionsApi
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
             services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
             services.AddScoped<IAddUseCase, AddUseCase>();
-            services.AddScoped<IGetAllSummaryUseCase, GetAllSummaryUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

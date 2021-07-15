@@ -1,14 +1,13 @@
+using FluentAssertions;
 using System.Linq;
 using TransactionsApi.Tests.V1.Helper;
-using NUnit.Framework;
+using Xunit;
 
 namespace TransactionsApi.Tests.V1.Infrastructure
 {
-    //TODO: Remove this file if Postgres is not being used
-    [TestFixture]
     public class DatabaseContextTest : DatabaseTests
     {
-        [Test]
+        [Fact]
         public void CanGetADatabaseEntity()
         {
             var databaseEntity = DatabaseEntityHelper.CreateDatabaseEntity();
@@ -17,8 +16,7 @@ namespace TransactionsApi.Tests.V1.Infrastructure
             DatabaseContext.SaveChanges();
 
             var result = DatabaseContext.TransactionEntities.ToList().FirstOrDefault();
-
-            Assert.AreEqual(result, databaseEntity);
+            result.Should().Equals(databaseEntity);
         }
     }
 }

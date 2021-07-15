@@ -14,5 +14,10 @@ namespace TransactionsApi.V1.Domain
         public DateTime TransactionDate { get; set; }
         public decimal TransactionAmount { get; set; }
         public string PaymentReference { get; set; }
+        public decimal PaidAmount { get; set; }
+        public decimal ChargedAmount { get; set; }
+        public decimal BalanceAmount { get; set; }
+        public decimal HousingBenefitAmount { get; set; }
+        public string AssetFullAddress { get; set; }
     }
 }
