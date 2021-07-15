@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TransactionsApi.V1.Boundary.Response;
 using TransactionsApi.V1.Domain;

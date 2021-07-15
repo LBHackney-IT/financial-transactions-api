@@ -3,7 +3,6 @@ using TransactionsApi.V1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
-using NUnit.Framework;
 
 namespace TransactionsApi.Tests
 {
@@ -12,13 +11,12 @@ namespace TransactionsApi.Tests
         protected HttpClient Client { get; private set; }
         protected DatabaseContext DatabaseContext { get; private set; }
 
-        private MockWebApplicationFactory<TStartup> _factory;
-        private NpgsqlConnection _connection;
-        private IDbContextTransaction _transaction;
-        private DbContextOptionsBuilder _builder;
+        private readonly MockWebApplicationFactory<TStartup> _factory;
+        private readonly NpgsqlConnection _connection;
+        private readonly IDbContextTransaction _transaction;
+        private readonly DbContextOptionsBuilder _builder;
 
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
+        public IntegrationTests()
         {
             _connection = new NpgsqlConnection(ConnectionString.TestDatabase());
             _connection.Open();
@@ -28,26 +26,33 @@ namespace TransactionsApi.Tests
 
             _builder = new DbContextOptionsBuilder();
             _builder.UseNpgsql(_connection);
-
-        }
-
-        [SetUp]
-        public void BaseSetup()
-        {
             _factory = new MockWebApplicationFactory<TStartup>(_connection);
             Client = _factory.CreateClient();
             DatabaseContext = new DatabaseContext(_builder.Options);
             DatabaseContext.Database.EnsureCreated();
             _transaction = DatabaseContext.Database.BeginTransaction();
         }
-
-        [TearDown]
-        public void BaseTearDown()
+        public void Dispose()
         {
-            Client.Dispose();
-            _factory.Dispose();
-            _transaction.Rollback();
-            _transaction.Dispose();
+            Dispose(true);
         }
+
+        private bool _disposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && !_disposed)
+            {
+                if (null != _transaction)
+                    _transaction.Rollback();
+                _transaction.Dispose();
+
+                if (null != _factory)
+                    _factory.Dispose();
+
+                Client.Dispose();
+                _disposed = true;
+            }
+        }
+       
     }
 }

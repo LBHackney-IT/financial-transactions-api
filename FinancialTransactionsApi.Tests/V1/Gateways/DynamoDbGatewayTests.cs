@@ -1,42 +1,95 @@
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using AutoFixture;
+using FinancialTransactionsApi.V1.Gateways;
+using FluentAssertions;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using TransactionsApi.Tests.V1.Helper;
 using TransactionsApi.V1.Domain;
 using TransactionsApi.V1.Gateways;
 using TransactionsApi.V1.Infrastructure;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
+using Xunit;
 
-namespace TransactionsApi.Tests.V1.Gateways
+namespace TransactionsApi.Facts.V1.Gateways
 {
-    //TODO: Remove this file if DynamoDb gateway not being used
-    //TODO: Rename Tests to match gateway name
-    //For instruction on how to run tests please see the wiki: https://github.com/LBHackney-IT/lbh-base-api/wiki/Running-the-test-suite.
-    [TestFixture]
-    public class DynamoDbGatewayTests
+
+    public class DynamoDbGatewayTests : IDisposable
     {
         private readonly Fixture _fixture = new Fixture();
-        private Mock<IDynamoDBContext> _dynamoDb;
-        private DynamoDbGateway _classUnderTest;
-
-        [SetUp]
-        public void Setup()
+        private readonly Mock<IDynamoDBContext> _dynamoDb;
+        private readonly Mock<DynamoDbContextWrapper> _wrapper;
+        private readonly DynamoDbGateway _classUnderTest;
+        private readonly List<Action> _cleanup;
+        public DynamoDbGatewayTests()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
-            _classUnderTest = new DynamoDbGateway(_dynamoDb.Object);
+            _wrapper = new Mock<DynamoDbContextWrapper>();
+            _classUnderTest = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object);
+            _cleanup = new List<Action>();
         }
 
-        [Test]
-        public void GetEntityByIdReturnsNullIfEntityDoesntExist()
+
+
+        public void Dispose()
         {
-            var response = _classUnderTest.GetEntityById(123);
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private bool _disposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && !_disposed)
+            {
+                foreach (var action in _cleanup)
+                    action();
+
+                _disposed = true;
+            }
+        }
+
+
+        [Fact]
+        public async Task PostNewTransactionSuccessfulSaves()
+        {
+            // Arrange
+            var entity = _fixture.Create<Transaction>();
+            _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
+              .Returns(Task.CompletedTask);
+            await _classUnderTest.AddAsync(entity).ConfigureAwait(false);
+            _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Once);
+
+
+        }
+
+        [Fact]
+        public async Task PostMultipleNewTransactionSuccessfulSaves()
+        {
+            // Arrange
+            var entities = _fixture.CreateMany<Transaction>(3).ToList();
+            _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
+              .Returns(Task.CompletedTask);
+            await _classUnderTest.AddRangeAsync(entities).ConfigureAwait(false);
+            _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Exactly(3));
+
+
+        }
+        [Fact]
+        public async Task GetEntityByIdReturnsNullIfEntityDoesntExist()
+        {
+            var id = Guid.NewGuid();
+            var response = await _classUnderTest.GetTransactionByIdAsync(id).ConfigureAwait(false);
 
             response.Should().BeNull();
         }
 
-        [Test]
-        public void GetEntityByIdReturnsTheEntityIfItExists()
+        [Fact]
+        public async Task GetEntityByIdReturnsTheEntityIfItExists()
         {
             var entity = _fixture.Create<Transaction>();
             var dbEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
@@ -44,12 +97,53 @@ namespace TransactionsApi.Tests.V1.Gateways
             _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(entity.Id, default))
                      .ReturnsAsync(dbEntity);
 
-            var response = _classUnderTest.GetEntityById(entity.Id);
+            var response = await _classUnderTest.GetTransactionByIdAsync(entity.Id).ConfigureAwait(false);
 
             _dynamoDb.Verify(x => x.LoadAsync<TransactionDbEntity>(entity.Id, default), Times.Once);
 
             entity.Id.Should().Be(response.Id);
-            entity.CreatedAt.Should().BeSameDateAs(response.CreatedAt);
+            entity.TransactionDate.Should().BeSameDateAs(response.TransactionDate);
+        }
+
+        [Fact]
+        public async Task GetEntityByTargetIdAndTransactionTypeReturnsNullIfEntityDoesntExist()
+        {
+            var targetId = Guid.NewGuid();
+            var transType = "Type";
+            var startDate = DateTime.Now;
+            var endDate = DateTime.Now;
+            var response = await _classUnderTest.GetAllTransactionsAsync(targetId, transType, startDate, endDate).ConfigureAwait(false);
+
+            response.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetEntityByTargetIdAndTransactionTypeReturnsTheEntityIfItExists()
+        {
+           
+            var entities = _fixture.Build<Transaction>()
+               .With(x => x.TargetId, Guid.NewGuid())
+               .With(x => x.TransactionType, "Sample")
+               .With(x => x.TransactionDate, DateTime.Now).CreateMany(3).ToList();
+            var entity = entities.FirstOrDefault();
+            var dbEnty = DatabaseEntityHelper.MapDatabaseEntityFrom(entity);
+            var databaseEntities = entities.Select(entity => DatabaseEntityHelper.MapDatabaseEntityFrom(entity));
+            List<ScanCondition> scanConditions = new List<ScanCondition>
+                {
+                    new ScanCondition("Id", ScanOperator.GreaterThan, Guid.Parse("00000000-0000-0000-0000-000000000000")),
+                    new ScanCondition("TransactionType", ScanOperator.Equal, entity.TransactionType),
+                    new ScanCondition("TargetId", ScanOperator.Equal, entity.TargetId)
+                };
+            //_dynamoDb.Setup(x => x.ScanAsync(Enumerable.Empty<ScanCondition>(), new DynamoDBOperationConfig { }).GetRemainingAsync(default)).Returns(databaseEntities.ToList());
+
+            _wrapper.Setup(x => x.ScanAsync(
+                It.IsAny<IDynamoDBContext>(),
+                It.IsAny<IEnumerable<ScanCondition>>(),
+                It.IsAny<DynamoDBOperationConfig>()))
+                .ReturnsAsync(new List<TransactionDbEntity>(databaseEntities));
+            var response = await _classUnderTest.GetAllTransactionsAsync(entity.TargetId, entity.TransactionType,entity.TransactionDate, entity.TransactionDate).ConfigureAwait(false);
+
+            response.Should().BeEquivalentTo(entities);
         }
     }
 }

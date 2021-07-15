@@ -10,9 +10,7 @@ namespace TransactionsApi.Tests
     {
         private IDbContextTransaction _transaction;
         protected DatabaseContext DatabaseContext { get; private set; }
-
-        [SetUp]
-        public void RunBeforeAnyTests()
+        public DatabaseTests()
         {
             var builder = new DbContextOptionsBuilder();
             builder.UseNpgsql(ConnectionString.TestDatabase());
@@ -22,11 +20,23 @@ namespace TransactionsApi.Tests
             _transaction = DatabaseContext.Database.BeginTransaction();
         }
 
-        [TearDown]
-        public void RunAfterAnyTests()
+
+        public void Dispose()
         {
-            _transaction.Rollback();
-            _transaction.Dispose();
+            Dispose(true);
         }
+
+        private bool _disposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && !_disposed)
+            {
+                if (null != _transaction)
+                    _transaction.Rollback();
+                _transaction.Dispose();
+                _disposed = true;
+            }
+        }
+       
     }
 }

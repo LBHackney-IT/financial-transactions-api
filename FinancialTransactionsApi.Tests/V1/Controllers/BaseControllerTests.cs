@@ -1,33 +1,32 @@
-using System.Collections.Generic;
-using TransactionsApi.V1.Controllers;
-using TransactionsApi.V1.Infrastructure;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
-using NUnit.Framework;
+using System.Collections.Generic;
+using TransactionsApi.V1.Controllers;
+using Xunit;
 
 namespace TransactionsApi.Tests.V1.Controllers
 {
-    [TestFixture]
+
     public class BaseControllerTests
     {
-        private BaseController _sut;
-        private ControllerContext _controllerContext;
-        private HttpContext _stubHttpContext;
-
-        [SetUp]
-        public void Init()
+        private readonly BaseController _sut;
+        private readonly ControllerContext _controllerContext;
+        private readonly HttpContext _stubHttpContext;
+        public BaseControllerTests()
         {
             _stubHttpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_stubHttpContext, new RouteData(), new ControllerActionDescriptor()));
-            _sut = new BaseController();
-
-            _sut.ControllerContext = _controllerContext;
+            _sut = new BaseController
+            {
+                ControllerContext = _controllerContext
+            };
         }
 
-        [Test]
+
+        [Fact]
         public void GetCorrelationShouldThrowExceptionIfCorrelationHeaderUnavailable()
         {
             // Arrange + Act + Assert
@@ -36,7 +35,7 @@ namespace TransactionsApi.Tests.V1.Controllers
                 .WithMessage("Request is missing a correlationId");
         }
 
-        [Test]
+        [Fact]
         public void GetCorrelationShouldReturnCorrelationIdWhenExists()
         {
             // Arrange

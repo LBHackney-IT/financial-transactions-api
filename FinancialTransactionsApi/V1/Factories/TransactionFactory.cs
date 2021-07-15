@@ -17,7 +17,12 @@ namespace TransactionsApi.V1.Factories
                 TargetId = transactionDbEntity.TargetId,
                 TransactionAmount = transactionDbEntity.TransactionAmount,
                 TransactionDate = transactionDbEntity.TransactionDate,
-                TransactionType = transactionDbEntity.TransactionType
+                TransactionType = transactionDbEntity.TransactionType,
+                PaidAmount = transactionDbEntity.PaidAmount,
+                ChargedAmount = transactionDbEntity.ChargedAmount,
+                BalanceAmount = transactionDbEntity.BalanceAmount,
+                HousingBenefitAmount= transactionDbEntity.HousingBenefitAmount,
+                AssetFullAddress = transactionDbEntity.AssetFullAddress
             };
         }
 
@@ -33,8 +38,15 @@ namespace TransactionsApi.V1.Factories
                 TargetId = transaction.TargetId,
                 PeriodNo = transaction.PeriodNo,
                 PaymentReference = transaction.PaymentReference,
-                Id = transaction.Id
+                Id = transaction.Id,
+                PaidAmount = transaction.PaidAmount,
+                ChargedAmount = transaction.ChargedAmount,
+                BalanceAmount = transaction.BalanceAmount,
+                HousingBenefitAmount = transaction.HousingBenefitAmount,
+                AssetFullAddress = transaction.AssetFullAddress
             };
         }
+
+
     }
 }

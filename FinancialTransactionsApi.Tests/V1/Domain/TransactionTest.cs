@@ -25,6 +25,7 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
             transaction.PaidAmount.Should().Be(Constants.AMOUNT);
             transaction.BalanceAmount.Should().Be(Constants.AMOUNT);
             transaction.HousingBenefitAmount.Should().Be(Constants.AMOUNT);
+            transaction.AssetFullAddress.Should().Be(Constants.ADDRESS);
 
         }
     }

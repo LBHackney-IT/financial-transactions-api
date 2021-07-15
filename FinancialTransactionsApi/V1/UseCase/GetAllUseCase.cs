@@ -1,4 +1,3 @@
-using FinancialTransactionsApi.V1.UseCase.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +19,11 @@ namespace TransactionsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task<TransactionResponseObjectList> ExecuteAsync(Guid targetId, string transactionType, string startDate, string endDate)
+        public async Task<TransactionResponseObjectList> ExecuteAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate)
         {
             TransactionResponseObjectList transactionResponseObjectList = new TransactionResponseObjectList();
             List<Transaction> transactions =
-                await _gateway.GetAllTransactionsAsync(targetId, transactionType, startDate.CheckAndConvertDateTime(), endDate.CheckAndConvertDateTime()).ConfigureAwait(false);
+                await _gateway.GetAllTransactionsAsync(targetId, transactionType, startDate, endDate).ConfigureAwait(false);
 
             transactionResponseObjectList.ResponseObjects =
                 transactions.Select(p => p.ToResponse()).ToList();

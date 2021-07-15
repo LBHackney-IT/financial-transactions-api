@@ -40,5 +40,25 @@ namespace TransactionsApi.V1.Boundary.Response
         /// 2345
         /// </summary>
         public string PaymentReference { get; set; }
+        /// <summary>
+        /// 56.78
+        /// </summary>
+        public decimal PaidAmount { get; set; }
+        /// <summary>
+        /// 87.53
+        /// </summary>
+        public decimal ChargedAmount { get; set; }
+        /// <summary>
+        /// 1025
+        /// </summary>
+        public decimal BalanceAmount { get; set; }
+        /// <summary>
+        /// 25.56
+        /// </summary>
+        public decimal HousingBenefitAmount { get; set; }
+        /// <summary>
+        /// Apartment 22, 18 G road, SW11
+        /// </summary>
+        public string AssetFullAddress { get; set; }
     }
 }
