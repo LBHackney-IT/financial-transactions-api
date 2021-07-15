@@ -38,7 +38,6 @@ namespace TransactionsApi.V1.Infrastructure
         public decimal BalanceAmount { get; set; }
         [DynamoDBProperty(AttributeName = "housing_benefit_amount")]
         public decimal HousingBenefitAmount { get; set; }
-        [DynamoDBProperty(AttributeName = "asset_full_address")]
-        public string AssetFullAddress { get; set; }
+       
     }
 }

@@ -23,8 +23,7 @@ namespace TransactionsApi.V1.Factories
                 PaidAmount = domain.PaidAmount,
                 ChargedAmount = domain.ChargedAmount,
                 BalanceAmount = domain.BalanceAmount,
-                HousingBenefitAmount = domain.HousingBenefitAmount,
-                AssetFullAddress = domain.AssetFullAddress
+                HousingBenefitAmount = domain.HousingBenefitAmount
             };
         }
 

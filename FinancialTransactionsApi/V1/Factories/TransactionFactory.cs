@@ -21,8 +21,7 @@ namespace TransactionsApi.V1.Factories
                 PaidAmount = transactionDbEntity.PaidAmount,
                 ChargedAmount = transactionDbEntity.ChargedAmount,
                 BalanceAmount = transactionDbEntity.BalanceAmount,
-                HousingBenefitAmount= transactionDbEntity.HousingBenefitAmount,
-                AssetFullAddress = transactionDbEntity.AssetFullAddress
+                HousingBenefitAmount= transactionDbEntity.HousingBenefitAmount
             };
         }
 
@@ -42,8 +41,7 @@ namespace TransactionsApi.V1.Factories
                 PaidAmount = transaction.PaidAmount,
                 ChargedAmount = transaction.ChargedAmount,
                 BalanceAmount = transaction.BalanceAmount,
-                HousingBenefitAmount = transaction.HousingBenefitAmount,
-                AssetFullAddress = transaction.AssetFullAddress
+                HousingBenefitAmount = transaction.HousingBenefitAmount
             };
         }
 
