@@ -1,7 +1,6 @@
 using System;
 using TransactionsApi.V1.Domain;
 using FluentAssertions;
-using NUnit.Framework;
 using Xunit;
 
 namespace TransactionsApi.Tests.V1.Domain

@@ -56,9 +56,6 @@ namespace TransactionsApi.V1.Boundary.Response
         /// 25.56
         /// </summary>
         public decimal HousingBenefitAmount { get; set; }
-        /// <summary>
-        /// Apartment 22, 18 G road, SW11
-        /// </summary>
-        public string AssetFullAddress { get; set; }
+        
     }
 }

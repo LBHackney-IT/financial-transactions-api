@@ -108,13 +108,20 @@ namespace TransactionsApi.Facts.V1.Gateways
         [Fact]
         public async Task GetEntityByTargetIdAndTransactionTypeReturnsNullIfEntityDoesntExist()
         {
+
+            var databaseEntities = new List<TransactionDbEntity>();
             var targetId = Guid.NewGuid();
             var transType = "Type";
-            var startDate = DateTime.Now;
-            var endDate = DateTime.Now;
+            var startDate = DateTime.Now.AddDays(40);
+            var endDate = DateTime.Now.AddDays(30);
+            _wrapper.Setup(x => x.ScanAsync(
+               It.IsAny<IDynamoDBContext>(),
+               It.IsAny<IEnumerable<ScanCondition>>(),
+               It.IsAny<DynamoDBOperationConfig>()))
+               .ReturnsAsync(new List<TransactionDbEntity>(databaseEntities));
             var response = await _classUnderTest.GetAllTransactionsAsync(targetId, transType, startDate, endDate).ConfigureAwait(false);
 
-            response.Should().BeNull();
+            response.Should().HaveCount(0);
         }
 
         [Fact]
@@ -128,14 +135,7 @@ namespace TransactionsApi.Facts.V1.Gateways
             var entity = entities.FirstOrDefault();
             var dbEnty = DatabaseEntityHelper.MapDatabaseEntityFrom(entity);
             var databaseEntities = entities.Select(entity => DatabaseEntityHelper.MapDatabaseEntityFrom(entity));
-            List<ScanCondition> scanConditions = new List<ScanCondition>
-                {
-                    new ScanCondition("Id", ScanOperator.GreaterThan, Guid.Parse("00000000-0000-0000-0000-000000000000")),
-                    new ScanCondition("TransactionType", ScanOperator.Equal, entity.TransactionType),
-                    new ScanCondition("TargetId", ScanOperator.Equal, entity.TargetId)
-                };
-            //_dynamoDb.Setup(x => x.ScanAsync(Enumerable.Empty<ScanCondition>(), new DynamoDBOperationConfig { }).GetRemainingAsync(default)).Returns(databaseEntities.ToList());
-
+           
             _wrapper.Setup(x => x.ScanAsync(
                 It.IsAny<IDynamoDBContext>(),
                 It.IsAny<IEnumerable<ScanCondition>>(),

@@ -33,8 +33,7 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
                 PaidAmount = AMOUNT,
                 BalanceAmount = AMOUNT,
                 ChargedAmount = AMOUNT,
-                HousingBenefitAmount= AMOUNT,
-                AssetFullAddress = ADDRESS
+                HousingBenefitAmount= AMOUNT
             };
 
             return entity;

@@ -37,8 +37,7 @@ namespace TransactionsApi.Tests.V1.Helper
                 PaidAmount = entity.PaidAmount,
                 ChargedAmount = entity.ChargedAmount,
                 BalanceAmount = entity.BalanceAmount,
-                HousingBenefitAmount = entity.HousingBenefitAmount,
-                AssetFullAddress = entity.AssetFullAddress
+                HousingBenefitAmount = entity.HousingBenefitAmount
 
             };
         }

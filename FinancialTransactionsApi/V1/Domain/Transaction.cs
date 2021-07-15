@@ -18,6 +18,5 @@ namespace TransactionsApi.V1.Domain
         public decimal ChargedAmount { get; set; }
         public decimal BalanceAmount { get; set; }
         public decimal HousingBenefitAmount { get; set; }
-        public string AssetFullAddress { get; set; }
     }
 }

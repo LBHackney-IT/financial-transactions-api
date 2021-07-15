@@ -1,11 +1,10 @@
 using TransactionsApi.V1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using NUnit.Framework;
 
 namespace TransactionsApi.Tests
 {
-    [TestFixture]
+   
     public class DatabaseTests
     {
         private IDbContextTransaction _transaction;
