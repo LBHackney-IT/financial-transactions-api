@@ -1,4 +1,5 @@
 using AutoFixture;
+using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
@@ -27,7 +28,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task AddTransactionsAsync()
         {
-            var entity = _fixture.Create<Transaction>();
+            var entity = _fixture.Create<TransactionRequest>();
             var responseEntity = _fixture.Create<TransactionResponseObject>();
             
             _mockGateway.Setup(x => x.AddAsync(It.IsAny<Transaction>())).Returns(Task.FromResult(false));
@@ -37,8 +38,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 .ConfigureAwait(false);
 
             // Assert
-            var expectedResponse = entity.ToResponse();
-            response.Should().BeEquivalentTo(expectedResponse);
+            var expectedResponse = entity.ToTransactionDomain().ToResponse();
+            response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id));
            
         }
     }

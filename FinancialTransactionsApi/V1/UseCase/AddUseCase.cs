@@ -1,3 +1,4 @@
+using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,12 @@ namespace FinancialTransactionsApi.V1.UseCase
         {
             _gateway = gateway;
         }
-        public async Task<TransactionResponseObject> ExecuteAsync(Transaction transaction)
+        public async Task<TransactionResponseObject> ExecuteAsync(TransactionRequest transaction)
         {
-            await _gateway.AddAsync(transaction).ConfigureAwait(false);
-            return transaction.ToResponse();
+            var transactionDomain = transaction.ToTransactionDomain();
+            transactionDomain.Id = Guid.NewGuid();
+            await _gateway.AddAsync(transactionDomain).ConfigureAwait(false);
+            return transactionDomain.ToResponse();
         }
     }
 }
