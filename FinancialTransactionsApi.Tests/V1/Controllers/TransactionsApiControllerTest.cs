@@ -40,7 +40,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _getByIdUseCase.Setup(x => x.ExecuteAsync(id)).ReturnsAsync((TransactionResponseObject) null);
 
             var response = await _classUnderTest.GetById(id).ConfigureAwait(false);
-            response.Should().BeOfType(typeof(NotFoundResult));
+            response.Should().BeOfType(typeof(NotFoundObjectResult));
             //(response as NotFoundObjectResult).Value.Should().Be(id);
         }
 
@@ -65,7 +65,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _getAllUseCase.Setup(x => x.ExecuteAsync(targerId, transType, date, date)).ReturnsAsync((TransactionResponseObjectList) null);
             var query = new TransactionQuery { TargetId = targerId, TransactionType = transType, StartDate = date, EndDate = date };
             var response = await _classUnderTest.GetAll(query).ConfigureAwait(false);
-            response.Should().BeOfType(typeof(NotFoundResult));
+            response.Should().BeOfType(typeof(NotFoundObjectResult));
         }
 
         [Fact]
@@ -90,8 +90,8 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         public async Task PostNewTransactionSuccessfulSaves()
         {
 
-            var transactionsObj = _fixture.Create<Transaction>();
-            var returnObj = transactionsObj.ToResponse();
+            var transactionsObj = _fixture.Create<TransactionRequest>();
+            var returnObj = transactionsObj.ToTransactionDomain().ToResponse();
             _addUseCase.Setup(x => x.ExecuteAsync(transactionsObj)).ReturnsAsync(returnObj);
 
             var response = await _classUnderTest.Add(transactionsObj).ConfigureAwait(false);

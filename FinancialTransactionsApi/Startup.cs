@@ -25,6 +25,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1;
 
 namespace TransactionsApi
 {
@@ -170,6 +171,7 @@ namespace TransactionsApi
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCorrelation();
+            
 
             if (env.IsDevelopment())
             {
@@ -201,6 +203,7 @@ namespace TransactionsApi
             });
             app.UseSwagger();
             app.UseRouting();
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 // SwaggerGen won't find controllers that are routed via this technique.

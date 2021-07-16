@@ -6,8 +6,9 @@ using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System.Threading.Tasks;
 using System;
 using TransactionsApi.V1.Domain;
-using System.ComponentModel.DataAnnotations;
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
+using System.Net;
 
 namespace TransactionsApi.V1.Controllers
 {
@@ -38,7 +39,7 @@ namespace TransactionsApi.V1.Controllers
 
             var data = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
             if (data == null)
-                return NotFound();
+                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No Transaction found!"));
             return Ok(data);
 
 
@@ -60,7 +61,7 @@ namespace TransactionsApi.V1.Controllers
             {
                 var data = await _getAllUseCase.ExecuteAsync(query.TargetId, query.TransactionType, query.StartDate, query.EndDate).ConfigureAwait(false);
                 if (data == null)
-                    return NotFound();
+                    return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No Transactions found!"));
                 return Ok(data);
             }
             catch (Exception e)
@@ -70,16 +71,15 @@ namespace TransactionsApi.V1.Controllers
             }
         }
 
-        [ProducesResponseType(typeof(TransactionResponseObjectList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TransactionResponseObject), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] Transaction transaction)
+        public async Task<IActionResult> Add([FromBody] TransactionRequest transactionRequest)
         {
-            transaction.Id = Guid.NewGuid();
-            await _addUseCase.ExecuteAsync(transaction).ConfigureAwait(false);
-            return CreatedAtAction(nameof(GetById), new { id = transaction.Id });
+            var result = await _addUseCase.ExecuteAsync(transactionRequest).ConfigureAwait(false);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id });
 
         }
 

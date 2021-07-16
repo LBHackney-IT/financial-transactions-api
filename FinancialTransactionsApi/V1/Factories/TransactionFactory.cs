@@ -1,3 +1,4 @@
+using FinancialTransactionsApi.V1.Boundary.Request;
 using TransactionsApi.V1.Domain;
 using TransactionsApi.V1.Infrastructure;
 
@@ -44,7 +45,24 @@ namespace TransactionsApi.V1.Factories
                 HousingBenefitAmount = transaction.HousingBenefitAmount
             };
         }
-
+        public static Transaction ToTransactionDomain(this TransactionRequest transactionRequest)
+        {
+            return transactionRequest == null ? null : new Transaction
+            {
+                TargetId = transactionRequest.TargetId,
+                BalanceAmount = transactionRequest.BalanceAmount,
+                ChargedAmount = transactionRequest.ChargedAmount,
+                FinancialMonth = transactionRequest.FinancialMonth,
+                FinancialYear = transactionRequest.FinancialYear,
+                HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
+                PaidAmount = transactionRequest.PaidAmount,
+                PaymentReference = transactionRequest.PaymentReference,
+                PeriodNo = transactionRequest.PeriodNo,
+                TransactionAmount = transactionRequest.TransactionAmount,
+                TransactionDate = transactionRequest.TransactionDate,
+                TransactionType = transactionRequest.TransactionType
+            };
+        }
 
     }
 }
