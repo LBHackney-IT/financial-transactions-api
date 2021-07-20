@@ -1,14 +1,14 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
-using TransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 
-namespace TransactionsApi.Tests
+namespace FinancialTransactionsApi.Tests
 {
     public class DynamoDbMockWebApplicationFactory<TStartup>
         : WebApplicationFactory<TStartup> where TStartup : class

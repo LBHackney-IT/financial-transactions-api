@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
-using TransactionsApi.V1.Controllers;
-using TransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Controllers;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
-namespace TransactionsApi.Tests.V1.Infrastructure
+namespace FinancialTransactionsApi.Tests.V1.Infrastructure
 {
    
     public class CorrelationMiddlewareTest

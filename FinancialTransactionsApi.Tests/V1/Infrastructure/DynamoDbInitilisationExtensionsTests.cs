@@ -1,13 +1,13 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using TransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using Xunit;
 
-namespace TransactionsApi.Tests.V1.Infrastructure
+namespace FinancialTransactionsApi.Tests.V1.Infrastructure
 {
     
     public class DynamoDbInitilisationExtensionsTests

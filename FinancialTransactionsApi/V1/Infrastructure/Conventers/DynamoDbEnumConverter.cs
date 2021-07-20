@@ -2,7 +2,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using System;
 
-namespace TransactionsApi.V1.Infrastructure
+namespace FinancialTransactionsApi.V1.Infrastructure.Conventers
 {
     // TODO: This should go in a common NuGet package...
 
@@ -13,17 +13,25 @@ namespace TransactionsApi.V1.Infrastructure
     {
         public DynamoDBEntry ToEntry(object value)
         {
-            if (null == value) return new DynamoDBNull();
+            if (null == value)
+            {
+                return new DynamoDBNull();
+            }
 
             return new Primitive(Enum.GetName(typeof(TEnum), value));
         }
 
         public object FromEntry(DynamoDBEntry entry)
         {
-            Primitive primitive = entry as Primitive;
-            if (null == primitive) return default(TEnum);
+            var primitive = entry as Primitive;
 
-            TEnum valueAsEnum = (TEnum) Enum.Parse(typeof(TEnum), primitive.AsString());
+            if (null == primitive)
+            {
+                return default(TEnum);
+            }
+
+            var valueAsEnum = (TEnum) Enum.Parse(typeof(TEnum), primitive.AsString());
+
             return valueAsEnum;
         }
     }

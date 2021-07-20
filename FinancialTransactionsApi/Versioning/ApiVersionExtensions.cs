@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace TransactionsApi.Versioning
+namespace FinancialTransactionsApi.Versioning
 {
     public static class ApiVersionExtensions
     {
         public static string GetFormattedApiVersion(this ApiVersion apiVersion)
         {
-            return $"v{apiVersion.ToString()}";
+            return $"v{apiVersion}";
         }
     }
 }

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using TransactionsApi.V1.Controllers;
-using TransactionsApi.V1.UseCase;
+using FinancialTransactionsApi.V1.Controllers;
+using FinancialTransactionsApi.V1.UseCase;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
-namespace TransactionsApi.Tests.V1.Controllers
+namespace FinancialTransactionsApi.Tests.V1.Controllers
 {
 
   
@@ -16,8 +16,6 @@ namespace TransactionsApi.Tests.V1.Controllers
         {
             _classUnderTest = new HealthCheckController();
         }
-
-        
 
         [Fact]
         public void ReturnsResponseWithStatus()

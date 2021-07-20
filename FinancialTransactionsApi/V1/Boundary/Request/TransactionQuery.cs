@@ -1,5 +1,6 @@
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Infrastructure;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace FinancialTransactionsApi.V1.Boundary.Request
 {
@@ -8,19 +9,34 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <summary>
         /// The guid of a tenancy/property
         /// </summary>
-        [Required]
+        /// <example>
+        /// 94b02545-0233-4640-98dd-b2900423c0a5
+        /// </example>
+        [NonEmptyGuid]
         public Guid TargetId { get; set; }
+
         /// <summary>
         /// Type of transactioin tenancy/property
         /// </summary>
-        public string TransactionType { get; set; }
+        /// <example>
+        /// Rent
+        /// </example>
+        public TransactionType? TransactionType { get; set; }
+
         /// <summary>
-        /// Selected Start Date Range like 2021-07-01
+        /// Selected start date
         /// </summary>
+        /// <example>
+        /// 2021-07-01
+        /// </example>
         public DateTime? StartDate { get; set; }
+
         /// <summary>
-        /// Selected Start Date Range like 2021-07-01
+        /// Selected end date
         /// </summary>
+        /// <example>
+        /// 2021-08-01
+        /// </example>
         public DateTime? EndDate { get; set; }
     }
 }

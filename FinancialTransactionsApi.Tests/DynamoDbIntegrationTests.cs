@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Xunit;
 
-namespace TransactionsApi.Tests
+namespace FinancialTransactionsApi.Tests
 {
     public class DynamoDbIntegrationTests<TStartup> where TStartup : class
     {

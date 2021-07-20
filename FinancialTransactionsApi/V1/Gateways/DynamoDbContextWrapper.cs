@@ -1,9 +1,8 @@
 using Amazon.DynamoDBv2.DataModel;
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using TransactionsApi.V1.Infrastructure;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -14,6 +13,9 @@ namespace FinancialTransactionsApi.V1.Gateways
             return context.ScanAsync<TransactionDbEntity>(conditions, operationConfig).GetRemainingAsync();
         }
 
-     
+        public virtual Task<TransactionDbEntity> LoadAsync(IDynamoDBContext context, Guid id, DynamoDBOperationConfig operationConfig = null)
+        {
+            return context.LoadAsync<TransactionDbEntity>(id);
+        }
     }
 }

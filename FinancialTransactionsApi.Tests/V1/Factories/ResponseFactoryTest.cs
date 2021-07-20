@@ -1,11 +1,11 @@
 using AutoFixture;
 using FluentAssertions;
 using System.Collections.Generic;
-using TransactionsApi.V1.Domain;
-using TransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
 using Xunit;
 
-namespace TransactionsApi.Tests.V1.Factories
+namespace FinancialTransactionsApi.Tests.V1.Factories
 {
 
     public class ResponseFactoryTest

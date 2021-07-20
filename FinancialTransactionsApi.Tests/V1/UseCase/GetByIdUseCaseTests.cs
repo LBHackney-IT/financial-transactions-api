@@ -3,13 +3,13 @@ using FluentAssertions;
 using Moq;
 using System;
 using System.Threading.Tasks;
-using TransactionsApi.V1.Domain;
-using TransactionsApi.V1.Factories;
-using TransactionsApi.V1.Gateways;
-using TransactionsApi.V1.UseCase;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.UseCase;
 using Xunit;
 
-namespace TransactionsApi.Tests.V1.UseCase
+namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
     public class GetByIdUseCaseTests
     {
