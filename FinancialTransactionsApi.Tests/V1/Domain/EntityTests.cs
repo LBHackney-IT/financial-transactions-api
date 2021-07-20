@@ -1,9 +1,9 @@
 using System;
-using TransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Domain;
 using FluentAssertions;
 using Xunit;
 
-namespace TransactionsApi.Tests.V1.Domain
+namespace FinancialTransactionsApi.Tests.V1.Domain
 {
     public class EntityTests
     {

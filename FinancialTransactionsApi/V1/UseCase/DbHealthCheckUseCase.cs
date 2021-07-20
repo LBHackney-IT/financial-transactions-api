@@ -1,7 +1,7 @@
-using TransactionsApi.V1.Boundary;
+using FinancialTransactionsApi.V1.Boundary.Response;
 using Microsoft.Extensions.HealthChecks;
 
-namespace TransactionsApi.V1.UseCase
+namespace FinancialTransactionsApi.V1.UseCase
 {
     public class DbHealthCheckUseCase
     {
@@ -17,6 +17,7 @@ namespace TransactionsApi.V1.UseCase
             var result = _healthCheckService.CheckHealthAsync().Result;
 
             var success = result.CheckStatus == CheckStatus.Healthy;
+
             return new HealthCheckResponse(success, result.Description);
         }
     }

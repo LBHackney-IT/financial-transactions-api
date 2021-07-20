@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+
 namespace FinancialTransactionsApi.V1
 {
     public class ExceptionMiddleware

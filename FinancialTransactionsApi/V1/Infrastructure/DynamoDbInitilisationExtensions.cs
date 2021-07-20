@@ -3,14 +3,13 @@ using Amazon.DynamoDBv2.DataModel;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace TransactionsApi.V1.Infrastructure
+namespace FinancialTransactionsApi.V1.Infrastructure
 {
     public static class DynamoDbInitilisationExtensions
     {
         public static void ConfigureDynamoDB(this IServiceCollection services)
         {
-            bool localMode = false;
-            _ = bool.TryParse(Environment.GetEnvironmentVariable("DynamoDb_LocalMode"), out localMode);
+            _ = bool.TryParse(Environment.GetEnvironmentVariable("DynamoDb_LocalMode"), out var localMode);
 
             if (localMode)
             {

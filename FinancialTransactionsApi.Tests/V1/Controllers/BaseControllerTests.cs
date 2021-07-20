@@ -1,13 +1,13 @@
+using FinancialTransactionsApi.V1.Controllers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
-using TransactionsApi.V1.Controllers;
 using Xunit;
 
-namespace TransactionsApi.Tests.V1.Controllers
+namespace FinancialTransactionsApi.Tests.V1.Controllers
 {
 
     public class BaseControllerTests

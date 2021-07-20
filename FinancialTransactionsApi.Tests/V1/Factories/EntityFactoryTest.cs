@@ -1,11 +1,11 @@
 using AutoFixture;
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
-using TransactionsApi.V1.Domain;
-using TransactionsApi.V1.Factories;
-using TransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
 using Xunit;
 
-namespace TransactionsApi.Tests.V1.Factories
+namespace FinancialTransactionsApi.Tests.V1.Factories
 {
 
     public class EntityFactoryTest

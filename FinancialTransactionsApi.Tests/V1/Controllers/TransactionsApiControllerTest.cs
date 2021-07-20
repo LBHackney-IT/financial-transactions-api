@@ -1,104 +1,246 @@
 using AutoFixture;
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Controllers;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
-using TransactionsApi.V1.Boundary.Response;
-using TransactionsApi.V1.Controllers;
-using TransactionsApi.V1.Domain;
-using TransactionsApi.V1.Factories;
-using TransactionsApi.V1.UseCase.Interfaces;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Controllers
 {
-    public class TransactionsApiControllerTest
+    public class FinancialTransactionsApiControllerTest
     {
-        private readonly TransactionsApiController _classUnderTest;
+        private readonly FinancialTransactionsApiController _controller;
         private readonly Mock<IGetByIdUseCase> _getByIdUseCase;
         private readonly Mock<IGetAllUseCase> _getAllUseCase;
         private readonly Mock<IAddUseCase> _addUseCase;
+        private readonly Mock<IUpdateUseCase> _updateUseCase;
         private readonly Fixture _fixture = new Fixture();
-        public TransactionsApiControllerTest()
+
+        public FinancialTransactionsApiControllerTest()
         {
             _getByIdUseCase = new Mock<IGetByIdUseCase>();
             _getAllUseCase = new Mock<IGetAllUseCase>();
             _addUseCase = new Mock<IAddUseCase>();
-            _classUnderTest = new TransactionsApiController(_getAllUseCase.Object, _getByIdUseCase.Object, _addUseCase.Object);
-        }
-
-
-
-        [Fact]
-        public async Task GetTransactionWithNoIdReturnsNotFound()
-        {
-            var id = Guid.NewGuid();
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(id)).ReturnsAsync((TransactionResponseObject) null);
-
-            var response = await _classUnderTest.GetById(id).ConfigureAwait(false);
-            response.Should().BeOfType(typeof(NotFoundObjectResult));
-            //(response as NotFoundObjectResult).Value.Should().Be(id);
+            _updateUseCase = new Mock<IUpdateUseCase>();
+            _controller = new FinancialTransactionsApiController(_getAllUseCase.Object,
+                _getByIdUseCase.Object, _addUseCase.Object, _updateUseCase.Object);
         }
 
         [Fact]
-        public async Task GetTransactionWithValidIdReturnsOKResponse()
+        public async Task GetTransactionWithValidIdReturns200()
         {
+            var transactionResponse = _fixture.Create<TransactionResponse>();
 
-            var transactionResponse = _fixture.Create<TransactionResponseObject>();
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(transactionResponse.Id)).ReturnsAsync(transactionResponse);
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(transactionResponse);
 
-            var response = await _classUnderTest.GetById(transactionResponse.Id).ConfigureAwait(false);
-            response.Should().BeOfType(typeof(OkObjectResult));
-            (response as OkObjectResult).Value.Should().Be(transactionResponse);
+            var result = await _controller.GetById(transactionResponse.Id).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var okResult = result as OkObjectResult;
+
+            okResult.Should().NotBeNull();
+
+            var transaction = okResult.Value as TransactionResponse;
+
+            transaction.Should().NotBeNull();
+
+            transaction.Should().BeEquivalentTo(transactionResponse);
         }
 
         [Fact]
-        public async Task GetTransactionWithValidTargetIdAndTransactionTypeNotFound()
+        public async Task GetTransactionWithInvalidIdReturns404()
         {
-            var targerId = Guid.NewGuid();
-            var transType = _fixture.Create<string>();
-            var date = DateTime.Now;
-            _getAllUseCase.Setup(x => x.ExecuteAsync(targerId, transType, date, date)).ReturnsAsync((TransactionResponseObjectList) null);
-            var query = new TransactionQuery { TargetId = targerId, TransactionType = transType, StartDate = date, EndDate = date };
-            var response = await _classUnderTest.GetAll(query).ConfigureAwait(false);
-            response.Should().BeOfType(typeof(NotFoundObjectResult));
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((TransactionResponse) null);
+
+            var result = await _controller.GetById(Guid.NewGuid()).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var notFoundResult = result as NotFoundObjectResult;
+
+            notFoundResult.Should().NotBeNull();
+
+            var response = notFoundResult.Value as BaseErrorResponse;
+
+            response.Should().NotBeNull();
+
+            response.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
+
+            response.Message.Should().BeEquivalentTo("No transaction by provided Id cannot be found!");
+
+            response.Details.Should().BeEquivalentTo(string.Empty);
         }
 
         [Fact]
-        public async Task GetTransactionWithValidTargetIdAndTransactionTypeReturnsOKResponse()
+        public async Task GetTransactionByIdReturns500()
         {
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+                .ThrowsAsync(new Exception("Test exception"));
 
-            var transactionsObj = _fixture.Build<TransactionResponseObject>()
-                            .With(x => x.TargetId, Guid.NewGuid())
-                            .With(x => x.TransactionType, "Sample")
-                            .With(x => x.TransactionDate, DateTime.Now)
-                            .CreateMany(5);
-            var search = transactionsObj.FirstOrDefault();
-            var transactionsResponse = new TransactionResponseObjectList { ResponseObjects = transactionsObj.ToList() };
-            _getAllUseCase.Setup(x => x.ExecuteAsync(search.TargetId, search.TransactionType, search.TransactionDate, search.TransactionDate)).ReturnsAsync(transactionsResponse);
-            var query = new TransactionQuery { TargetId = search.TargetId, TransactionType = search.TransactionType, StartDate = search.TransactionDate, EndDate = search.TransactionDate };
-            var response = await _classUnderTest.GetAll(query).ConfigureAwait(false);
-            response.Should().BeOfType(typeof(OkObjectResult));
-            (response as OkObjectResult).Value.Should().Be(transactionsResponse);
+            try
+            {
+                var result = await _controller.GetById(new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
+                    .ConfigureAwait(false);
+                Assert.True(false, "Exception must be thrown!");
+            }
+            catch (Exception ex)
+            {
+                ex.GetType().Should().Be(typeof(Exception));
+                ex.Message.Should().Be("Test exception");
+            }
         }
 
         [Fact]
-        public async Task PostNewTransactionSuccessfulSaves()
+        public async Task GetTransactionsByTargetIdReturns200()
         {
+            var obj1 = _fixture.Create<TransactionResponse>();
+            var obj2 = _fixture.Create<TransactionResponse>();
 
-            var transactionsObj = _fixture.Create<TransactionRequest>();
-            var returnObj = transactionsObj.ToTransactionDomain().ToResponse();
-            _addUseCase.Setup(x => x.ExecuteAsync(transactionsObj)).ReturnsAsync(returnObj);
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>()))
+                .ReturnsAsync(new List<TransactionResponse>()
+                {
+                    obj1,
+                    obj2
+                });
 
-            var response = await _classUnderTest.Add(transactionsObj).ConfigureAwait(false);
-            response.Should().BeOfType(typeof(CreatedAtActionResult));
-            (response as CreatedAtActionResult).ActionName.Should().Be("GetById");
-            var id = (response as CreatedAtActionResult).Value;
-            id.Should().NotBeNull();
+            var query = new TransactionQuery()
+            {
+                TargetId = Guid.NewGuid()
+            };
+
+            var result = await _controller.GetAll(query).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var okResult = result as OkObjectResult;
+
+            okResult.Should().NotBeNull();
+
+            var list = okResult.Value as List<TransactionResponse>;
+
+            list.Should().NotBeNull();
+
+            list.Should().HaveCount(2);
+
+            list[0].Should().BeEquivalentTo(obj1);
+
+            list[1].Should().BeEquivalentTo(obj2);
+        }
+
+        [Fact]
+        public async Task GetTransactionsReturns500()
+        {
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>()))
+                .ThrowsAsync(new Exception("Test exception"));
+
+            try
+            {
+                var result = await _controller.GetAll(new TransactionQuery { })
+                    .ConfigureAwait(false);
+                Assert.True(false, "Exception must be thrown!");
+            }
+            catch (Exception ex)
+            {
+                ex.GetType().Should().Be(typeof(Exception));
+                ex.Message.Should().Be("Test exception");
+            }
+        }
+
+        [Fact]
+        public async Task CreateTransactionWithValidModelReturns200()
+        {
+            var guid = Guid.NewGuid();
+
+            var request = new AddTransactionRequest()
+            {
+                TargetId = Guid.NewGuid(),
+                TransactionDate = DateTime.UtcNow,
+                Address = "Address",
+                BalanceAmount = 145.23M,
+                ChargedAmount = 134.12M,
+                FinancialMonth = 2,
+                FinancialYear = 2022,
+                Fund = "HSGSUN",
+                HousingBenefitAmount = 123.12M,
+                IsSuspense = true,
+                PaidAmount = 123.22M,
+                PaymentReference = "123451",
+                PeriodNo = 2,
+                TransactionAmount = 126.83M,
+                TransactionSource = "DD",
+                TransactionType = TransactionType.Charge,
+                Person = new Person()
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = "Kain Hyawrd"
+                }
+            };
+
+            var response = new TransactionResponse()
+            {
+                Id = guid,
+                TargetId = Guid.NewGuid(),
+                TransactionDate = DateTime.UtcNow,
+                Address = "Address",
+                BalanceAmount = 145.23M,
+                ChargedAmount = 134.12M,
+                FinancialMonth = 2,
+                FinancialYear = 2022,
+                Fund = "HSGSUN",
+                HousingBenefitAmount = 123.12M,
+                IsSuspense = true,
+                PaidAmount = 123.22M,
+                PaymentReference = "123451",
+                PeriodNo = 2,
+                TransactionAmount = 126.83M,
+                TransactionSource = "DD",
+                TransactionType = TransactionType.Charge,
+                Person = new Person()
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = "Kain Hyawrd"
+                }
+            };
+
+            _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddTransactionRequest>()))
+                .ReturnsAsync(response);
+
+            var result = await _controller.Add(request).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var createResult = result as CreatedAtActionResult;
+
+            createResult.Should().NotBeNull();
+
+            createResult.StatusCode.Should().Be((int) HttpStatusCode.Created);
+
+            createResult.RouteValues.Should().NotBeNull();
+
+            createResult.RouteValues.Should().HaveCount(1);
+
+            createResult.RouteValues["id"].Should().NotBeNull();
+
+            createResult.RouteValues["id"].Should().Be(guid);
+
+            var responseObject = createResult.Value as TransactionResponse;
+
+            responseObject.Should().NotBeNull();
+
+            responseObject.Should().BeEquivalentTo(response);
         }
     }
 }

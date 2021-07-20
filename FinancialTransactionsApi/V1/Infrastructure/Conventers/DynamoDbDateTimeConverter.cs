@@ -2,7 +2,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using System;
 
-namespace TransactionsApi.V1.Infrastructure
+namespace FinancialTransactionsApi.V1.Infrastructure.Conventers
 {
     // TODO: This should go in a common NuGet package...
 
@@ -16,17 +16,25 @@ namespace TransactionsApi.V1.Infrastructure
 
         public DynamoDBEntry ToEntry(object value)
         {
-            if (null == value) return new DynamoDBNull();
+            if (null == value)
+            {
+                return new DynamoDBNull();
+            }
 
             return new Primitive { Value = ((DateTime) value).ToUniversalTime().ToString(DATEFORMAT) };
         }
 
         public object FromEntry(DynamoDBEntry entry)
         {
-            Primitive primitive = entry as Primitive;
-            if (null == primitive) return (DateTime?) null;
+            var primitive = entry as Primitive;
+
+            if (null == primitive)
+            {
+                return null;
+            }
 
             var dtString = primitive.Value.ToString();
+
             return DateTime.Parse(dtString, null, System.Globalization.DateTimeStyles.RoundtripKind);
         }
     }

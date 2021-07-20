@@ -1,33 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using TransactionsApi.V1.Controllers;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
-using TransactionsApi.V1.Gateways;
-using TransactionsApi.V1.Infrastructure;
-using TransactionsApi.V1.UseCase;
-using TransactionsApi.V1.UseCase.Interfaces;
-using TransactionsApi.Versioning;
+using FinancialTransactionsApi.V1;
+using FinancialTransactionsApi.V1.Controllers;
+using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.UseCase;
+using FinancialTransactionsApi.V1.UseCase.Interfaces;
+using FinancialTransactionsApi.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using FinancialTransactionsApi.V1.UseCase.Interfaces;
-using FinancialTransactionsApi.V1.UseCase;
-using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
-namespace TransactionsApi
+namespace FinancialTransactionsApi
 {
     public class Startup
     {
@@ -98,7 +94,7 @@ namespace TransactionsApi
                 //Get every ApiVersion attribute specified and create swagger docs for them
                 foreach (var apiVersion in _apiVersions)
                 {
-                    var version = $"v{apiVersion.ApiVersion.ToString()}";
+                    var version = $"v{apiVersion.ApiVersion}";
                     c.SwaggerDoc(version, new OpenApiInfo
                     {
                         Title = $"{ApiName}-api {version}",
@@ -117,20 +113,15 @@ namespace TransactionsApi
 
             ConfigureLogging(services, Configuration);
 
-            //ConfigureDbContext(services);
-            //TODO: For DynamoDb, remove the line above and uncomment the line below.
-             services.ConfigureDynamoDB();
+            services.ConfigureDynamoDB();
 
             RegisterGateways(services);
             RegisterUseCases(services);
-        }
 
-        private static void ConfigureDbContext(IServiceCollection services)
-        {
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-
-            services.AddDbContext<DatabaseContext>(
-                opt => opt.UseNpgsql(connectionString).AddXRayInterceptor(true));
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -155,7 +146,6 @@ namespace TransactionsApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            //services.AddScoped<ITransactionGateway, TransactionGateway>();
             services.AddScoped<ITransactionGateway, DynamoDbGateway>();
             services.AddSingleton<DynamoDbContextWrapper>();
         }
@@ -165,6 +155,7 @@ namespace TransactionsApi
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
             services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
             services.AddScoped<IAddUseCase, AddUseCase>();
+            services.AddScoped<IUpdateUseCase, UpdateUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -172,7 +163,6 @@ namespace TransactionsApi
         {
             app.UseCorrelation();
             
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
