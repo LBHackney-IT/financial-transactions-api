@@ -20,7 +20,7 @@ namespace FinancialTransactionsApi.V1.UseCase
         {
             var data = await _gateway.GetTransactionByIdAsync(id).ConfigureAwait(false);
 
-            return data.ToResponse();
+            return data?.ToResponse();
         }
     }
 }

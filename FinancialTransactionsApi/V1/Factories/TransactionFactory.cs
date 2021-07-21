@@ -8,7 +8,7 @@ namespace FinancialTransactionsApi.V1.Factories
     {
         public static TransactionDbEntity ToDatabase(this Transaction transaction)
         {
-            return new TransactionDbEntity
+            return transaction == null ? null : new TransactionDbEntity
             {
                 Id = transaction.Id,
                 TargetId = transaction.TargetId,
@@ -20,31 +20,21 @@ namespace FinancialTransactionsApi.V1.Factories
                 PaidAmount = transaction.PaidAmount,
                 PaymentReference = transaction.PaymentReference,
                 IsSuspense = transaction.IsSuspense,
-                SuspenseInfo = new SuspenseInfoDbEntity()
-                {
-                    ResolutionDate = transaction.SuspenseInfo?.ResolutionDate,
-                    IsResolve = transaction.SuspenseInfo != null && transaction.SuspenseInfo.IsResolve,
-                    Note = transaction.SuspenseInfo == null ? string.Empty : transaction.SuspenseInfo.Note
-                },
+                SuspenseResolutionInfo = transaction.SuspenseResolutionInfo.ToDatabase(),
                 PeriodNo = transaction.PeriodNo,
                 TransactionAmount = transaction.TransactionAmount,
                 TransactionDate = transaction.TransactionDate,
                 TransactionType = transaction.TransactionType,
                 TransactionSource = transaction.TransactionSource,
                 Address = transaction.Address,
-                Person = transaction.Person == null ? null :
-                new PersonDbEntity()
-                {
-                    Id = transaction.Person.Id,
-                    FullName = transaction.Person?.FullName
-                },
+                Person = transaction.Person.ToDatabase(),
                 Fund = transaction.Fund
             };
         }
 
         public static Transaction ToDomain(this TransactionDbEntity transactionDbEntity)
         {
-            return new Transaction
+            return transactionDbEntity == null ? null : new Transaction
             {
                 Id = transactionDbEntity.Id,
                 TargetId = transactionDbEntity.TargetId,
@@ -56,24 +46,14 @@ namespace FinancialTransactionsApi.V1.Factories
                 PaidAmount = transactionDbEntity.PaidAmount,
                 PaymentReference = transactionDbEntity.PaymentReference,
                 IsSuspense = transactionDbEntity.IsSuspense,
-                SuspenseInfo = new SuspenseInfo()
-                {
-                    ResolutionDate = transactionDbEntity.SuspenseInfo.ResolutionDate,
-                    IsResolve = transactionDbEntity.SuspenseInfo.IsResolve,
-                    Note = transactionDbEntity.SuspenseInfo.Note
-                },
+                SuspenseResolutionInfo = transactionDbEntity.SuspenseResolutionInfo.ToDomain(),
                 PeriodNo = transactionDbEntity.PeriodNo,
                 TransactionAmount = transactionDbEntity.TransactionAmount,
                 TransactionDate = transactionDbEntity.TransactionDate,
                 TransactionType = transactionDbEntity.TransactionType,
                 TransactionSource = transactionDbEntity.TransactionSource,
                 Address = transactionDbEntity.Address,
-                Person = transactionDbEntity.Person == null ? null :
-                new Person()
-                {
-                    Id = transactionDbEntity.Person.Id,
-                    FullName = transactionDbEntity.Person.FullName
-                },
+                Person = transactionDbEntity.Person.ToDomain(),
                 Fund = transactionDbEntity.Fund
             };
         }
@@ -85,30 +65,18 @@ namespace FinancialTransactionsApi.V1.Factories
                 TargetId = transactionRequest.TargetId,
                 BalanceAmount = transactionRequest.BalanceAmount,
                 ChargedAmount = transactionRequest.ChargedAmount,
-                FinancialMonth = transactionRequest.FinancialMonth,
-                FinancialYear = transactionRequest.FinancialYear,
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
                 IsSuspense = transactionRequest.IsSuspense,
-                SuspenseInfo = new SuspenseInfo()
-                {
-                    ResolutionDate = null,
-                    IsResolve = false,
-                    Note = string.Empty
-                },
+                SuspenseResolutionInfo = null,
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
                 TransactionDate = transactionRequest.TransactionDate,
                 TransactionType = transactionRequest.TransactionType,
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
-                Person = transactionRequest.Person == null ? null :
-                new Person()
-                {
-                    Id = transactionRequest.Person.Id,
-                    FullName = transactionRequest.Person?.FullName
-                },
+                Person = transactionRequest.Person.ToDomain(),
                 Fund = transactionRequest.Fund
             };
         }
@@ -120,29 +88,18 @@ namespace FinancialTransactionsApi.V1.Factories
                 TargetId = transactionRequest.TargetId,
                 BalanceAmount = transactionRequest.BalanceAmount,
                 ChargedAmount = transactionRequest.ChargedAmount,
-                FinancialMonth = transactionRequest.FinancialMonth,
-                FinancialYear = transactionRequest.FinancialYear,
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
                 IsSuspense = transactionRequest.IsSuspense,
-                SuspenseInfo = new SuspenseInfo()
-                {
-                    ResolutionDate = transactionRequest.SuspenseInfo.ResolutionDate,
-                    IsResolve = transactionRequest.SuspenseInfo.IsResolve,
-                    Note = transactionRequest.SuspenseInfo.Note
-                },
+                SuspenseResolutionInfo = transactionRequest.SuspenseResolutionInfo.ToDomain(),
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
                 TransactionDate = transactionRequest.TransactionDate,
                 TransactionType = transactionRequest.TransactionType,
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
-                Person = new Person()
-                {
-                    Id = transactionRequest.Person.Id,
-                    FullName = transactionRequest.Person.FullName
-                },
+                Person = transactionRequest.Person.ToDomain(),
                 Fund = transactionRequest.Fund
             };
         }

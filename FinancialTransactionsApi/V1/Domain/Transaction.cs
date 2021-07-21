@@ -26,7 +26,7 @@ namespace FinancialTransactionsApi.V1.Domain
 
         public bool IsSuspense { get; set; }
 
-        public SuspenseInfo SuspenseInfo { get; set; }
+        public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
 
         public decimal PaidAmount { get; set; }
 

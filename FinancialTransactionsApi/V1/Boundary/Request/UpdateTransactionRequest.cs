@@ -22,29 +22,8 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 2
         /// </example>
-        [Required]
-        [Range(0, (double) short.MaxValue)]
+        [Range(1, 53)]
         public short PeriodNo { get; set; }
-
-        /// <summary>
-        /// Financial year of transaction
-        /// </summary>
-        /// <example>
-        /// 2022
-        /// </example>
-        [Required]
-        [Range(0, (double) short.MaxValue)]
-        public short FinancialYear { get; set; }
-
-        /// <summary>
-        /// Financial Month of transaction
-        /// </summary>
-        /// <example>
-        /// 1
-        /// </example>
-        [Required]
-        [Range(0, (double) short.MaxValue)]
-        public short FinancialMonth { get; set; }
 
         /// <summary>
         /// Transaction Information
@@ -52,16 +31,14 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// DD
         /// </example>
-        [Required]
         public string TransactionSource { get; set; }
 
         /// <summary>
-        /// Type of transaction
+        /// Type of transaction [Charge, Rent]
         /// </summary>
         /// <example>
         /// Rent
         /// </example>
-        [Required]
         [AllowedValues(TransactionType.Charge, TransactionType.Rent)]
         public TransactionType TransactionType { get; set; }
 
@@ -71,7 +48,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 2021-04-27T23:00:00.000Z
         /// </example>
-        [Required]
         [RequiredDateTime]
         public DateTime TransactionDate { get; set; }
 
@@ -81,7 +57,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 56.78
         /// </example>
-        [Required]
         [Range(0, (double) decimal.MaxValue)]
         public decimal TransactionAmount { get; set; }
 
@@ -91,7 +66,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 216704
         /// </example>
-        [Required]
         public string PaymentReference { get; set; }
 
         /// <summary>
@@ -100,8 +74,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// true
         /// </example>
-        [Required]
-        [BoolValidate(false)]
         public bool IsSuspense { get; set; }
 
         /// <summary>
@@ -114,8 +86,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         ///     "Note": "Some notes about this recond"
         /// }
         /// </example>
-        [Required]
-        public SuspenseInfo SuspenseInfo { get; set; }
+        public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
 
         /// <summary>
         /// Total paid amount
@@ -123,7 +94,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 56.78
         /// </example>
-        [Required]
         [Range(0, (double) decimal.MaxValue)]
         public decimal PaidAmount { get; set; }
 
@@ -133,7 +103,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 87.53
         /// </example>
-        [Required]
         [Range(0, (double) decimal.MaxValue)]
         public decimal ChargedAmount { get; set; }
 
@@ -143,8 +112,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 1025.00
         /// </example>
-        [Required]
-        [Range((double) decimal.MinValue, (double) decimal.MaxValue)]
         public decimal BalanceAmount { get; set; }
 
         /// <summary>
@@ -153,7 +120,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 25.56
         /// </example>
-        [Required]
         [Range(0, (double) decimal.MaxValue)]
         public decimal HousingBenefitAmount { get; set; }
 
@@ -163,7 +129,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// Apartment 22, 18 G road, SW11
         /// </example>
-        [Required]
         public string Address { get; set; }
 
         /// <summary>
@@ -175,7 +140,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         ///     "FullName": "Kian Hayward"
         /// }
         /// </example>
-        [Required]
         public Person Person { get; set; }
 
         /// <summary>
@@ -184,7 +148,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// HSGSUN
         /// </example>
-        [Required]
         public string Fund { get; set; }
     }
 }

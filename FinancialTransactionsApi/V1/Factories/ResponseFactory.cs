@@ -21,24 +21,14 @@ namespace FinancialTransactionsApi.V1.Factories
                 PaidAmount = domain.PaidAmount,
                 PaymentReference = domain.PaymentReference,
                 IsSuspense = domain.IsSuspense,
-                SuspenseInfo = new SuspenseInfo()
-                {
-                    ResolutionDate = domain.SuspenseInfo.ResolutionDate,
-                    IsResolve = domain.SuspenseInfo.IsResolve,
-                    Note = domain.SuspenseInfo.Note
-                },
+                SuspenseResolutionInfo = domain.SuspenseResolutionInfo.ToDomain(),
                 PeriodNo = domain.PeriodNo,
                 TransactionAmount = domain.TransactionAmount,
                 TransactionDate = domain.TransactionDate,
                 TransactionType = domain.TransactionType,
                 TransactionSource = domain.TransactionSource,
                 Address = domain.Address,
-                Person = domain.Person == null ? null :
-                new Person()
-                {
-                    Id = domain.Person.Id,
-                    FullName = domain.Person.FullName
-                },
+                Person = domain.Person.ToDomain(),
                 Fund = domain.Fund
             };
         }

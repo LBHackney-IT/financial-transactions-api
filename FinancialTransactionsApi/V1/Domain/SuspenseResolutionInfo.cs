@@ -4,13 +4,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FinancialTransactionsApi.V1.Domain
 {
-    public class SuspenseInfo
+    public class SuspenseResolutionInfo
     {
-        [Required]
         [RequiredDateTime]
         public DateTime? ResolutionDate { get; set; }
 
-        [BoolValidate(true)]
         public bool IsResolve { get; set; }
 
         [Required]

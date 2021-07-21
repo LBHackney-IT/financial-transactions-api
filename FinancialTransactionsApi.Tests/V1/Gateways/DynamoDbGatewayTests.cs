@@ -1,149 +1,171 @@
-//using Amazon.DynamoDBv2.DataModel;
-//using Amazon.DynamoDBv2.DocumentModel;
-//using AutoFixture;
-//using FinancialTransactionsApi.V1.Gateways;
-//using FinancialTransactionsApi.V1.Infrastructure.Entities;
-//using FluentAssertions;
-//using Moq;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading;
-//using System.Threading.Tasks;
-//using FinancialTransactionsApi.Tests.V1.Helper;
-//using FinancialTransactionsApi.V1.Domain;
-//using FinancialTransactionsApi.V1.Gateways;
-//using Xunit;
+using Amazon.DynamoDBv2.DataModel;
+using AutoFixture;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
+using FluentAssertions;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
-//namespace FinancialTransactionsApi.Facts.V1.Gateways
-//{
+namespace FinancialTransactionsApi.Tests.V1.Gateways
+{
 
-//    public class DynamoDbGatewayTests : IDisposable
-//    {
-//        private readonly Fixture _fixture = new Fixture();
-//        private readonly Mock<IDynamoDBContext> _dynamoDb;
-//        private readonly Mock<DynamoDbContextWrapper> _wrapper;
-//        private readonly DynamoDbGateway _classUnderTest;
-//        private readonly List<Action> _cleanup;
-//        public DynamoDbGatewayTests()
-//        {
-//            _dynamoDb = new Mock<IDynamoDBContext>();
-//            _wrapper = new Mock<DynamoDbContextWrapper>();
-//            _classUnderTest = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object);
-//            _cleanup = new List<Action>();
-//        }
+    public class DynamoDbGatewayTests
+    {
+        private readonly Fixture _fixture = new Fixture();
+        private readonly Mock<IDynamoDBContext> _dynamoDb;
+        private readonly Mock<DynamoDbContextWrapper> _wrapper;
+        private readonly DynamoDbGateway _gateway;
 
+        public DynamoDbGatewayTests()
+        {
+            _dynamoDb = new Mock<IDynamoDBContext>();
+            _wrapper = new Mock<DynamoDbContextWrapper>();
+            _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object);
+        }
 
+        [Fact]
+        public async Task GetById_EntityDoesntExists_ReturnsNull()
+        {
+            _wrapper.Setup(x => x.LoadAsync(
+                It.IsAny<IDynamoDBContext>(),
+                It.IsAny<Guid>(),
+                It.IsAny<DynamoDBOperationConfig>()))
+                .ReturnsAsync((TransactionDbEntity) null);
 
-//        public void Dispose()
-//        {
-//            Dispose(true);
-//            GC.SuppressFinalize(this);
-//        }
+            var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid()).ConfigureAwait(false);
 
-//        private bool _disposed;
-//        protected virtual void Dispose(bool disposing)
-//        {
-//            if (disposing && !_disposed)
-//            {
-//                foreach (var action in _cleanup)
-//                    action();
+            result.Should().BeNull();
+        }
 
-//                _disposed = true;
-//            }
-//        }
+        [Fact]
+        public async Task GetById_EntityExists_ReturnsEntity()
+        {
+            var expectedResult = new TransactionDbEntity()
+            {
+                Id = Guid.NewGuid(),
+                TargetId = Guid.NewGuid(),
+                TransactionDate = DateTime.UtcNow,
+                Address = "Address",
+                BalanceAmount = 145.23M,
+                ChargedAmount = 134.12M,
+                FinancialMonth = 2,
+                FinancialYear = 2022,
+                Fund = "HSGSUN",
+                HousingBenefitAmount = 123.12M,
+                IsSuspense = true,
+                PaidAmount = 123.22M,
+                PaymentReference = "123451",
+                PeriodNo = 2,
+                TransactionAmount = 126.83M,
+                TransactionSource = "DD",
+                TransactionType = TransactionType.Charge,
+                Person = new PersonDbEntity()
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = "Kain Hyawrd"
+                }
+            };
 
+            _wrapper.Setup(x => x.LoadAsync(
+                It.IsAny<IDynamoDBContext>(),
+                It.IsAny<Guid>(),
+                It.IsAny<DynamoDBOperationConfig>()))
+                .ReturnsAsync(expectedResult);
 
-//        [Fact]
-//        public async Task PostNewTransactionSuccessfulSaves()
-//        {
-//            // Arrange
-//            var entity = _fixture.Create<Transaction>();
-//            _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
-//              .Returns(Task.CompletedTask);
-//            await _classUnderTest.AddAsync(entity).ConfigureAwait(false);
-//            _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Once);
+            var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid()).ConfigureAwait(false);
 
+            result.Should().NotBeNull();
 
-//        }
+            result.Should().BeEquivalentTo(expectedResult);
+        }
 
-//        [Fact]
-//        public async Task PostMultipleNewTransactionSuccessfulSaves()
-//        {
-//            // Arrange
-//            var entities = _fixture.CreateMany<Transaction>(3).ToList();
-//            _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
-//              .Returns(Task.CompletedTask);
-//            await _classUnderTest.AddRangeAsync(entities).ConfigureAwait(false);
-//            _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Exactly(3));
+        [Fact]
+        public async Task AddAndUpdate_SaveObject_VerifiedOneTimeWorked()
+        {
+            var entity = _fixture.Create<Transaction>();
 
+            _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
+              .Returns(Task.CompletedTask);
 
-//        }
-//        [Fact]
-//        public async Task GetEntityByIdReturnsNullIfEntityDoesntExist()
-//        {
-//            var id = Guid.NewGuid();
-//            var response = await _classUnderTest.GetTransactionByIdAsync(id).ConfigureAwait(false);
+            await _gateway.AddAsync(entity).ConfigureAwait(false);
 
-//            response.Should().BeNull();
-//        }
+            _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Once);
+        }
 
-//        [Fact]
-//        public async Task GetEntityByIdReturnsTheEntityIfItExists()
-//        {
-//            var entity = _fixture.Create<Transaction>();
-//            var dbEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
+        [Fact]
+        public async Task AddAndUpdate_InvalidObject_VerifiedOneTimeWorked()
+        {
+            Transaction entity = null;
 
-//            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(entity.Id, default))
-//                     .ReturnsAsync(dbEntity);
+            _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
+              .Returns(Task.CompletedTask);
 
-//            var response = await _classUnderTest.GetTransactionByIdAsync(entity.Id).ConfigureAwait(false);
+            await _gateway.AddAsync(entity).ConfigureAwait(false);
 
-//            _dynamoDb.Verify(x => x.LoadAsync<TransactionDbEntity>(entity.Id, default), Times.Once);
+            _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Once);
+        }
 
-//            entity.Id.Should().Be(response.Id);
-//            entity.TransactionDate.Should().BeSameDateAs(response.TransactionDate);
-//        }
+        [Fact]
+        public async Task Add_SaveListOfObjects_VirifiedThreeTimesWorked()
+        {
+            var entities = _fixture.CreateMany<Transaction>(3).ToList();
 
-//        [Fact]
-//        public async Task GetEntityByTargetIdAndTransactionTypeReturnsNullIfEntityDoesntExist()
-//        {
+            _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
+              .Returns(Task.CompletedTask);
 
-//            var databaseEntities = new List<TransactionDbEntity>();
-//            var targetId = Guid.NewGuid();
-//            var transType = "Type";
-//            var startDate = DateTime.Now.AddDays(40);
-//            var endDate = DateTime.Now.AddDays(30);
-//            _wrapper.Setup(x => x.ScanAsync(
-//               It.IsAny<IDynamoDBContext>(),
-//               It.IsAny<IEnumerable<ScanCondition>>(),
-//               It.IsAny<DynamoDBOperationConfig>()))
-//               .ReturnsAsync(new List<TransactionDbEntity>(databaseEntities));
-//            var response = await _classUnderTest.GetAllTransactionsAsync(targetId, transType, startDate, endDate).ConfigureAwait(false);
+            await _gateway.AddRangeAsync(entities).ConfigureAwait(false);
 
-//            response.Should().HaveCount(0);
-//        }
+            _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Exactly(3));
+        }
 
-//        [Fact]
-//        public async Task GetEntityByTargetIdAndTransactionTypeReturnsTheEntityIfItExists()
-//        {
-           
-//            var entities = _fixture.Build<Transaction>()
-//               .With(x => x.TargetId, Guid.NewGuid())
-//               .With(x => x.TransactionType, "Sample")
-//               .With(x => x.TransactionDate, DateTime.Now).CreateMany(3).ToList();
-//            var entity = entities.FirstOrDefault();
-//            var dbEnty = DatabaseEntityHelper.MapDatabaseEntityFrom(entity);
-//            var databaseEntities = entities.Select(entity => DatabaseEntityHelper.MapDatabaseEntityFrom(entity));
-           
-//            _wrapper.Setup(x => x.ScanAsync(
-//                It.IsAny<IDynamoDBContext>(),
-//                It.IsAny<IEnumerable<ScanCondition>>(),
-//                It.IsAny<DynamoDBOperationConfig>()))
-//                .ReturnsAsync(new List<TransactionDbEntity>(databaseEntities));
-//            var response = await _classUnderTest.GetAllTransactionsAsync(entity.TargetId, entity.TransactionType,entity.TransactionDate, entity.TransactionDate).ConfigureAwait(false);
+        [Fact]
+        public async Task GetAll_ByTransactionQueryReturnEmptyList_EntitiesDoesntExists()
+        {
+            var databaseEntities = new List<TransactionDbEntity>();
 
-//            response.Should().BeEquivalentTo(entities);
-//        }
-//    }
-//}
+            var targetId = Guid.NewGuid();
+            var transType = TransactionType.Rent;
+            var startDate = DateTime.Now.AddDays(40);
+            var endDate = DateTime.Now.AddDays(30);
+
+            _wrapper.Setup(x => x.ScanAsync(
+               It.IsAny<IDynamoDBContext>(),
+               It.IsAny<IEnumerable<ScanCondition>>(),
+               It.IsAny<DynamoDBOperationConfig>()))
+               .ReturnsAsync(new List<TransactionDbEntity>(databaseEntities));
+            var response = await _gateway.GetAllTransactionsAsync(targetId, transType, startDate, endDate).ConfigureAwait(false);
+
+            response.Should().HaveCount(0);
+        }
+
+        [Fact]
+        public async Task GetAll_ByTransactionQueryReturnsListWithEntities_ReturnsAllCorrect()
+        {
+            var entities = _fixture.Build<Transaction>()
+               .With(x => x.TargetId, Guid.NewGuid())
+               .With(x => x.TransactionType, TransactionType.Charge)
+               .With(x => x.TransactionDate, DateTime.Now).CreateMany(3).ToList();
+
+            var entity = entities.FirstOrDefault();
+
+            var databaseEntities = entities.Select(entity => entity.ToDatabase());
+
+            _wrapper.Setup(x => x.ScanAsync(
+                It.IsAny<IDynamoDBContext>(),
+                It.IsAny<IEnumerable<ScanCondition>>(),
+                It.IsAny<DynamoDBOperationConfig>()))
+                .ReturnsAsync(new List<TransactionDbEntity>(databaseEntities));
+
+            var response = await _gateway.GetAllTransactionsAsync(entity.TargetId, entity.TransactionType, entity.TransactionDate, entity.TransactionDate).ConfigureAwait(false);
+
+            response.Should().BeEquivalentTo(entities);
+        }
+    }
+}

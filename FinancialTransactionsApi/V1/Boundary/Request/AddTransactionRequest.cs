@@ -22,29 +22,8 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 2
         /// </example>
-        [Required]
-        [Range(0, (double) short.MaxValue)]
+        [Range(1, 53)]
         public short PeriodNo { get; set; }
-
-        /// <summary>
-        /// Financial year of transaction
-        /// </summary>
-        /// <example>
-        /// 2022
-        /// </example>
-        [Required]
-        [Range(0, (double) short.MaxValue)]
-        public short FinancialYear { get; set; }
-
-        /// <summary>
-        /// Financial Month of transaction
-        /// </summary>
-        /// <example>
-        /// 1
-        /// </example>
-        [Required]
-        [Range(0, (double) short.MaxValue)]
-        public short FinancialMonth { get; set; }
 
         /// <summary>
         /// Transaction Information
@@ -52,16 +31,14 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// DD
         /// </example>
-        [Required]
         public string TransactionSource { get; set; }
 
         /// <summary>
-        /// Type of transaction
+        /// Type of transaction [Charge, Rent]
         /// </summary>
         /// <example>
         /// Rent
         /// </example>
-        [Required]
         [AllowedValues(TransactionType.Charge, TransactionType.Rent)]
         public TransactionType TransactionType { get; set; }
 
@@ -80,7 +57,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 56.78
         /// </example>
-        [Required]
         [Range(0, (double) decimal.MaxValue)]
         public decimal TransactionAmount { get; set; }
 
@@ -90,7 +66,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 216704
         /// </example>
-        [Required]
         public string PaymentReference { get; set; }
 
         /// <summary>
@@ -99,7 +74,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// true
         /// </example>
-        [BoolValidate(true)]
         public bool IsSuspense { get; set; }
 
         /// <summary>
@@ -126,7 +100,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 1025.00
         /// </example>
-        [Range((double) decimal.MinValue, (double) decimal.MaxValue)]
         public decimal BalanceAmount { get; set; }
 
         /// <summary>
