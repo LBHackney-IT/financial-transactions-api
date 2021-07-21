@@ -4,7 +4,7 @@ using System;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 {
-    public class SuspenseInfoDbEntity
+    public class SuspenseResolutionInfoDbEntity
     {
         [DynamoDBProperty(AttributeName = "resolution_date", Converter = typeof(DynamoDbDateTimeConverter))]
         public DateTime? ResolutionDate { get; set; }

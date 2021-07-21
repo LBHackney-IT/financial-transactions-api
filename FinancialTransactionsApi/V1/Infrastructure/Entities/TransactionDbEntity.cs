@@ -42,8 +42,8 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "is_suspense")]
         public bool IsSuspense { get; set; }
 
-        [DynamoDBProperty(AttributeName = "suspense_info", Converter = typeof(DynamoDbObjectConverter<SuspenseInfoDbEntity>))]
-        public SuspenseInfoDbEntity SuspenseInfo { get; set; }
+        [DynamoDBProperty(AttributeName = "suspense_resolution_info", Converter = typeof(DynamoDbObjectConverter<SuspenseResolutionInfoDbEntity>))]
+        public SuspenseResolutionInfoDbEntity SuspenseResolutionInfo { get; set; }
 
         [DynamoDBProperty(AttributeName = "paid_amount")]
         public decimal PaidAmount { get; set; }

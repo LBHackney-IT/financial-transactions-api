@@ -103,7 +103,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Response
         ///     "Note": "Some notes about this recond"
         /// }
         /// </example>
-        public SuspenseInfo SuspenseInfo { get; set; }
+        public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
 
         /// <summary>
         /// Total paid amount

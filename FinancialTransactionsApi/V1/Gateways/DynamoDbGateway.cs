@@ -36,7 +36,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         {
             List<ScanCondition> scanConditions = new List<ScanCondition>
             {
-                new ScanCondition("Id", Amazon.DynamoDBv2.DocumentModel.ScanOperator.GreaterThan, Guid.Parse("00000000-0000-0000-0000-000000000000"))
+                new ScanCondition("Id", Amazon.DynamoDBv2.DocumentModel.ScanOperator.NotEqual, Guid.Parse("00000000-0000-0000-0000-000000000000"))
             };
 
             if (transactionType != null)
@@ -63,7 +63,7 @@ namespace FinancialTransactionsApi.V1.Gateways
               .ScanAsync(_dynamoDbContext, scanConditions)
               .ConfigureAwait(false);
 
-            return data.Select(p => p.ToDomain()).ToList();
+            return data.Select(p => p?.ToDomain()).ToList();
         }
 
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
