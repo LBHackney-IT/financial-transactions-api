@@ -172,8 +172,6 @@ namespace FinancialTransactionsApi
                 app.UseHsts();
             }
 
-            // TODO
-            // If you DON'T use the renaming script, PLEASE replace with your own API name manually
             app.UseXRay("financial_transaction_api");
 
 

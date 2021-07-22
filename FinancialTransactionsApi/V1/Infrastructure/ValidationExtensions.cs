@@ -33,7 +33,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
             }
 
             if (transaction.Person.Id == Guid.Empty
-                || transaction.Person.FullName == null)
+                || string.IsNullOrWhiteSpace(transaction.Person.FullName))
             {
                 return false;
             }
@@ -74,7 +74,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
             }
 
             if (transaction.Person.Id == Guid.Empty
-                || transaction.Person.FullName == null)
+                || string.IsNullOrWhiteSpace(transaction.Person.FullName))
             {
                 return false;
             }
