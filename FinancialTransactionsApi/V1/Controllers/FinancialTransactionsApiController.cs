@@ -36,6 +36,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <summary>
         /// Get transaction by provided id
         /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="id">The value by which we are looking for a transaction</param>
         /// <response code="200">Success. Transaction model was received successfully</response>
         /// <response code="400">Bad Request</response>
@@ -47,7 +48,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        public async Task<IActionResult> Get([FromHeader(Name = "x-correlation-id")] string correlationId, [FromRoute] Guid id)
         {
             var transaction = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
 
@@ -62,6 +63,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <summary>
         /// Gets a collection of transactions for a tenancy/property
         /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="query">Model with parameters to get collection of transactions</param>
         /// <response code="200">Success. Transaction models were received successfully</response>
         /// <response code="400">Bad Request</response>
@@ -70,7 +72,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] TransactionQuery query)
+        public async Task<IActionResult> GetAll([FromHeader(Name = "x-correlation-id")] string correlationId, [FromQuery] TransactionQuery query)
         {
             if(!ModelState.IsValid)
             {
@@ -85,6 +87,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <summary>
         /// Create a new transaction model
         /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="transaction">Transaction model for create</param>
         /// <response code="201">Created. Transaction model was created successfully</response>
         /// <response code="400">Bad Request</response>
@@ -93,7 +96,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] AddTransactionRequest transaction)
+        public async Task<IActionResult> Add([FromHeader(Name = "x-correlation-id")] string correlationId, [FromBody] AddTransactionRequest transaction)
         {
             if (transaction == null)
             {
@@ -107,12 +110,13 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             var transactionResponse = await _addUseCase.ExecuteAsync(transaction).ConfigureAwait(false);
 
-            return CreatedAtAction(nameof(GetById), new { id = transactionResponse.Id }, transactionResponse);
+            return CreatedAtAction(nameof(Get), new { id = transactionResponse.Id }, transactionResponse);
         }
 
         /// <summary>
         /// Update a transaction model
         /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="id">The value by which we are looking for a transaction</param>
         /// <param name="transaction">Transaction model for update</param>
         /// <response code="200">Success. Transaction model was updated successfully</response>
@@ -125,7 +129,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateTransactionRequest transaction)
+        public async Task<IActionResult> Update([FromHeader(Name = "x-correlation-id")] string correlationId, [FromRoute] Guid id, [FromBody] UpdateTransactionRequest transaction)
         {
             if (transaction == null)
             {
@@ -137,16 +141,21 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
-            var transactionResponse = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
 
-            if (transactionResponse == null)
+            if (existTransaction == null)
             {
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            await _updateUseCase.ExecuteAsync(transaction, id).ConfigureAwait(false);
+            if (!existTransaction.IsSuspense)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
+            }
 
-            return RedirectToAction(nameof(GetById), new { id = transactionResponse.Id });
+            var transactionResponse =  await _updateUseCase.ExecuteAsync(transaction, id).ConfigureAwait(false);
+
+            return Ok(transactionResponse);
         }
     }
 }

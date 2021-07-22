@@ -18,11 +18,15 @@ namespace FinancialTransactionsApi.V1.Controllers
         {
             if (context.Request.Headers[Constants.CorrelationId].Count == 0)
             {
-                context.Request.Headers[Constants.CorrelationId] = Guid.NewGuid().ToString();
+                var correlationId = Guid.NewGuid().ToString();
+                context.Request.Headers[Constants.CorrelationId] = correlationId;
+                context.Response.Headers[Constants.CorrelationId] = correlationId;
             }
 
             if (_next != null)
+            {
                 await _next(context).ConfigureAwait(false);
+            }
         }
     }
 
