@@ -288,6 +288,9 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             updateApiEntity.Should().NotBeNull();
 
             updateApiEntity.Should().BeEquivalentTo(transaction);
+
+            updateApiEntity.FinancialMonth.Should().Be(8);
+            updateApiEntity.FinancialYear.Should().Be(2021);
         }
 
         [Fact]
@@ -391,6 +394,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                                                                              .Excluding(a => a.FinancialYear)
                                                                              .Excluding(a => a.FinancialMonth));
 
+            apiEntity.SuspenseResolutionInfo.Should().BeNull();
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);
 
