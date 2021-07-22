@@ -4,6 +4,7 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +44,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(transactionResponse);
 
-            var result = await _controller.GetById(transactionResponse.Id).ConfigureAwait(false);
+            var result = await _controller.Get("", transactionResponse.Id).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -64,7 +65,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((TransactionResponse) null);
 
-            var result = await _controller.GetById(Guid.NewGuid()).ConfigureAwait(false);
+            var result = await _controller.Get("", Guid.NewGuid()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -91,7 +92,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _controller.GetById(new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
+                var result = await _controller.Get("", new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }
@@ -120,7 +121,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 TargetId = Guid.NewGuid()
             };
 
-            var result = await _controller.GetAll(query).ConfigureAwait(false);
+            var result = await _controller.GetAll("", query).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -147,7 +148,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _controller.GetAll(new TransactionQuery { })
+                var result = await _controller.GetAll("", new TransactionQuery { })
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }
@@ -215,7 +216,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddTransactionRequest>()))
                 .ReturnsAsync(expectedResponse);
 
-            var result = await _controller.Add(request).ConfigureAwait(false);
+            var result = await _controller.Add("", request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -243,7 +244,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Add_WithNullModel_Returns400()
         {
-            var result = await _controller.Add(null).ConfigureAwait(false);
+            var result = await _controller.Add("", null).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -270,7 +271,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _controller.Add(new AddTransactionRequest { })
+                var result = await _controller.Add("", new AddTransactionRequest { })
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }
@@ -310,32 +311,28 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             };
 
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(new TransactionResponse() { Id = guid });
+                .ReturnsAsync(new TransactionResponse() { Id = guid, IsSuspense = true });
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<UpdateTransactionRequest>(), It.IsAny<Guid>()))
-                .ReturnsAsync(new TransactionResponse() { });
+                .ReturnsAsync(request.ToDomain().ToResponse());
 
-            var result = await _controller.Update(guid, request).ConfigureAwait(false);
+            var result = await _controller.Update("", guid, request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
-            var redirect = result as RedirectToActionResult;
+            var OkResult = result as OkObjectResult;
 
-            redirect.Should().NotBeNull();
+            OkResult.Should().NotBeNull();
 
-            redirect.ActionName.Should().BeEquivalentTo("GetById");
+            OkResult.Value.Should().BeOfType(typeof(TransactionResponse));
 
-            redirect.RouteValues.Should().NotBeNull();
-
-            redirect.RouteValues.Should().HaveCount(1);
-
-            redirect.RouteValues["id"].Should().Be(guid);
+            OkResult.Value.Should().BeEquivalentTo(request);
         }
 
         [Fact]
         public async Task Update_WithNullModel_Returns400()
         {
-            var result = await _controller.Update(Guid.NewGuid(), null).ConfigureAwait(false);
+            var result = await _controller.Update("", Guid.NewGuid(), null).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -360,7 +357,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((TransactionResponse) null);
 
-            var result = await _controller.Update(Guid.NewGuid(), new UpdateTransactionRequest()).ConfigureAwait(false);
+            var result = await _controller.Update("", Guid.NewGuid(), new UpdateTransactionRequest()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -383,14 +380,14 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         public async Task Update_UseCaseThrownException_ShouldRethrow()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(new TransactionResponse { });
+                .ReturnsAsync(new TransactionResponse { IsSuspense = true });
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<UpdateTransactionRequest>(), It.IsAny<Guid>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
             try
             {
-                var result = await _controller.Update(Guid.NewGuid(), new UpdateTransactionRequest())
+                var result = await _controller.Update("", Guid.NewGuid(), new UpdateTransactionRequest())
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }

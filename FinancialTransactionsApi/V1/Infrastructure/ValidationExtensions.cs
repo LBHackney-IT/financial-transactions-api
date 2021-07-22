@@ -90,8 +90,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
             }
 
             if (transaction.SuspenseResolutionInfo.ResolutionDate == null
-                || transaction.SuspenseResolutionInfo.IsResolve == false
-                || transaction.SuspenseResolutionInfo.Note == null)
+                || transaction.SuspenseResolutionInfo.IsResolve == false)
             {
                 return false;
             }

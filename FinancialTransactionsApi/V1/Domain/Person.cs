@@ -6,7 +6,7 @@ namespace FinancialTransactionsApi.V1.Domain
 {
     public class Person
     {
-        [NonEmptyGuid]
+        [NonEmptyGuid("PersonId")]
         public Guid Id { get; set; }
 
         [Required]
