@@ -1,6 +1,7 @@
 using FinancialTransactionsApi.Tests.V1.Helper;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase;
 using FluentAssertions;
@@ -28,7 +29,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var entity = new UpdateTransactionRequest()
             {
                 TargetId = Guid.NewGuid(),
-                TransactionDate = DateTime.UtcNow,
+                TransactionDate = new DateTime(2021, 8, 1),
                 Address = "Address",
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
@@ -48,10 +49,19 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             _mockGateway.Setup(x => x.UpdateAsync(It.IsAny<Transaction>()))
                 .Returns(Task.CompletedTask);
 
-            await _updateUseCase.ExecuteAsync(entity, Guid.NewGuid())
+            var response = await _updateUseCase.ExecuteAsync(entity, Guid.NewGuid())
                 .ConfigureAwait(false);
 
+            var expectedResponse = entity.ToDomain().ToResponse();
+
             _mockGateway.Verify(_ => _.UpdateAsync(It.IsAny<Transaction>()), Times.Once);
+
+            response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id)
+                                                                         .Excluding(x => x.FinancialYear)
+                                                                         .Excluding(x => x.FinancialMonth));
+
+            response.FinancialMonth.Should().Be(8);
+            response.FinancialYear.Should().Be(2021);
         }
 
         [Fact]
@@ -60,7 +70,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var entity = new UpdateTransactionRequest()
             {
                 TargetId = Guid.NewGuid(),
-                TransactionDate = DateTime.UtcNow,
+                TransactionDate = new DateTime(2021, 8, 1),
                 Address = "Address",
                 BalanceAmount = 145.23M,
                 ChargedAmount = 134.12M,
@@ -89,10 +99,19 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             _mockGateway.Setup(x => x.UpdateAsync(It.IsAny<Transaction>()))
                 .Returns(Task.CompletedTask);
 
-            await _updateUseCase.ExecuteAsync(entity, Guid.NewGuid())
+            var response = await _updateUseCase.ExecuteAsync(entity, Guid.NewGuid())
                 .ConfigureAwait(false);
 
+            var expectedResponse = entity.ToDomain().ToResponse();
+
             _mockGateway.Verify(_ => _.UpdateAsync(It.IsAny<Transaction>()), Times.Once);
+
+            response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id)
+                                                                         .Excluding(x => x.FinancialYear)
+                                                                         .Excluding(x => x.FinancialMonth));
+
+            response.FinancialMonth.Should().Be(8);
+            response.FinancialYear.Should().Be(2021);
         }
 
         [Fact]

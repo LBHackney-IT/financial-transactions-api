@@ -1,4 +1,5 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Infrastructure;
@@ -17,7 +18,7 @@ namespace FinancialTransactionsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task ExecuteAsync(UpdateTransactionRequest transaction, Guid id)
+        public async Task<TransactionResponse> ExecuteAsync(UpdateTransactionRequest transaction, Guid id)
         {
             if (!transaction.IsSuspense)
             {
@@ -37,6 +38,8 @@ namespace FinancialTransactionsApi.V1.UseCase
             transactionDomain.Id = id;
 
             await _gateway.UpdateAsync(transactionDomain).ConfigureAwait(false);
+
+            return transactionDomain.ToResponse();
         }
     }
 }
