@@ -313,7 +313,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 .ReturnsAsync(new TransactionResponse() { Id = guid });
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<UpdateTransactionRequest>(), It.IsAny<Guid>()))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(new TransactionResponse() { });
 
             var result = await _controller.Update(guid, request).ConfigureAwait(false);
 
