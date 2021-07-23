@@ -3,62 +3,45 @@ using Amazon.DynamoDBv2.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using Xunit;
 
-namespace TransactionsApi.Tests
+namespace FinancialTransactionsApi.Tests
 {
-    public class DynamoDbIntegrationTests<TStartup> where TStartup : class
+    public class DynamoDbIntegrationTests<TStartup> : IDisposable where TStartup : class
     {
-        public HttpClient Client { get; private set; }
-        private DynamoDbMockWebApplicationFactory<TStartup> _factory;
-        public IDynamoDBContext DynamoDbContext => _factory?.DynamoDbContext;
+        protected HttpClient Client { get; private set; }
+        private readonly DynamoDbMockWebApplicationFactory<TStartup> _factory;
+        protected IDynamoDBContext DynamoDbContext => _factory?.DynamoDbContext;
         protected List<Action> CleanupActions { get; set; }
 
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-            // TODO: Populate the list of table(s) and their key property details here, for example:
-            new TableDef { Name = "transactions", KeyName = "id", KeyType = ScalarAttributeType.N }
+            new TableDef { Name = "transactions_table", KeyName = "id", KeyType = ScalarAttributeType.S },
         };
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
         {
             if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(name)))
+            {
                 Environment.SetEnvironmentVariable(name, defaultValue);
+            }
         }
 
         public DynamoDbIntegrationTests()
         {
             EnsureEnvVarConfigured("DynamoDb_LocalMode", "true");
             EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
-            EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "8ksq4m6");
-            EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "ig7pb");
+            EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "8kmm3g");
+            EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "fco1i2");
             _factory = new DynamoDbMockWebApplicationFactory<TStartup>(_tables);
+
             Client = _factory.CreateClient();
+            CleanupActions = new List<Action>();
         }
 
-        //[OneTimeTearDown]
-        //public void OneTimeTearDown()
-        //{
-        //    _factory.Dispose();
-        //}
-
-        //[SetUp]
-        //public void BaseSetup()
-        //{
-        //    Client = _factory.CreateClient();
-        //    CleanupActions = new List<Action>();
-        //}
-
-        //[TearDown]
-        //public void BaseTearDown()
-        //{
-        //    foreach (var act in CleanupActions)
-        //        act();
-        //    Client.Dispose();
-        //}
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         private bool _disposed;
@@ -66,12 +49,17 @@ namespace TransactionsApi.Tests
         {
             if (disposing && !_disposed)
             {
+                foreach (var act in CleanupActions)
+                {
+                    act();
+                }
+                Client.Dispose();
+
                 if (null != _factory)
                     _factory.Dispose();
                 _disposed = true;
             }
         }
-
     }
 
     public class TableDef
@@ -79,13 +67,5 @@ namespace TransactionsApi.Tests
         public string Name { get; set; }
         public string KeyName { get; set; }
         public ScalarAttributeType KeyType { get; set; }
-    }
-
-    [CollectionDefinition("DynamoDb collection", DisableParallelization = true)]
-    public class DynamoDbCollection : ICollectionFixture<DynamoDbIntegrationTests<Startup>>
-    {
-        // This class has no code, and is never created. Its purpose is simply
-        // to be the place to apply [CollectionDefinition] and all the
-        // ICollectionFixture<> interfaces.
     }
 }

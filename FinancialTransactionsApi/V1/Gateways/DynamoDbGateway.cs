@@ -1,20 +1,17 @@
 using Amazon.DynamoDBv2.DataModel;
-using TransactionsApi.V1.Domain;
-using TransactionsApi.V1.Factories;
-using TransactionsApi.V1.Infrastructure;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using FinancialTransactionsApi.V1.Gateways;
+using System.Threading.Tasks;
 
-namespace TransactionsApi.V1.Gateways
+namespace FinancialTransactionsApi.V1.Gateways
 {
     public class DynamoDbGateway : ITransactionGateway
     {
         private readonly IDynamoDBContext _dynamoDbContext;
-       private readonly DynamoDbContextWrapper _wrapper;
-
+        private readonly DynamoDbContextWrapper _wrapper;
 
         public DynamoDbGateway(IDynamoDBContext dynamoDbContext, DynamoDbContextWrapper wrapper)
         {
@@ -35,46 +32,50 @@ namespace TransactionsApi.V1.Gateways
             }
         }
 
-        public async Task<List<Transaction>> GetAllTransactionsAsync(Guid targetid, string transactionType, DateTime? startDate, DateTime? endDate)
+        public async Task<List<Transaction>> GetAllTransactionsAsync(Guid targetId, TransactionType? transactionType, DateTime? startDate, DateTime? endDate)
         {
-            //string DATEFORMAT = "yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ";
             List<ScanCondition> scanConditions = new List<ScanCondition>
             {
-                new ScanCondition("Id", Amazon.DynamoDBv2.DocumentModel.ScanOperator.GreaterThan, Guid.Parse("00000000-0000-0000-0000-000000000000"))
+                new ScanCondition("Id", Amazon.DynamoDBv2.DocumentModel.ScanOperator.NotEqual, Guid.Parse("00000000-0000-0000-0000-000000000000"))
             };
 
             if (transactionType != null)
+            {
                 scanConditions.Add(new ScanCondition("TransactionType", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, transactionType));
-            if (targetid != Guid.Parse("00000000-0000-0000-0000-000000000000"))
-                scanConditions.Add(new ScanCondition("TargetId", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, targetid));
-           
+            }
+
+            if (targetId != Guid.Parse("00000000-0000-0000-0000-000000000000"))
+            {
+                scanConditions.Add(new ScanCondition("TargetId", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, targetId));
+            }
+
             if (startDate.HasValue)
             {
                 if (endDate == null)
+                {
                     endDate = DateTime.Now;
+                }
+
                 scanConditions.Add(new ScanCondition("TransactionDate", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Between, startDate.Value, endDate.Value));
             }
 
-                
-
-            //List<TransactionDbEntity> data =
-            //    await _dynamoDbContext
-            //    .ScanAsync<TransactionDbEntity>(scanConditions)
-            //    .GetRemainingAsync()
-            //    .ConfigureAwait(false);
-
-            List<TransactionDbEntity> data =
-              await _wrapper
+            var data = await _wrapper
               .ScanAsync(_dynamoDbContext, scanConditions)
               .ConfigureAwait(false);
 
-            return data.Select(p => p.ToDomain()).ToList();
+            return data.Select(p => p?.ToDomain()).ToList();
         }
 
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {
-            var data =  await _dynamoDbContext.LoadAsync<TransactionDbEntity>(id).ConfigureAwait(false);
+            var data = await _wrapper.LoadAsync(_dynamoDbContext, id).ConfigureAwait(false);
+
             return data?.ToDomain();
-        } 
+        }
+
+        public async Task UpdateAsync(Transaction transaction)
+        {
+            await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
+        }
     }
 }

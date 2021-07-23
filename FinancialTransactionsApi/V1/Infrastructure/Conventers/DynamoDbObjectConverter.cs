@@ -4,7 +4,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace TransactionsApi.V1.Infrastructure
+namespace FinancialTransactionsApi.V1.Infrastructure.Conventers
 {
     // TODO: This should go in a common NuGet package...
 
@@ -28,18 +28,27 @@ namespace TransactionsApi.V1.Infrastructure
 
         public DynamoDBEntry ToEntry(object value)
         {
-            if (null == value) return new DynamoDBNull();
+            if (null == value)
+            {
+                return new DynamoDBNull();
+            }
 
             return Document.FromJson(JsonSerializer.Serialize(value, CreateJsonOptions()));
         }
 
         public object FromEntry(DynamoDBEntry entry)
         {
-            if ((null == entry) || (null != entry.AsDynamoDBNull())) return null;
+            if (null == entry || null != entry.AsDynamoDBNull())
+            {
+                return null;
+            }
 
             var doc = entry.AsDocument();
+
             if (null == doc)
+            {
                 throw new ArgumentException("Field value is not a Document. This attribute has been used on a property that is not a custom object.");
+            }
 
             return JsonSerializer.Deserialize<T>(doc.ToJson(), CreateJsonOptions());
         }

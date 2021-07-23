@@ -1,68 +1,107 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
-using TransactionsApi.V1.Domain;
-using TransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
 
-namespace TransactionsApi.V1.Factories
+namespace FinancialTransactionsApi.V1.Factories
 {
     public static class TransactionFactory
     {
-        public static Transaction ToDomain(this TransactionDbEntity transactionDbEntity)
+        public static TransactionDbEntity ToDatabase(this Transaction transaction)
         {
-            return new Transaction
+            return transaction == null ? null : new TransactionDbEntity
             {
-                FinancialMonth = transactionDbEntity.FinancialMonth,
-                FinancialYear = transactionDbEntity.FinancialYear,
-                Id = transactionDbEntity.Id,
-                PaymentReference = transactionDbEntity.PaymentReference,
-                PeriodNo = transactionDbEntity.PeriodNo,
-                TargetId = transactionDbEntity.TargetId,
-                TransactionAmount = transactionDbEntity.TransactionAmount,
-                TransactionDate = transactionDbEntity.TransactionDate,
-                TransactionType = transactionDbEntity.TransactionType,
-                PaidAmount = transactionDbEntity.PaidAmount,
-                ChargedAmount = transactionDbEntity.ChargedAmount,
-                BalanceAmount = transactionDbEntity.BalanceAmount,
-                HousingBenefitAmount= transactionDbEntity.HousingBenefitAmount
+                Id = transaction.Id,
+                TargetId = transaction.TargetId,
+                BalanceAmount = transaction.BalanceAmount,
+                ChargedAmount = transaction.ChargedAmount,
+                FinancialMonth = transaction.FinancialMonth,
+                FinancialYear = transaction.FinancialYear,
+                HousingBenefitAmount = transaction.HousingBenefitAmount,
+                PaidAmount = transaction.PaidAmount,
+                PaymentReference = transaction.PaymentReference,
+                IsSuspense = transaction.IsSuspense,
+                SuspenseResolutionInfo = transaction.SuspenseResolutionInfo.ToDatabase(),
+                PeriodNo = transaction.PeriodNo,
+                TransactionAmount = transaction.TransactionAmount,
+                TransactionDate = transaction.TransactionDate,
+                TransactionType = transaction.TransactionType,
+                TransactionSource = transaction.TransactionSource,
+                Address = transaction.Address,
+                Person = transaction.Person.ToDatabase(),
+                Fund = transaction.Fund
             };
         }
 
-        public static TransactionDbEntity ToDatabase(this Transaction transaction)
+        public static Transaction ToDomain(this TransactionDbEntity transactionDbEntity)
         {
-            return new TransactionDbEntity
+            return transactionDbEntity == null ? null : new Transaction
             {
-                FinancialMonth = transaction.FinancialMonth,
-                FinancialYear = transaction.FinancialYear,
-                TransactionType = transaction.TransactionType,
-                TransactionDate = transaction.TransactionDate,
-                TransactionAmount = transaction.TransactionAmount,
-                TargetId = transaction.TargetId,
-                PeriodNo = transaction.PeriodNo,
-                PaymentReference = transaction.PaymentReference,
-                Id = transaction.Id,
-                PaidAmount = transaction.PaidAmount,
-                ChargedAmount = transaction.ChargedAmount,
-                BalanceAmount = transaction.BalanceAmount,
-                HousingBenefitAmount = transaction.HousingBenefitAmount
+                Id = transactionDbEntity.Id,
+                TargetId = transactionDbEntity.TargetId,
+                BalanceAmount = transactionDbEntity.BalanceAmount,
+                ChargedAmount = transactionDbEntity.ChargedAmount,
+                FinancialMonth = transactionDbEntity.FinancialMonth,
+                FinancialYear = transactionDbEntity.FinancialYear,
+                HousingBenefitAmount = transactionDbEntity.HousingBenefitAmount,
+                PaidAmount = transactionDbEntity.PaidAmount,
+                PaymentReference = transactionDbEntity.PaymentReference,
+                IsSuspense = transactionDbEntity.IsSuspense,
+                SuspenseResolutionInfo = transactionDbEntity.SuspenseResolutionInfo.ToDomain(),
+                PeriodNo = transactionDbEntity.PeriodNo,
+                TransactionAmount = transactionDbEntity.TransactionAmount,
+                TransactionDate = transactionDbEntity.TransactionDate,
+                TransactionType = transactionDbEntity.TransactionType,
+                TransactionSource = transactionDbEntity.TransactionSource,
+                Address = transactionDbEntity.Address,
+                Person = transactionDbEntity.Person.ToDomain(),
+                Fund = transactionDbEntity.Fund
             };
         }
-        public static Transaction ToTransactionDomain(this TransactionRequest transactionRequest)
+
+        public static Transaction ToDomain(this AddTransactionRequest transactionRequest)
         {
             return transactionRequest == null ? null : new Transaction
             {
                 TargetId = transactionRequest.TargetId,
                 BalanceAmount = transactionRequest.BalanceAmount,
                 ChargedAmount = transactionRequest.ChargedAmount,
-                FinancialMonth = transactionRequest.FinancialMonth,
-                FinancialYear = transactionRequest.FinancialYear,
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
+                IsSuspense = transactionRequest.IsSuspense,
+                SuspenseResolutionInfo = null,
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
                 TransactionDate = transactionRequest.TransactionDate,
-                TransactionType = transactionRequest.TransactionType
+                TransactionType = transactionRequest.TransactionType,
+                TransactionSource = transactionRequest.TransactionSource,
+                Address = transactionRequest.Address,
+                Person = transactionRequest.Person.ToDomain(),
+                Fund = transactionRequest.Fund
             };
         }
 
+        public static Transaction ToDomain(this UpdateTransactionRequest transactionRequest)
+        {
+            return transactionRequest == null ? null : new Transaction
+            {
+                TargetId = transactionRequest.TargetId,
+                BalanceAmount = transactionRequest.BalanceAmount,
+                ChargedAmount = transactionRequest.ChargedAmount,
+                HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
+                PaidAmount = transactionRequest.PaidAmount,
+                PaymentReference = transactionRequest.PaymentReference,
+                IsSuspense = transactionRequest.IsSuspense,
+                SuspenseResolutionInfo = transactionRequest.SuspenseResolutionInfo.ToDomain(),
+                PeriodNo = transactionRequest.PeriodNo,
+                TransactionAmount = transactionRequest.TransactionAmount,
+                TransactionDate = transactionRequest.TransactionDate,
+                TransactionType = transactionRequest.TransactionType,
+                TransactionSource = transactionRequest.TransactionSource,
+                Address = transactionRequest.Address,
+                Person = transactionRequest.Person.ToDomain(),
+                Fund = transactionRequest.Fund
+            };
+        }
     }
 }

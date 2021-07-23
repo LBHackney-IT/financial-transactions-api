@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using TransactionsApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace TransactionsApi.V1.Controllers
+namespace FinancialTransactionsApi.V1.Controllers
 {
     public class BaseController : Controller
     {
@@ -17,8 +16,7 @@ namespace TransactionsApi.V1.Controllers
 
         public string GetCorrelationId()
         {
-            StringValues correlationId;
-            HttpContext.Request.Headers.TryGetValue(Constants.CorrelationId, out correlationId);
+            HttpContext.Request.Headers.TryGetValue(Constants.CorrelationId, out var correlationId);
 
             if (!correlationId.Any())
                 throw new KeyNotFoundException("Request is missing a correlationId");
@@ -30,15 +28,22 @@ namespace TransactionsApi.V1.Controllers
         {
             JsonConvert.DefaultSettings = () =>
             {
-                var settings = new JsonSerializerSettings();
-                settings.Formatting = Formatting.Indented;
-                settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                var settings = new JsonSerializerSettings
+                {
+                    Formatting = Formatting.Indented,
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
 
-                settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                settings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                    DateFormatHandling = DateFormatHandling.IsoDateFormat
+                };
 
                 return settings;
             };
+        }
+
+        public static string GetErrorMessage(ModelStateDictionary modelState)
+        {
+            return string.Join(" ", modelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
         }
     }
 }

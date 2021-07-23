@@ -3,40 +3,51 @@ using FluentAssertions;
 using Moq;
 using System;
 using System.Threading.Tasks;
-using TransactionsApi.V1.Domain;
-using TransactionsApi.V1.Factories;
-using TransactionsApi.V1.Gateways;
-using TransactionsApi.V1.UseCase;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.UseCase;
 using Xunit;
 
-namespace TransactionsApi.Tests.V1.UseCase
+namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
     public class GetByIdUseCaseTests
     {
         private readonly Mock<ITransactionGateway> _mockGateway;
-        private readonly GetByIdUseCase _classUnderTest;
+        private readonly GetByIdUseCase _getByIdUseCase;
         private readonly Fixture _fixture = new Fixture();
+
         public GetByIdUseCaseTests()
         {
             _mockGateway = new Mock<ITransactionGateway>();
-            _classUnderTest = new GetByIdUseCase(_mockGateway.Object);
+            _getByIdUseCase = new GetByIdUseCase(_mockGateway.Object);
         }
 
 
         [Fact]
-        public async Task GetTransactionByIdAsyncReturnsSuccessResponse()
+        public async Task GetById_GatewayReturnTransaction_ReturnTransaction()
         {
-            // Arrange
             var query = Guid.NewGuid();
+
             var transaction = _fixture.Create<Transaction>();
+
             _mockGateway.Setup(x => x.GetTransactionByIdAsync(query)).ReturnsAsync(transaction);
 
-            // Act
-            var response = await _classUnderTest.ExecuteAsync(query).ConfigureAwait(false);
+            var response = await _getByIdUseCase.ExecuteAsync(query).ConfigureAwait(false);
 
-            // Assert
             response.Should().BeEquivalentTo(transaction.ToResponse());
         }
-        
+
+        [Fact]
+        public async Task GetById_GatewayReturnNull_ReturnNull()
+        {
+            var query = Guid.NewGuid();
+
+            _mockGateway.Setup(x => x.GetTransactionByIdAsync(query)).ReturnsAsync((Transaction) null);
+
+            var response = await _getByIdUseCase.ExecuteAsync(query).ConfigureAwait(false);
+
+            response.Should().BeNull();
+        }
     }
 }

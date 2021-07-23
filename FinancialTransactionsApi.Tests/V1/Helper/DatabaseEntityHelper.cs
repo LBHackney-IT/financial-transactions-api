@@ -1,8 +1,8 @@
 using AutoFixture;
-using TransactionsApi.V1.Domain;
-using TransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
+using FinancialTransactionsApi.V1.Domain;
 
-namespace TransactionsApi.Tests.V1.Helper
+namespace FinancialTransactionsApi.Tests.V1.Helper
 {
     public static class DatabaseEntityHelper
     {

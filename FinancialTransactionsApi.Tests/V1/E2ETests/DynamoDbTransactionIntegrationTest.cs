@@ -1,5 +1,14 @@
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
+using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,55 +17,29 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using TransactionsApi;
-using TransactionsApi.Tests;
-using TransactionsApi.V1.Boundary;
-using TransactionsApi.V1.Boundary.Response;
-using TransactionsApi.V1.Domain;
-using TransactionsApi.V1.Factories;
-using TransactionsApi.V1.Infrastructure;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
-    [Collection("DynamoDb collection")]
-    public class DynamoDbTransactionIntegrationTest: IDisposable
+    public class DynamoDbTransactionIntegrationTest : DynamoDbIntegrationTests<Startup>
     {
         private readonly Fixture _fixture = new Fixture();
-        private readonly DynamoDbIntegrationTests<Startup> _dbFixture;
-        private readonly List<Action> _cleanupActions = new List<Action>();
-        public DynamoDbTransactionIntegrationTest(DynamoDbIntegrationTests<Startup> dbFixture)
-        {
-            _dbFixture = dbFixture;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private bool _disposed;
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing && !_disposed)
-            {
-                foreach (var action in _cleanupActions)
-                    action();
-
-                _disposed = true;
-            }
-        }
 
         /// <summary>
         /// Method to construct a test entity that can be used in a test
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        private Transaction ConstructTestEntity()
+        private Transaction ConstructTransaction()
         {
             var entity = _fixture.Create<Transaction>();
-            entity.TransactionDate = DateTime.UtcNow;
+
+            entity.TransactionDate = new DateTime(2021, 8, 1);
+            entity.PeriodNo = 35;
+            entity.Fund = null;
+            entity.IsSuspense = true;
+            entity.SuspenseResolutionInfo = null;
+
             return entity;
         }
 
@@ -68,104 +51,35 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         /// <returns></returns>
         private async Task SetupTestData(Transaction entity)
         {
-            await _dbFixture.DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
-            _cleanupActions.Add(async () => await _dbFixture.DynamoDbContext.DeleteAsync<TransactionDbEntity>(entity.Id).ConfigureAwait(false));
+            await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
+
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(entity.Id).ConfigureAwait(false));
         }
 
         [Fact]
-        public async Task GetTransactionByIdNotFoundReturns404()
+        public async Task GetById_WithInvalidId_Returns404()
         {
             var id = Guid.NewGuid();
-            //TODO: Update uri route to match the APIs endpoint
+
             var uri = new Uri($"api/v1/transactions/{id}", UriKind.Relative);
-            var response = await _dbFixture.Client.GetAsync(uri).ConfigureAwait(false);
+            var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        }
-
-        [Fact]
-        public async Task GetTransactionBydIdFoundReturnsResponse()
-        {
-            var entity = ConstructTestEntity();
-            await SetupTestData(entity).ConfigureAwait(false);
-
-            //TODO: Update uri route to match the APIs endpoint
-            var uri = new Uri($"api/v1/transactions/{entity.Id}", UriKind.Relative);
-            var response = await _dbFixture.Client.GetAsync(uri).ConfigureAwait(false);
-
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<TransactionResponseObject>(responseContent);
-            apiEntity.Should().BeEquivalentTo(entity.ToResponse());
-           // apiEntity.Should().BeEquivalentTo(entity, (x) => x.Excluding(y => y.TransactionDate));
-           // apiEntity.TransactionDate.Should().BeCloseTo(DateTime.UtcNow, 1000);
+            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.Message.Should().BeEquivalentTo("No transaction by provided Id cannot be found!");
+            apiEntity.StatusCode.Should().Be(404);
+            apiEntity.Details.Should().BeEquivalentTo(string.Empty);
         }
 
         [Fact]
-        public async Task GetEntityByTargetIdAndTransactionTypeNotFoundReturns404()
-        {
-            var targetId = Guid.NewGuid();
-            var transType = "Nothing";
-            var date = DateTime.Now.ToString("yyyy-MM-dd");
-            //TODO: Update uri route to match the APIs endpoint
-            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={date}&endDate={date}", UriKind.Relative);
-            var response = await _dbFixture.Client.GetAsync(uri).ConfigureAwait(false);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<TransactionResponseObjectList>(responseContent);
-
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            apiEntity.ResponseObjects.Count.Should().Be(0);
-        }
-
-        [Fact]
-        public async Task GetTargetIdAndTransactionTypeFoundReturnsResponse()
-        {
-            
-            var transactionsObj = _fixture.Build<Transaction>()
-                             .With(x => x.TargetId, Guid.NewGuid())
-                             .With(x => x.TransactionType, "Sample")
-                             .CreateMany(5);
-            var targetId = transactionsObj.FirstOrDefault().TargetId;
-            var transType = transactionsObj.FirstOrDefault().TransactionType;
-            int d = -5;
-            var startDate = DateTime.Now.AddDays(d).ToString("yyyy-MM-dd");
-            foreach (var entity in transactionsObj)
-            {
-                entity.TransactionDate = DateTime.Now.AddDays(d);
-                await SetupTestData(entity).ConfigureAwait(false);
-                d++;
-            }
-            var endDate = DateTime.Now.AddDays(d).ToString("yyyy-MM-dd");
-            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}", UriKind.Relative);
-            var response = await _dbFixture.Client.GetAsync(uri).ConfigureAwait(false);
-
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<TransactionResponseObjectList>(responseContent);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            foreach (var item in transactionsObj)
-            {
-                _cleanupActions.Add(async () => await _dbFixture.DynamoDbContext.DeleteAsync<TransactionDbEntity>(item.Id).ConfigureAwait(false));
-            }
-            apiEntity.ResponseObjects.Count.Should().Be(5);
-        }
-        [Fact]
-        public async Task CreateTransactionCreatedReturns200()
-        {
-            var entity = _fixture.Create<Transaction>();
-
-            await CreateTransactionAndValidateResponse(entity).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public async Task HealchCheckOkReturns200()
+        public async Task HealchCheck_Returns200()
         {
             var uri = new Uri($"api/v1/healthcheck/ping", UriKind.Relative);
-            var response = await _dbFixture.Client.GetAsync(uri).ConfigureAwait(false);
+            var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -176,27 +90,334 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Message.Should().BeNull();
             apiEntity.Success.Should().BeTrue();
         }
-        private async Task CreateTransactionAndValidateResponse(Transaction transaction)
+
+        [Fact]
+        public async Task Add_WithValidModel_Returns201()
         {
+            var transaction = ConstructTransaction();
+
+            await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task AddAndThenGetById_WithValidModelAndValidId_Returns201And200()
+        {
+            var transaction = ConstructTransaction();
+
+            var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+
+            transaction.Id = id;
+
+            await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Add_WithInvalidModel_Returns400()
+        {
+            var transaction = new Transaction()
+            {
+                TransactionAmount = -2000,
+                PaidAmount = -2334,
+                ChargedAmount = -213,
+                HousingBenefitAmount = -1
+            };
+
+            var uri = new Uri("api/v1/transactions", UriKind.Relative);
+            string body = JsonConvert.SerializeObject(transaction);
+
+            HttpResponseMessage response;
+            using (StringContent stringContent = new StringContent(body))
+            {
+                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
+            }
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.Details.Should().Be(string.Empty);
+
+            apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
+            apiEntity.Message.Should().Contain("The field TargetId cannot be empty or default.");
+            apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
+            apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TransactionAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and {(double) decimal.MaxValue}.");
+        }
+
+        [Fact]
+        public async Task CreateTwoRentGroupsGetAllReturns200()
+        {
+            var transactions = new[] { ConstructTransaction(), ConstructTransaction() };
+
+            transactions[0].TargetId = new Guid("29574614-46e9-447d-9b92-704df528861f");
+            transactions[1].TargetId = new Guid("29574614-46e9-447d-9b92-704df528861f");
+
+            foreach (var transaction in transactions)
+            {
+                var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+
+                transaction.Id = id;
+
+                await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
+            }
+
+            var uri = new Uri("api/v1/transactions?targetId=29574614-46e9-447d-9b92-704df528861f", UriKind.Relative);
+            using var response = await Client.GetAsync(uri).ConfigureAwait(false);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<List<TransactionResponse>>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.Count.Should().BeGreaterOrEqualTo(2);
+
+            var firstTransaction = apiEntity.Find(r => r.Id.Equals(transactions[0].Id));
+            var secondTransaction = apiEntity.Find(r => r.Id.Equals(transactions[1].Id));
+
+            firstTransaction.Should().BeEquivalentTo(transactions[0], opt => opt.Excluding(a => a.FinancialYear)
+                                                                                .Excluding(a => a.FinancialMonth));
+
+            firstTransaction.FinancialMonth.Should().Be(8);
+            firstTransaction.FinancialYear.Should().Be(2021);
+
+            secondTransaction.Should().BeEquivalentTo(transactions[1], opt => opt.Excluding(a => a.FinancialYear)
+                                                                                 .Excluding(a => a.FinancialMonth));
+
+            secondTransaction.FinancialMonth.Should().Be(8);
+            secondTransaction.FinancialYear.Should().Be(2021);
+        }
+
+        [Fact]
+        public async Task GetTargetIdAndTransactionTypeFoundReturnsResponse()
+        {
+            var transactionsObj = _fixture.Build<Transaction>()
+                             .With(x => x.TargetId, Guid.NewGuid())
+                             .With(x => x.TransactionType, TransactionType.Charge)
+                             .CreateMany(5);
+
+            var targetId = transactionsObj.FirstOrDefault().TargetId;
+            var transType = transactionsObj.FirstOrDefault().TransactionType;
+
+            int d = -5;
+            var startDate = DateTime.Now.AddDays(d).ToString("yyyy-MM-dd");
+            foreach (var entity in transactionsObj)
+            {
+                entity.TransactionDate = DateTime.Now.AddDays(d);
+                await SetupTestData(entity).ConfigureAwait(false);
+                d++;
+            }
+            var endDate = DateTime.Now.AddDays(d).ToString("yyyy-MM-dd");
+            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}", UriKind.Relative);
+            var response = await Client.GetAsync(uri).ConfigureAwait(false);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<List<TransactionResponse>>(responseContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            foreach (var item in transactionsObj)
+            {
+                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(item.Id).ConfigureAwait(false));
+            }
+
+            apiEntity.Count.Should().Be(5);
+        }
+
+        [Fact]
+        public async Task AddAndUpdate_WithValidModel_Returns201And200()
+        {
+            var transaction = new Transaction()
+            {
+                Id = new Guid("6479ffee-b0e8-4c2a-b887-63f2dec086aa"),
+                TransactionDate = new DateTime(2021, 8, 1),
+                Address = "Address",
+                BalanceAmount = 154.12M,
+                ChargedAmount = 123.78M,
+                FinancialMonth = 8,
+                FinancialYear = 2021,
+                IsSuspense = true,
+                PaidAmount = 125.62M,
+                PeriodNo = 31,
+                TargetId = new Guid("9e067bac-56ed-4802-a83f-b1e32f09177e"),
+                TransactionAmount = 186.90M,
+                TransactionSource = "DD",
+                TransactionType = TransactionType.Rent,
+                Person = new Person()
+                {
+                    Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
+                    FullName = "Hyan Widro"
+                }
+            };
+
+            var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+
+            transaction.Id = id;
+            transaction.PaymentReference = "PaymentReference";
+            transaction.Fund = "Fund";
+            transaction.HousingBenefitAmount = 999.9M;
+            transaction.SuspenseResolutionInfo = new SuspenseResolutionInfo()
+            {
+                IsResolve = true,
+                ResolutionDate = new DateTime(2021, 9, 1),
+                Note = "Note"
+            };
+            transaction.IsSuspense = false;
+
+            var updateUri = new Uri($"api/v1/transactions/{transaction.Id}", UriKind.Relative);
+            string updateTransaction = JsonConvert.SerializeObject(transaction);
+
+            HttpResponseMessage updateResponse;
+            using var updateStringContent = new StringContent(updateTransaction);
+            updateStringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            updateResponse = await Client.PutAsync(updateUri, updateStringContent).ConfigureAwait(false);
+
+            updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var updateResponseContent = await updateResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var updateApiEntity = JsonConvert.DeserializeObject<TransactionResponse>(updateResponseContent);
+
+            updateApiEntity.Should().NotBeNull();
+
+            updateApiEntity.Should().BeEquivalentTo(transaction);
+
+            updateApiEntity.FinancialMonth.Should().Be(8);
+            updateApiEntity.FinancialYear.Should().Be(2021);
+        }
+
+        [Fact]
+        public async Task Update_WithInvalidModel_Returns400()
+        {
+            var transaction = new Transaction()
+            {
+                TransactionAmount = -2000,
+                PaidAmount = -2334,
+                ChargedAmount = -213,
+                HousingBenefitAmount = -1
+            };
+
+            var uri = new Uri($"api/v1/transactions/{Guid.NewGuid()}", UriKind.Relative);
+            string body = JsonConvert.SerializeObject(transaction);
+
+            HttpResponseMessage response;
+            using (StringContent stringContent = new StringContent(body))
+            {
+                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                response = await Client.PutAsync(uri, stringContent).ConfigureAwait(false);
+            }
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.Details.Should().Be(string.Empty);
+
+            apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
+            apiEntity.Message.Should().Contain("The field TargetId cannot be empty or default.");
+            apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
+            apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TransactionAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and {(double) decimal.MaxValue}.");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("false")]
+        [InlineData("true")]
+        public void ConfigureDynamoDBTestNoLocalModeEnvVarUsesAWSService(string localModeEnvVar)
+        {
+            Environment.SetEnvironmentVariable("DynamoDb_LocalMode", localModeEnvVar);
+
+            ServiceCollection services = new ServiceCollection();
+            services.ConfigureDynamoDB();
+
+            services.Any(x => x.ServiceType == typeof(IAmazonDynamoDB)).Should().BeTrue();
+            services.Any(x => x.ServiceType == typeof(IDynamoDBContext)).Should().BeTrue();
+
+            Environment.SetEnvironmentVariable("DynamoDb_LocalMode", null);
+        }
+
+        private async Task<Guid> CreateTransactionAndValidateResponse(Transaction transaction)
+        {
+            var addRequest = new AddTransactionRequest()
+            {
+                TransactionDate = transaction.TransactionDate,
+                Address = transaction.Address,
+                BalanceAmount = transaction.BalanceAmount,
+                ChargedAmount = transaction.ChargedAmount,
+                Fund = transaction.Fund,
+                HousingBenefitAmount = transaction.HousingBenefitAmount,
+                IsSuspense = transaction.IsSuspense,
+                PaidAmount = transaction.PaidAmount,
+                PaymentReference = transaction.PaymentReference,
+                PeriodNo = transaction.PeriodNo,
+                Person = transaction.Person,
+                TargetId = transaction.TargetId,
+                TransactionAmount = transaction.TransactionAmount,
+                TransactionSource = transaction.TransactionSource,
+                TransactionType = transaction.TransactionType
+            };
+
             var uri = new Uri("api/v1/transactions", UriKind.Relative);
 
-            string body = JsonConvert.SerializeObject(transaction);
+            string body = JsonConvert.SerializeObject(addRequest);
 
             using StringContent stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            using var response = await _dbFixture.Client.PostAsync(uri, stringContent).ConfigureAwait(false);
+            using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.Created);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<TransactionResponseObject>(responseContent);
+            var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
 
-            _cleanupActions.Add(async () => await _dbFixture.DynamoDbContext.DeleteAsync<TransactionDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 
-            //apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.Id));
+            apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.Id)
+                                                                             .Excluding(a => a.SuspenseResolutionInfo)
+                                                                             .Excluding(a => a.FinancialYear)
+                                                                             .Excluding(a => a.FinancialMonth));
+
+            apiEntity.SuspenseResolutionInfo.Should().BeNull();
+            apiEntity.FinancialMonth.Should().Be(8);
+            apiEntity.FinancialYear.Should().Be(2021);
+
+            return apiEntity.Id;
+        }
+
+        private async Task GetTransactionByIdAndValidateResponse(Transaction transaction)
+        {
+            var uri = new Uri($"api/v1/transactions/{transaction.Id}", UriKind.Relative);
+            using var response = await Client.GetAsync(uri).ConfigureAwait(false);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+
+            apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.FinancialYear)
+                                                                             .Excluding(a => a.FinancialMonth));
+
+            apiEntity.FinancialMonth.Should().Be(8);
+            apiEntity.FinancialYear.Should().Be(2021);
         }
     }
 }

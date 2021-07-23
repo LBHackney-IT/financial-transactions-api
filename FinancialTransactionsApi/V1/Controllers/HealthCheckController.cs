@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using TransactionsApi.V1.UseCase;
+using FinancialTransactionsApi.V1.UseCase;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TransactionsApi.V1.Controllers
+namespace FinancialTransactionsApi.V1.Controllers
 {
     [Route("api/v1/healthcheck")]
     [ApiController]

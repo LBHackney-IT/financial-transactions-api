@@ -1,6 +1,7 @@
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace TransactionsApi.V1.Infrastructure
+namespace FinancialTransactionsApi.V1.Infrastructure
 {
 
     public class DatabaseContext : DbContext
