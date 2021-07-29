@@ -19,16 +19,16 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
     public class DynamoDbGatewayTests
     {
         // private readonly Fixture _fixture = new Fixture();
-        private readonly Mock<IDynamoDBContext> _dynamoDb;
-        private readonly Mock<DynamoDbContextWrapper> _wrapper;
-        private readonly DynamoDbGateway _gateway;
-
-        public DynamoDbGatewayTests()
-        {
-            _dynamoDb = new Mock<IDynamoDBContext>();
-            _wrapper = new Mock<DynamoDbContextWrapper>();
-            _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object);
-        }
+        // private readonly Mock<IDynamoDBContext> _dynamoDb;
+        // private readonly Mock<DynamoDbContextWrapper> _wrapper;
+        // private readonly DynamoDbGateway _gateway;
+        //
+        // public DynamoDbGatewayTests()
+        // {
+        //     _dynamoDb = new Mock<IDynamoDBContext>();
+        //     _wrapper = new Mock<DynamoDbContextWrapper>();
+        //     _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object);
+        // }
 
         // [Fact]
         // public async Task GetById_EntityDoesntExists_ReturnsNull()
