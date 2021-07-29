@@ -8,7 +8,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 {
     public class DynamoDbContextWrapper
     {
-        public  virtual Task<List<TransactionDbEntity>> ScanAsync(IDynamoDBContext context, IEnumerable<ScanCondition> conditions, DynamoDBOperationConfig operationConfig = null)
+        public virtual Task<List<TransactionDbEntity>> ScanAsync(IDynamoDBContext context, IEnumerable<ScanCondition> conditions, DynamoDBOperationConfig operationConfig = null)
         {
             return context.ScanAsync<TransactionDbEntity>(conditions, operationConfig).GetRemainingAsync();
         }

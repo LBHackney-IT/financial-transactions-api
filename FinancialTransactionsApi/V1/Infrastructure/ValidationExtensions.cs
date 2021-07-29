@@ -51,7 +51,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
             if (transaction == null)
             {
                 throw new ArgumentNullException("UpdateTransactionRequest model cannot be null!");
-            }    
+            }
 
             if (transaction.TargetId == Guid.Empty)
             {

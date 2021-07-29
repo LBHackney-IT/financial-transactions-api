@@ -162,7 +162,7 @@ namespace FinancialTransactionsApi
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCorrelation();
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

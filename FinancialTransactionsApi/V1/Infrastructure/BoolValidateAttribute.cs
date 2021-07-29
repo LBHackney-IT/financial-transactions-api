@@ -18,7 +18,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 return new ValidationResult($"The field {validationContext.MemberName} cannot be null");
             }
 
-            if(!((bool) value == _permissibleValue))
+            if (!((bool) value == _permissibleValue))
             {
                 return new ValidationResult($"The field {validationContext.MemberName} must be {_permissibleValue}.");
             }
