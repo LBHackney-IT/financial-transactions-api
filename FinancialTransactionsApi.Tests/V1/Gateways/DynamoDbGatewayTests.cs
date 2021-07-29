@@ -18,7 +18,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
 
     public class DynamoDbGatewayTests
     {
-        private readonly Fixture _fixture = new Fixture();
+        // private readonly Fixture _fixture = new Fixture();
         private readonly Mock<IDynamoDBContext> _dynamoDb;
         private readonly Mock<DynamoDbContextWrapper> _wrapper;
         private readonly DynamoDbGateway _gateway;
