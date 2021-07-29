@@ -7,7 +7,7 @@ using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Infrastructure
 {
-
+   
     public class CorrelationMiddlewareTest
     {
         private CorrelationMiddleware _sut;
@@ -15,7 +15,7 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
         {
             _sut = new CorrelationMiddleware(null);
         }
-
+       
 
         [Fact]
         public async Task DoesNotReplaceCorrelationIdIfOneExists()
@@ -31,6 +31,7 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
 
             // Assert
             httpContext.HttpContext.Request.Headers[Constants.CorrelationId].Should().BeEquivalentTo(headerValue);
+            httpContext.HttpContext.Response.Headers[Constants.CorrelationId].Should().BeEquivalentTo(headerValue);
         }
 
         [Fact]
@@ -44,6 +45,7 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
 
             // Assert
             httpContext.HttpContext.Request.Headers[Constants.CorrelationId].Should().HaveCountGreaterThan(0);
+            httpContext.HttpContext.Response.Headers[Constants.CorrelationId].Should().HaveCountGreaterThan(0);
         }
     }
 }

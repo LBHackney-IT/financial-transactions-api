@@ -20,8 +20,9 @@ namespace FinancialTransactionsApi.V1.Controllers
             {
                 var correlationId = Guid.NewGuid().ToString();
                 context.Request.Headers[Constants.CorrelationId] = correlationId;
-                context.Response.Headers[Constants.CorrelationId] = correlationId;
             }
+
+            context.Response.Headers[Constants.CorrelationId] = context.Request.Headers[Constants.CorrelationId];
 
             if (_next != null)
             {
