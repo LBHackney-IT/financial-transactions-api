@@ -74,7 +74,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromHeader(Name = "x-correlation-id")] string correlationId, [FromQuery] TransactionQuery query)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
@@ -153,7 +153,7 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
             }
 
-            var transactionResponse =  await _updateUseCase.ExecuteAsync(transaction, id).ConfigureAwait(false);
+            var transactionResponse = await _updateUseCase.ExecuteAsync(transaction, id).ConfigureAwait(false);
 
             return Ok(transactionResponse);
         }

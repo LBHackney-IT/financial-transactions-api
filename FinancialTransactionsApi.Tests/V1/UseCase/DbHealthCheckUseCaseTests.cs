@@ -32,7 +32,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             _classUnderTest = new DbHealthCheckUseCase(_mockHealthCheckService.Object);
         }
 
-        
+
         [Fact]
         public void ReturnsResponseWithStatus()
         {
