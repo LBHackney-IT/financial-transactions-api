@@ -8,7 +8,7 @@ using Xunit;
 namespace FinancialTransactionsApi.Tests.V1.Controllers
 {
 
-  
+
     public class HealthCheckControllerTests
     {
         private HealthCheckController _classUnderTest;
