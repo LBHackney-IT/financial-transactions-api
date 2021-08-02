@@ -8,8 +8,7 @@ provider:
     apiGateway: true
   vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
-  # TODO: Enable this line if DynamoDb is in use
-  #account: ${opt:account}
+  account: ${opt:account}
   region: eu-west-2
   apiKeys:
     - secureAccess:
@@ -29,10 +28,6 @@ functions:
     name: ${self:service}-${self:provider.stage}
     handler: FinancialTransactionsApi::FinancialTransactionsApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
-#    environment:
-# TODO: Create ssm variables for this API's postgres mirror then rename base-api below to match api name
-# TODO: Remove this line if DynamoDb is being used
-#      CONNECTION_STRING: Host=${ssm:/base-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/base-api/${self:provider.stage}/postgres-port};Database=base-api-mirror;Username=${ssm:/base-api/${self:provider.stage}/postgres-username};Password=${ssm:/base-api/${self:provider.stage}/postgres-password}
     events:
       - http:
           path: /{proxy+}
@@ -56,8 +51,7 @@ resources:
         ManagedPolicyArns:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
           - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
-# TODO: Enable this line and set the correct policy name if DynamoDb is in use
-#          - arn:aws:iam::${self:provider.account}:policy/base-api/lambda-dynamodb-base-api
+          - arn:aws:iam::${self:provider.account}:policy/financial-transactions-api/lambda-dynamodb-financial-transactions-api
         Policies:
           - PolicyName: manageLogs
             PolicyDocument:
