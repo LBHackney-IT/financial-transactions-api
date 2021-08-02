@@ -143,7 +143,7 @@ workflows:
           filters:
             branches:
               only: development
- check-and-deploy-staging-and-production:
+  check-and-deploy-staging-and-production:
       jobs:
       - build-and-test:
           filters:
