@@ -86,10 +86,10 @@ jobs:
       - setup_remote_docker
       - run:
           name: build
-          command: docker-compose build financial-transactions-api-test
+          command: docker-compose build accounts-api-test
       - run:
           name: Run tests
-          command: docker-compose run financial-transactions-api-test
+          command: docker-compose run accounts-api-test
   assume-role-development:
     executor: docker-python
     steps:
@@ -147,6 +147,7 @@ workflows:
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
+            - check-code-formatting
             - build-and-test
          # filters:
           #  branches:
