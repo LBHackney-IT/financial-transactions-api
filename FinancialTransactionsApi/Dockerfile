@@ -8,8 +8,8 @@ RUN dotnet restore
 
 # Copy everything else and build
 COPY . ./
-RUN dotnet build -c Release -o out
-RUN dotnet publish -c Release -o out
+RUN dotnet build -c Debug -o out
+RUN dotnet publish -c Debug -o out
 
 EXPOSE ${PORT:-3000}
 CMD ASPNETCORE_URLS=http://+:${PORT:-3000} dotnet ./out/FinancialTransactionsApi.dll
