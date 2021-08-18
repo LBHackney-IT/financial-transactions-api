@@ -44,7 +44,7 @@ resource "aws_sns_topic" "financial-transactions_topic" {
     kms_master_key_id = "alias/aws/sns"
 }
 
-resource "aws_ssm_parameter" "new_charges_created_sns_arn" {
+resource "aws_ssm_parameter" "new_financial-transactions_created_sns_arn" {
     name  = "/sns-topic/${var.environment_name}/financial-transactions_created/arn"
     type  = "String"
     value = aws_sns_topic.financial-transactions_topic.arn
