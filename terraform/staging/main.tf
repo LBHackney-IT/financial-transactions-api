@@ -33,19 +33,19 @@ terraform {
     bucket  = "terraform-state-housing-staging"
     encrypt = true
     region  = "eu-west-2"
-    key     = services/financial-transaction/state #e.g. "services/financial-transaction/state"
+    key     = services/financial-transactions-api/state
   }
 }
 
-resource "aws_sns_topic" "financial-transaction_topic" {
-    name                        = "financial-transaction.fifo"
+resource "aws_sns_topic" "financial-transactions_topic" {
+    name                        = "financial-transactions.fifo"
     fifo_topic                  = true
     content_based_deduplication = true
     kms_master_key_id = "alias/aws/sns"
 }
 
 resource "aws_ssm_parameter" "new_charges_created_sns_arn" {
-    name  = "/sns-topic/${var.environment_name}/financial-transaction_created/arn"
+    name  = "/sns-topic/${var.environment_name}/financial-transactions_created/arn"
     type  = "String"
-    value = aws_sns_topic.financial-transaction_topic.arn
+    value = aws_sns_topic.financial-transactions_topic.arn
 }
