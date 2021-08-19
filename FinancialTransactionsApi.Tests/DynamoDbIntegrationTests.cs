@@ -15,7 +15,7 @@ namespace FinancialTransactionsApi.Tests
 
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-            new TableDef { Name = "transactions_table", KeyName = "id", KeyType = ScalarAttributeType.S },
+            new TableDef { Name = "Transactions", KeyName = "id", KeyType = ScalarAttributeType.S },
         };
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
