@@ -5,7 +5,7 @@ using System;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 {
-    [DynamoDBTable("transactions_table", LowerCamelCaseProperties = true)]
+    [DynamoDBTable("Transactions", LowerCamelCaseProperties = true)]
     public class TransactionDbEntity
     {
         [DynamoDBHashKey]
