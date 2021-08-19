@@ -59,9 +59,9 @@ namespace FinancialTransactionsApi.V1
             response.StatusCode = (int) code;
             var allMessageText = ex.GetFullMessage();
 
-            var details = ex.StackTrace?.ToString();/* _env.IsDevelopment() && code == HttpStatusCode.InternalServerError
+            var details = _env.IsDevelopment() && code == HttpStatusCode.InternalServerError
                 ? ex.StackTrace?.ToString() :
-                  string.Empty;*/
+                  string.Empty;
 
             await response.WriteAsync(JsonConvert.SerializeObject(new BaseErrorResponse((int) code, allMessageText, details)))
                     .ConfigureAwait(false);
