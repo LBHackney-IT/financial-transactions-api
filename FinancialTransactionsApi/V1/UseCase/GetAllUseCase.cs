@@ -30,7 +30,7 @@ namespace FinancialTransactionsApi.V1.UseCase
                     transaction.BankAccountNumber = $"*****{transaction.BankAccountNumber.Substring(5, 2)}";
                 }
             }
-            
+
             return transactions.ToResponse();
         }
     }
