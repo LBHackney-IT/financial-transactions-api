@@ -39,6 +39,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             entity.Fund = null;
             entity.IsSuspense = true;
             entity.SuspenseResolutionInfo = null;
+            entity.BankAccountNumber = "1234567";
 
             return entity;
         }
@@ -151,7 +152,40 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and {(double) decimal.MaxValue}.");
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("1234^8", "The field BankAccountNumber must be a string with a length exactly equals to 7. The field BankAccountNumber should contain only digital characters.")]
+        [InlineData("123457", "The field BankAccountNumber must be a string with a length exactly equals to 7.")]
+        [InlineData("", "The field BankAccountNumber must be a string with a length exactly equals to 7.")]
+        [InlineData("123456s", "The field BankAccountNumber should contain only digital characters.")]
+        public async Task Add_ModelWithInvalidLengthBankAccountNumber_Returns400(string bankAccountNumber, string message)
+        {
+            var transaction = ConstructTransaction();
+            transaction.BankAccountNumber = bankAccountNumber;
+
+            var uri = new Uri("api/v1/transactions", UriKind.Relative);
+            string body = JsonConvert.SerializeObject(transaction);
+
+            HttpResponseMessage response;
+            using (StringContent stringContent = new StringContent(body))
+            {
+                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
+            }
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.Details.Should().Be(string.Empty);
+
+            apiEntity.Message.Should().Contain(message);
+        }
+
+        [Fact] // TODO: fix problem with TransactionDate
         public async Task CreateTwoRentGroupsGetAllReturns200()
         {
             var transactions = new[] { ConstructTransaction(), ConstructTransaction() };
@@ -183,16 +217,20 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var secondTransaction = apiEntity.Find(r => r.Id.Equals(transactions[1].Id));
 
             firstTransaction.Should().BeEquivalentTo(transactions[0], opt => opt.Excluding(a => a.FinancialYear)
-                                                                                .Excluding(a => a.FinancialMonth));
+                                                                                .Excluding(a => a.FinancialMonth)
+                                                                                .Excluding(a => a.BankAccountNumber));
 
             firstTransaction.FinancialMonth.Should().Be(8);
             firstTransaction.FinancialYear.Should().Be(2021);
+            firstTransaction.BankAccountNumber.Should().Be("*****67");
 
             secondTransaction.Should().BeEquivalentTo(transactions[1], opt => opt.Excluding(a => a.FinancialYear)
-                                                                                 .Excluding(a => a.FinancialMonth));
+                                                                                 .Excluding(a => a.FinancialMonth)
+                                                                                 .Excluding(a => a.BankAccountNumber));
 
             secondTransaction.FinancialMonth.Should().Be(8);
             secondTransaction.FinancialYear.Should().Be(2021);
+            secondTransaction.BankAccountNumber.Should().Be("*****67");
         }
 
         [Fact]
@@ -244,6 +282,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 ChargedAmount = 123.78M,
                 FinancialMonth = 8,
                 FinancialYear = 2021,
+                BankAccountNumber = "1234567",
                 IsSuspense = true,
                 PaidAmount = 125.62M,
                 PeriodNo = 31,
@@ -287,10 +326,11 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             updateApiEntity.Should().NotBeNull();
 
-            updateApiEntity.Should().BeEquivalentTo(transaction);
+            updateApiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.BankAccountNumber));
 
             updateApiEntity.FinancialMonth.Should().Be(8);
             updateApiEntity.FinancialYear.Should().Be(2021);
+            updateApiEntity.BankAccountNumber.Should().Be("*****67");
         }
 
         [Fact]
@@ -361,6 +401,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 Fund = transaction.Fund,
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
                 IsSuspense = transaction.IsSuspense,
+                BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
                 PaymentReference = transaction.PaymentReference,
                 PeriodNo = transaction.PeriodNo,
@@ -392,11 +433,13 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.Id)
                                                                              .Excluding(a => a.SuspenseResolutionInfo)
                                                                              .Excluding(a => a.FinancialYear)
-                                                                             .Excluding(a => a.FinancialMonth));
+                                                                             .Excluding(a => a.FinancialMonth)
+                                                                             .Excluding(a => a.BankAccountNumber));
 
             apiEntity.SuspenseResolutionInfo.Should().BeNull();
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);
+            apiEntity.BankAccountNumber.Should().Be("*****67");
 
             return apiEntity.Id;
         }
@@ -414,10 +457,12 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Should().NotBeNull();
 
             apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.FinancialYear)
-                                                                             .Excluding(a => a.FinancialMonth));
+                                                                             .Excluding(a => a.FinancialMonth)
+                                                                             .Excluding(a => a.BankAccountNumber));
 
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);
+            apiEntity.BankAccountNumber.Should().Be("*****67");
         }
     }
 }

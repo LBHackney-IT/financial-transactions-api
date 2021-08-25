@@ -34,6 +34,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 BalanceAmount = 145.23M,
                 ChargedAmount = 134.12M,
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "1234567",
                 IsSuspense = true,
                 PaidAmount = 123.22M,
                 PeriodNo = 2,
@@ -56,10 +57,12 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id)
                                                                          .Excluding(x => x.FinancialYear)
-                                                                         .Excluding(x => x.FinancialMonth));
+                                                                         .Excluding(x => x.FinancialMonth)
+                                                                         .Excluding(x => x.BankAccountNumber));
 
             response.FinancialMonth.Should().Be(8);
             response.FinancialYear.Should().Be(2021);
+            response.BankAccountNumber.Should().Be("*****67");
 
             _mockGateway.Verify(x => x.AddAsync(It.IsAny<Transaction>()), Times.Once);
         }
@@ -76,6 +79,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 ChargedAmount = 134.12M,
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "1234567",
                 IsSuspense = false,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
@@ -100,10 +104,12 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id)
                                                                          .Excluding(x => x.FinancialYear)
-                                                                         .Excluding(x => x.FinancialMonth));
+                                                                         .Excluding(x => x.FinancialMonth)
+                                                                         .Excluding(x => x.BankAccountNumber));
 
             response.FinancialMonth.Should().Be(8);
             response.FinancialYear.Should().Be(2021);
+            response.BankAccountNumber.Should().Be("*****67");
 
             _mockGateway.Verify(x => x.AddAsync(It.IsAny<Transaction>()), Times.Once);
         }
@@ -119,6 +125,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 BalanceAmount = 145.23M,
                 ChargedAmount = 134.12M,
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "1234567",
                 IsSuspense = false,
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,

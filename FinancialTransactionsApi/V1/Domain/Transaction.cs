@@ -24,6 +24,8 @@ namespace FinancialTransactionsApi.V1.Domain
 
         public string PaymentReference { get; set; }
 
+        public string BankAccountNumber { get; set; }
+
         public bool IsSuspense { get; set; }
 
         public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }

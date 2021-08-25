@@ -69,6 +69,15 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         public string PaymentReference { get; set; }
 
         /// <summary>
+        /// Bank account number
+        /// </summary>
+        /// <example>
+        /// 1234578
+        /// </example>
+        [ExactlyLength(7), OnlyDigitalStringFormat]
+        public string BankAccountNumber { get; set; }
+
+        /// <summary>
         /// Is this account need to be in suspense
         /// </summary>
         /// <example>
