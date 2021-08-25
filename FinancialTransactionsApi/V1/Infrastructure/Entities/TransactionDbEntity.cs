@@ -39,6 +39,9 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "payment_reference")]
         public string PaymentReference { get; set; }
 
+        [DynamoDBProperty(AttributeName = "bank_acoount_number")]
+        public string BankAccountNumber { get; set; }
+
         [DynamoDBProperty(AttributeName = "is_suspense")]
         public bool IsSuspense { get; set; }
 

@@ -1,11 +1,10 @@
+using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
-using FinancialTransactionsApi.V1.Boundary.Request;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.UseCase
 {
@@ -24,6 +23,14 @@ namespace FinancialTransactionsApi.V1.UseCase
                 await _gateway.GetAllTransactionsAsync(query.TargetId, query.TransactionType, query.StartDate, query.EndDate)
                     .ConfigureAwait(false);
 
+            foreach (var transaction in transactions)
+            {
+                if (!string.IsNullOrWhiteSpace(transaction.BankAccountNumber))
+                {
+                    transaction.BankAccountNumber = $"*****{transaction.BankAccountNumber.Substring(5, 2)}";
+                }
+            }
+            
             return transactions.ToResponse();
         }
     }
