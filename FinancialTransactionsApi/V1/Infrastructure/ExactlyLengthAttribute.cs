@@ -16,21 +16,19 @@ namespace FinancialTransactionsApi.V1.Infrastructure
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var data = (string) value;
+            var data = value as string;
 
             if (data == null)
             {
                 return null;
             }
-            else
-            {
-                if (data.Length != _length)
-                {
-                    return new ValidationResult($"The field {validationContext.MemberName} must be a string with a length exactly equals to {_length}.");
-                }
 
-                return ValidationResult.Success;
+            if (data.Length != _length)
+            {
+                return new ValidationResult($"The field {validationContext.MemberName} must be a string with a length exactly equals to {_length}.");
             }
+
+            return ValidationResult.Success;
         }
     }
 }
