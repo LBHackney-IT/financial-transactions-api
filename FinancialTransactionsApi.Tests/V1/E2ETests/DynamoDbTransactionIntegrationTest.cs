@@ -185,7 +185,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Message.Should().Contain(message);
         }
 
-        [Fact] // TODO: fix problem with TransactionDate
+        [Fact]
         public async Task CreateTwoRentGroupsGetAllReturns200()
         {
             var transactions = new[] { ConstructTransaction(), ConstructTransaction() };
