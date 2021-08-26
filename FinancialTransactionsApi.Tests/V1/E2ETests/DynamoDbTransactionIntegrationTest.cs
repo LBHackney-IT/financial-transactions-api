@@ -153,8 +153,9 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         }
 
         [Theory]
-        [InlineData("1234^78", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
         [InlineData("", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
+        [InlineData("1234^78", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
+        [InlineData("12345^789", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
         public async Task Add_ModelWithInvalidBankAccountNumberLength_Returns400(string bankAccountNumber, string message)
         {
             var transaction = ConstructTransaction();
