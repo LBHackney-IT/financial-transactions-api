@@ -5,7 +5,6 @@ using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.UseCase
@@ -39,9 +38,6 @@ namespace FinancialTransactionsApi.V1.UseCase
             transactionDomain.Id = Guid.NewGuid();
 
             await _gateway.AddAsync(transactionDomain).ConfigureAwait(false);
-
-            transactionDomain.BankAccountNumber =
-                transactionDomain.BankAccountNumber == null ? null : $"*****{transactionDomain.BankAccountNumber.Substring(5, 2)}";
 
             return transactionDomain.ToResponse();
         }

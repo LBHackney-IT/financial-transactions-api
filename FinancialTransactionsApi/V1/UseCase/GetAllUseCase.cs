@@ -23,14 +23,6 @@ namespace FinancialTransactionsApi.V1.UseCase
                 await _gateway.GetAllTransactionsAsync(query.TargetId, query.TransactionType, query.StartDate, query.EndDate)
                     .ConfigureAwait(false);
 
-            foreach (var transaction in transactions)
-            {
-                if (!string.IsNullOrWhiteSpace(transaction.BankAccountNumber))
-                {
-                    transaction.BankAccountNumber = $"*****{transaction.BankAccountNumber.Substring(5, 2)}";
-                }
-            }
-
             return transactions.ToResponse();
         }
     }
