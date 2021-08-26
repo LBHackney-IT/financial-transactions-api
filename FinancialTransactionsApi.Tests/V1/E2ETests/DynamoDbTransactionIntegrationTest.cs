@@ -336,7 +336,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 ChargedAmount = -213,
                 HousingBenefitAmount = -1
             };
-            
+
             var uri = new Uri($"api/v1/transactions/{Guid.NewGuid()}", UriKind.Relative);
             string body = JsonConvert.SerializeObject(transaction);
 
