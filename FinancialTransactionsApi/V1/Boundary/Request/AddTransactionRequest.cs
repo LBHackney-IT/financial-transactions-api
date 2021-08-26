@@ -72,9 +72,9 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// Bank account number
         /// </summary>
         /// <example>
-        /// 1234578
+        /// 12345678
         /// </example>
-        [ExactlyLength(7), OnlyDigitalStringFormat]
+        [StringLength(8, MinimumLength = 8, ErrorMessage = "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
         public string BankAccountNumber { get; set; }
 
         /// <summary>

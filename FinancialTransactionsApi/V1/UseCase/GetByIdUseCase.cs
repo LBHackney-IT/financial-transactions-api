@@ -20,11 +20,6 @@ namespace FinancialTransactionsApi.V1.UseCase
         {
             var data = await _gateway.GetTransactionByIdAsync(id).ConfigureAwait(false);
 
-            if (data != null)
-            {
-                data.BankAccountNumber = data.BankAccountNumber == null ? null : $"*****{data.BankAccountNumber.Substring(5, 2)}";
-            }
-
             return data?.ToResponse();
         }
     }
