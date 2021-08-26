@@ -23,6 +23,7 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
                 Address = "Address",
                 Fund = "fund",
                 HousingBenefitAmount = 214.11M,
+                BankAccountNumber = "12345678",
                 IsSuspense = false,
                 PaidAmount = 12356.17M,
                 PaymentReference = "213456",
@@ -42,6 +43,7 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
             transaction.Address.Should().BeEquivalentTo("Address");
             transaction.Fund.Should().BeEquivalentTo("fund");
             transaction.HousingBenefitAmount.Should().Be(214.11M);
+            transaction.BankAccountNumber.Should().Be("12345678");
             transaction.IsSuspense.Should().BeFalse();
             transaction.PaidAmount.Should().Be(12356.17M);
             transaction.PaymentReference.Should().BeEquivalentTo("213456");
