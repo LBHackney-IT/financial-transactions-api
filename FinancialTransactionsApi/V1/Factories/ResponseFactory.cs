@@ -20,6 +20,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 HousingBenefitAmount = domain.HousingBenefitAmount,
                 PaidAmount = domain.PaidAmount,
                 PaymentReference = domain.PaymentReference,
+                BankAccountNumber = domain.BankAccountNumber,
                 IsSuspense = domain.IsSuspense,
                 SuspenseResolutionInfo = domain.SuspenseResolutionInfo.ToDomain(),
                 PeriodNo = domain.PeriodNo,

@@ -39,6 +39,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             entity.Fund = null;
             entity.IsSuspense = true;
             entity.SuspenseResolutionInfo = null;
+            entity.BankAccountNumber = "12345678";
 
             return entity;
         }
@@ -151,6 +152,38 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and {(double) decimal.MaxValue}.");
         }
 
+        [Theory]
+        [InlineData("", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
+        [InlineData("1234^78", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
+        [InlineData("12345^789", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
+        public async Task Add_ModelWithInvalidBankAccountNumberLength_Returns400(string bankAccountNumber, string message)
+        {
+            var transaction = ConstructTransaction();
+            transaction.BankAccountNumber = bankAccountNumber;
+
+            var uri = new Uri("api/v1/transactions", UriKind.Relative);
+            string body = JsonConvert.SerializeObject(transaction);
+
+            HttpResponseMessage response;
+            using (StringContent stringContent = new StringContent(body))
+            {
+                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
+            }
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.Details.Should().Be(string.Empty);
+
+            apiEntity.Message.Should().Contain(message);
+        }
+
         [Fact]
         public async Task CreateTwoRentGroupsGetAllReturns200()
         {
@@ -244,6 +277,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 ChargedAmount = 123.78M,
                 FinancialMonth = 8,
                 FinancialYear = 2021,
+                BankAccountNumber = "12345678",
                 IsSuspense = true,
                 PaidAmount = 125.62M,
                 PeriodNo = 31,
@@ -361,6 +395,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 Fund = transaction.Fund,
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
                 IsSuspense = transaction.IsSuspense,
+                BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
                 PaymentReference = transaction.PaymentReference,
                 PeriodNo = transaction.PeriodNo,
