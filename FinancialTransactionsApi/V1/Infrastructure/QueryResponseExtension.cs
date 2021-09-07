@@ -16,7 +16,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 SuspenseResolutionInfo suspenseResolutionInfo = null;
                 Person person = null;
 
-                try
+                if (item.Keys.Any(p => p == "SuspenseResolutionInfo"))
                 {
                     var innerItem = item["SuspenseResolutionInfo"].M;
                     suspenseResolutionInfo = new SuspenseResolutionInfo
@@ -26,9 +26,8 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                         ResolutionDate = DateTime.Parse(innerItem["ResolutionDate"].S)
                     };
                 }
-                catch { }
 
-                try
+                if (item.Keys.Any(p => p == "Person"))
                 {
                     var innerItem = item["Person"].M;
                     person = new Person
@@ -37,11 +36,10 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                         FullName = innerItem["FullName"].S
                     };
                 }
-                catch { }
 
                 transactions.Add(new Transaction
                 {
-                    
+
                     Id = Guid.Parse(item["id"].S),
                     Address = item["address"].S,
                     BalanceAmount = decimal.Parse(item["balance_amount"].N),
@@ -51,7 +49,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                     FinancialYear = short.Parse(item["financial_year"].N),
                     Fund = item["fund"].S,
                     HousingBenefitAmount = decimal.Parse(item["housing_benefit_amount"].N),
-                    IsSuspense = item["IsSuspense"].BOOL,
+                    IsSuspense = bool.Parse(item["is_suspense"].S),
                     PaidAmount = decimal.Parse(item["paid_amount"].N),
                     PaymentReference = item["payment_reference"].S,
                     PeriodNo = short.Parse(item["period_no"].N),

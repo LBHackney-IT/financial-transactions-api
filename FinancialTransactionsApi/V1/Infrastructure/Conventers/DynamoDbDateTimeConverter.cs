@@ -7,7 +7,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Conventers
     // TODO: This should go in a common NuGet package...
 
     /// <summary>
-    /// Converter for DateTime objects because the default handling expects the data time string to alays be in a very specific
+    /// Converter for DateTime objects because the default handling expects the data time string to always be in a very specific
     /// format and will throw an exception if not.
     /// </summary>
     public class DynamoDbDateTimeConverter : IPropertyConverter
@@ -35,7 +35,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Conventers
 
             var dtString = primitive.Value.ToString();
 
-            return DateTime.Parse(dtString, null, System.Globalization.DateTimeStyles.RoundtripKind);
+            return DateTime.Parse(dtString, null, System.Globalization.DateTimeStyles.RoundtripKind).ToLocalTime();
         }
     }
 }
