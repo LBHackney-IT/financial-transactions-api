@@ -17,17 +17,20 @@ namespace FinancialTransactionsApi.V1.Controllers
     public class FinancialTransactionsApiController : BaseController
     {
         private readonly IGetAllUseCase _getAllUseCase;
+        private readonly IGetAllSuspenseUseCase _getAllSuspenseUseCase;
         private readonly IGetByIdUseCase _getByIdUseCase;
         private readonly IAddUseCase _addUseCase;
         private readonly IUpdateUseCase _updateUseCase;
 
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
+            IGetAllSuspenseUseCase getAllSuspenseUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase)
         {
             _getAllUseCase = getAllUseCase;
+            _getAllSuspenseUseCase = getAllSuspenseUseCase;
             _getByIdUseCase = getByIdUseCase;
             _addUseCase = addUseCase;
             _updateUseCase = updateUseCase;
@@ -60,6 +63,29 @@ namespace FinancialTransactionsApi.V1.Controllers
             return Ok(transaction);
         }
 
+        /// <summary>
+        /// Gets a collection of transactions for a tenancy/property
+        /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="query">Model with parameters to get collection of transactions</param>
+        /// <response code="200">Success. Transaction models were received successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [ProducesResponseType(typeof(List<TransactionResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [HttpGet]
+        public async Task<IActionResult> GetAllSuspense([FromHeader(Name = "x-correlation-id")] string correlationId, [FromQuery] SuspenseTransactionsSearchRequest query)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
+            }
+
+            var transactions = await _getAllSuspenseUseCase.ExecuteAsync(query).ConfigureAwait(false);
+
+            return Ok(transactions);
+        }
         /// <summary>
         /// Gets a collection of transactions for a tenancy/property
         /// </summary>
