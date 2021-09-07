@@ -30,7 +30,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
             _dynamoDb = new Mock<IDynamoDBContext>();
             _wrapper = new Mock<DynamoDbContextWrapper>();
             _amazonDynamoDb = new Mock<IAmazonDynamoDB>();
-            _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object,_amazonDynamoDb.Object);
+            _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object, _amazonDynamoDb.Object);
         }
 
         [Fact]
