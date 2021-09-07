@@ -82,7 +82,7 @@ namespace FinancialTransactionsApi.V1.Gateways
                 KeyConditionExpression = "is_suspense = :V_is_suspense",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
-                    {"V_is_suspense", new AttributeValue {BOOL = true}}
+                    {":V_is_suspense", new AttributeValue {S = "true"}}
                 },
                 ScanIndexForward = true
             };
@@ -90,7 +90,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
 
             List<Transaction> transactions = result.ToTransactions();
-
+            return transactions;
         }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {
