@@ -10,12 +10,12 @@ namespace FinancialTransactionsApi.V1.UseCase
 {
     public class GetAllSuspenseUseCase : IGetAllSuspenseUseCase
     {
-        private readonly ITransactionGateway _gateway; 
+        private readonly ITransactionGateway _gateway;
 
         public GetAllSuspenseUseCase(ITransactionGateway gateway)
         {
             _gateway = gateway;
-        } 
+        }
 
         public async Task<List<TransactionResponse>> ExecuteAsync(SuspenseTransactionsSearchRequest query)
         {
