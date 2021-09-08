@@ -44,7 +44,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllSuspenseWithValidRequestReturnEmpty()
         {
-            List<TransactionResponse> responses = new List<TransactionResponse>(); 
+            List<TransactionResponse> responses = new List<TransactionResponse>();
 
             _getAllSuspenseTransactions.Setup(p => p.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()))
                 .ReturnsAsync(responses);
