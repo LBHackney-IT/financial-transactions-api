@@ -24,10 +24,10 @@ namespace FinancialTransactionsApi.V1.Controllers
             _getAllSuspenseUseCase = getAllSuspenseUseCase;
         }
         /// <summary>
-        /// Gets a collection of transactions for a tenancy/property
+        /// Gets a collection of suspense transactions for a tenancy/property
         /// </summary>
-        /// <param name="query">Model with parameters to get collection of transactions</param>
-        /// <response code="200">Success. Transaction models were received successfully</response>
+        /// <param name="query">Pagination information</param>
+        /// <response code="200">Success. Suspense transaction models were received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(List<TransactionResponse>), StatusCodes.Status200OK)]
