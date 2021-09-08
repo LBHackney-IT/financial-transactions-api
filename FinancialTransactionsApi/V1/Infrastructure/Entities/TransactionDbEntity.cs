@@ -6,7 +6,7 @@ using Amazon.DynamoDBv2.DocumentModel;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 {
-    [DynamoDBTable("transactions", LowerCamelCaseProperties = true)]
+    [DynamoDBTable("Transactions", LowerCamelCaseProperties = true)]
     public class TransactionDbEntity
     {
         [DynamoDBHashKey]

@@ -17,7 +17,7 @@ namespace FinancialTransactionsApi.Tests
         {
             new TableDef()
             {
-                TableName = "transactions",
+                TableName = "Transactions",
                 PartitionKey = new AttributeDef()
                 {
                     KeyName = "id",
