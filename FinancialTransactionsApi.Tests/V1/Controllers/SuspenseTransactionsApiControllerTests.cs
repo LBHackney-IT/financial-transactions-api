@@ -19,7 +19,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
     {
         private readonly SuspenseTransactionsApiController _sutApiController;
         private readonly Mock<IGetAllSuspenseUseCase> _getAllSuspenseTransactions;
-        private readonly Fixture _fixture= new Fixture();
+        private readonly Fixture _fixture = new Fixture();
         public SuspenseTransactionsApiControllerTests()
         {
             _getAllSuspenseTransactions = new Mock<IGetAllSuspenseUseCase>();
@@ -38,7 +38,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             resultAllSuspense.Should().NotBeNull();
             resultAllSuspense.Should().BeEquivalentTo(responses);
-            _getAllSuspenseTransactions.Verify(x=>x.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()),Times.Once);
+            _getAllSuspenseTransactions.Verify(x => x.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()), Times.Once);
         }
 
         [Fact]
