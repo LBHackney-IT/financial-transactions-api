@@ -31,29 +31,29 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             List<TransactionResponse> responses = _fixture.Create<List<TransactionResponse>>();
 
-            _getAllSuspenseTransactions.Setup(p => p.ExecuteAsync(_fixture.Create<SuspenseTransactionsSearchRequest>()))
+            _getAllSuspenseTransactions.Setup(p => p.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()))
                 .ReturnsAsync(responses);
 
             var resultAllSuspense = await _sutApiController.GetAllSuspense(It.IsAny<SuspenseTransactionsSearchRequest>()).ConfigureAwait(false);
 
             resultAllSuspense.Should().NotBeNull();
-            resultAllSuspense.Should().BeEquivalentTo(responses);
-            _getAllSuspenseTransactions.Verify(x => x.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()), Times.Once);
+            Assert.IsType<OkObjectResult>(resultAllSuspense);
+            ((OkObjectResult) resultAllSuspense).Value.Should().BeEquivalentTo(responses);
         }
 
         [Fact]
         public async Task GetAllSuspenseWithValidRequestReturnEmpty()
         {
-            List<TransactionResponse> responses = new List<TransactionResponse>();
+            List<TransactionResponse> responses = new List<TransactionResponse>(); 
 
-            _getAllSuspenseTransactions.Setup(p => p.ExecuteAsync(_fixture.Create<SuspenseTransactionsSearchRequest>()))
+            _getAllSuspenseTransactions.Setup(p => p.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()))
                 .ReturnsAsync(responses);
 
             var resultAllSuspense = await _sutApiController.GetAllSuspense(It.IsAny<SuspenseTransactionsSearchRequest>()).ConfigureAwait(false);
 
             resultAllSuspense.Should().NotBeNull();
-            resultAllSuspense.Should().BeEquivalentTo(responses);
-            _getAllSuspenseTransactions.Verify(x => x.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()), Times.Once);
+            Assert.IsType<OkObjectResult>(resultAllSuspense);
+            ((OkObjectResult) resultAllSuspense).Value.Should().BeEquivalentTo(responses);
         }
     }
 }
