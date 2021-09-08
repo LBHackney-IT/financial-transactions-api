@@ -45,5 +45,12 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             return Ok(transactions);
         }
+
+        [HttpGet]
+        [Route("{id}")]
+        public string Test([FromQuery] string id)
+        {
+            return id;
+        }
     }
 }
