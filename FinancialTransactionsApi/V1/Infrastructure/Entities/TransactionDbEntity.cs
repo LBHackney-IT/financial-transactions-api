@@ -2,10 +2,11 @@ using Amazon.DynamoDBv2.DataModel;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure.Conventers;
 using System;
+using Amazon.DynamoDBv2.DocumentModel;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 {
-    [DynamoDBTable("Transactions", LowerCamelCaseProperties = true)]
+    [DynamoDBTable("transactions", LowerCamelCaseProperties = true)]
     public class TransactionDbEntity
     {
         [DynamoDBHashKey]
@@ -42,7 +43,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "bank_account_number")]
         public string BankAccountNumber { get; set; }
 
-        [DynamoDBProperty(AttributeName = "is_suspense")]
+        [DynamoDBProperty(AttributeName = "is_suspense", Converter = typeof(DynamoDbBooleanConverter))]
         public bool IsSuspense { get; set; }
 
         [DynamoDBProperty(AttributeName = "suspense_resolution_info", Converter = typeof(DynamoDbObjectConverter<SuspenseResolutionInfoDbEntity>))]

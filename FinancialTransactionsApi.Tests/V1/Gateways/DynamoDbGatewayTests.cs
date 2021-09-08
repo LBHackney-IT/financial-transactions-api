@@ -1,3 +1,4 @@
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
 using FinancialTransactionsApi.V1.Domain;
@@ -21,13 +22,15 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         private readonly Fixture _fixture = new Fixture();
         private readonly Mock<IDynamoDBContext> _dynamoDb;
         private readonly Mock<DynamoDbContextWrapper> _wrapper;
+        private readonly Mock<IAmazonDynamoDB> _amazonDynamoDb;
         private readonly DynamoDbGateway _gateway;
 
         public DynamoDbGatewayTests()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
             _wrapper = new Mock<DynamoDbContextWrapper>();
-            _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object);
+            _amazonDynamoDb = new Mock<IAmazonDynamoDB>();
+            _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object, _amazonDynamoDb.Object);
         }
 
         [Fact]

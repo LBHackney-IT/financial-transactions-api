@@ -5,19 +5,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
+using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Infrastructure;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
     public class DynamoDbGateway : ITransactionGateway
     {
         private readonly IDynamoDBContext _dynamoDbContext;
+        private readonly IAmazonDynamoDB _amazonDynamoDb;
         private readonly DynamoDbContextWrapper _wrapper;
 
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, DynamoDbContextWrapper wrapper)
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, DynamoDbContextWrapper wrapper, IAmazonDynamoDB amazonDynamoDb)
         {
             _dynamoDbContext = dynamoDbContext;
             _wrapper = wrapper;
+            _amazonDynamoDb = amazonDynamoDb;
         }
+
 
         public async Task AddAsync(Transaction transaction)
         {
@@ -65,7 +72,26 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             return data.Select(p => p?.ToDomain()).ToList();
         }
+        public async Task<List<Transaction>> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
+        {
 
+            QueryRequest queryRequest = new QueryRequest
+            {
+                TableName = "transactions",
+                IndexName = "is_suspense_dx",
+                KeyConditionExpression = "is_suspense = :V_is_suspense",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":V_is_suspense", new AttributeValue {S = "true"}}
+                },
+                ScanIndexForward = true
+            };
+
+            var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
+
+            List<Transaction> transactions = result.ToTransactions();
+            return transactions;
+        }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {
             var data = await _wrapper.LoadAsync(_dynamoDbContext, id).ConfigureAwait(false);
