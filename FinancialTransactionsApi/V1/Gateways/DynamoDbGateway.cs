@@ -75,30 +75,22 @@ namespace FinancialTransactionsApi.V1.Gateways
         public async Task<List<Transaction>> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
         {
 
-            try
+            QueryRequest queryRequest = new QueryRequest
             {
-                QueryRequest queryRequest = new QueryRequest
-                {
-                    TableName = "transactions",
-                    IndexName = "is_suspense_dx",
-                    KeyConditionExpression = "is_suspense = :V_is_suspense",
-                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                TableName = "transactions",
+                IndexName = "is_suspense_dx",
+                KeyConditionExpression = "is_suspense = :V_is_suspense",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     {":V_is_suspense", new AttributeValue {S = "true"}}
                 },
-                    ScanIndexForward = true
-                };
+                ScanIndexForward = true
+            };
 
-                var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
+            var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
 
-                List<Transaction> transactions = result.ToTransactions();
-                return transactions;
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception($"queryRequest:{ex.Message}");
-            }
+            List<Transaction> transactions = result.ToTransactions();
+            return transactions;
         }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {
