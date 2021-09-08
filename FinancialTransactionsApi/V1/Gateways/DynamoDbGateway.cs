@@ -78,7 +78,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             {
                 new ScanCondition("IsSuspense", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal,"true")
             };
-              
+
             var data = await _wrapper
                 .ScanAsync(_dynamoDbContext, scanConditions)
                 .ConfigureAwait(false);
