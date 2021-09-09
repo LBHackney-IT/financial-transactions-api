@@ -47,8 +47,8 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
                             {
                                 M = new Dictionary<string, AttributeValue>
                                 {
-                                    { "Id", new AttributeValue { S = _fixture.Create<Guid>().ToString() } },
-                                    { "FullName", new AttributeValue { S = _fixture.Create<string>() } }
+                                    { "id", new AttributeValue { S = _fixture.Create<Guid>().ToString() } },
+                                    { "fullName", new AttributeValue { S = _fixture.Create<string>() } }
                                 }
                             }
                         },
@@ -58,9 +58,9 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
                             {
                                 M = new Dictionary<string, AttributeValue>
                                 {
-                                    { "IsResolve", new AttributeValue { S = _fixture.Create<bool>().ToString()} },
-                                    { "Note", new AttributeValue { S = _fixture.Create<string>() } },
-                                    { "ResolutionDate", new AttributeValue { S = _fixture.Create<DateTime>().ToString("F") } }
+                                    { "isResolve", new AttributeValue { S = _fixture.Create<bool>().ToString()} },
+                                    { "note", new AttributeValue { S = _fixture.Create<string>() } },
+                                    { "resolutionDate", new AttributeValue { S = _fixture.Create<DateTime>().ToString("F") } }
                                 }
                             }
                         }
