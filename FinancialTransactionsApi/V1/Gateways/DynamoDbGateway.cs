@@ -76,7 +76,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         {
             QueryRequest queryRequest = new QueryRequest
             {
-                TableName = "transactions",
+                TableName = "Transactions",
                 IndexName = "is_suspense_dx",
                 KeyConditionExpression = "is_suspense = :V_is_suspense",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
