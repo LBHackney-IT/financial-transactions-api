@@ -31,14 +31,14 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
                 transaction.Person.Should().NotBeNull();
                 transaction.SuspenseResolutionInfo.Should().NotBeNull();
 
-                queryResponse.Items[index]["person"].M["Id"].S.Should().BeEquivalentTo(transaction.Person.Id.ToString());
-                queryResponse.Items[index]["person"].M["FullName"].S.Should().BeEquivalentTo(transaction.Person.FullName);
+                queryResponse.Items[index]["person"].M["id"].S.Should().BeEquivalentTo(transaction.Person.Id.ToString());
+                queryResponse.Items[index]["person"].M["fullName"].S.Should().BeEquivalentTo(transaction.Person.FullName);
 
-                queryResponse.Items[index]["suspense_resolution_info"].M["IsResolve"].S.
+                queryResponse.Items[index]["suspense_resolution_info"].M["isResolve"].S.
                     Should().BeEquivalentTo(transaction.SuspenseResolutionInfo.IsResolve.ToString());
-                queryResponse.Items[index]["suspense_resolution_info"].M["ResolutionDate"].S.
+                queryResponse.Items[index]["suspense_resolution_info"].M["resolutionDate"].S.
                     Should().BeEquivalentTo(transaction.SuspenseResolutionInfo.ResolutionDate?.ToString("F"));
-                queryResponse.Items[index]["suspense_resolution_info"].M["Note"].S.
+                queryResponse.Items[index]["suspense_resolution_info"].M["note"].S.
                     Should().BeEquivalentTo(transaction.SuspenseResolutionInfo.Note.ToString());
 
                 queryResponse.Items[index]["address"].S.Should().BeEquivalentTo(transaction.Address);

@@ -21,9 +21,9 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                     var innerItem = item["suspense_resolution_info"].M;
                     suspenseResolutionInfo = new SuspenseResolutionInfo
                     {
-                        IsResolve = bool.Parse(innerItem["IsResolve"].S),
-                        Note = innerItem["Note"].S,
-                        ResolutionDate = DateTime.Parse(innerItem["ResolutionDate"].S)
+                        IsResolve = bool.Parse(innerItem["isResolve"].S),
+                        Note = innerItem["note"].S,
+                        ResolutionDate = DateTime.Parse(innerItem["resolutionDate"].S)
                     };
                 }
 
@@ -32,8 +32,8 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                     var innerItem = item["person"].M;
                     person = new Person
                     {
-                        Id = Guid.Parse(innerItem["Id"].S),
-                        FullName = innerItem["FullName"].S
+                        Id = Guid.Parse(innerItem["id"].S),
+                        FullName = innerItem["fullName"].S
                     };
                 }
 

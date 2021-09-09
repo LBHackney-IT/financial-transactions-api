@@ -74,7 +74,9 @@ namespace FinancialTransactionsApi.V1.Gateways
         }
         public async Task<List<Transaction>> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
         {
-            QueryRequest queryRequest = new QueryRequest
+
+            #region Count Calculation
+            QueryRequest countRequest = new QueryRequest
             {
                 TableName = "Transactions",
                 IndexName = "is_suspense_dx",
@@ -83,12 +85,47 @@ namespace FinancialTransactionsApi.V1.Gateways
                 {
                     {":V_is_suspense", new AttributeValue {S = "true"}}
                 },
-                ScanIndexForward = true
+                Select = Select.COUNT
             };
 
-            var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
+            var countResult = await _amazonDynamoDb.QueryAsync(countRequest).ConfigureAwait(false);
+            int count = countResult.ScannedCount;
+            #endregion
 
-            List<Transaction> transactions = result.ToTransactions();
+            #region Query Execution
+            List<Transaction> transactions = new List<Transaction>();
+            Dictionary<string, AttributeValue> lastKeyEvaluated = null;
+            int localPage = 0;
+            do
+            {
+                QueryRequest queryRequest = new QueryRequest
+                {
+                    Limit = request.PageSize,
+                    ExclusiveStartKey = lastKeyEvaluated,
+                    TableName = "Transactions",
+                    IndexName = "is_suspense_dx",
+                    KeyConditionExpression = "is_suspense = :V_is_suspense",
+                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                    {
+                        {":V_is_suspense", new AttributeValue {S = "true"}}
+                    }
+                };
+
+                var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
+                lastKeyEvaluated = result.LastEvaluatedKey;
+                if (localPage == request.Page)
+                {
+                    transactions = result.ToTransactions();
+                    break;
+                }
+                else
+                {
+                    localPage++;
+                }
+
+            } while (localPage <= request.Page && request.Page * request.PageSize <= count);
+            #endregion
+
             return transactions;
         }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
