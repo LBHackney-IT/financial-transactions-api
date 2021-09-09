@@ -21,7 +21,7 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
         {
             QueryResponse queryResponse = FakeDataHelper.MockQueryResponse<Transaction>();
 
-            List<Transaction> transactions =  queryResponse.ToTransactions();
+            List<Transaction> transactions = queryResponse.ToTransactions();
 
             transactions.Should().NotBeNull();
             transactions.Count.Should().BeGreaterThan(0);
