@@ -74,17 +74,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         }
         public async Task<List<Transaction>> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
         {
-            List<ScanCondition> scanConditions = new List<ScanCondition>
-            {
-                new ScanCondition("IsSuspense", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal,"true")
-            };
-
-            var data = await _wrapper
-                .ScanAsync(_dynamoDbContext, scanConditions)
-                .ConfigureAwait(false);
-
-            return data.Select(p => p?.ToDomain()).ToList();
-            /*QueryRequest queryRequest = new QueryRequest
+            QueryRequest queryRequest = new QueryRequest
             {
                 TableName = "transactions",
                 IndexName = "is_suspense_dx",
@@ -99,7 +89,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
 
             List<Transaction> transactions = result.ToTransactions();
-            return transactions;*/
+            return transactions;
         }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {
