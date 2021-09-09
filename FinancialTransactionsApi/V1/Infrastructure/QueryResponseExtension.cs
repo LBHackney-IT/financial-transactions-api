@@ -16,20 +16,20 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 SuspenseResolutionInfo suspenseResolutionInfo = null;
                 Person person = null;
 
-                if (item.Keys.Any(p => p == "SuspenseResolutionInfo"))
+                if (item.Keys.Any(p => p == "suspense_resolution_info"))
                 {
-                    var innerItem = item["SuspenseResolutionInfo"].M;
+                    var innerItem = item["suspense_resolution_info"].M;
                     suspenseResolutionInfo = new SuspenseResolutionInfo
                     {
-                        IsResolve = innerItem["IsResolve"].BOOL,
+                        IsResolve = bool.Parse(innerItem["IsResolve"].S),
                         Note = innerItem["Note"].S,
                         ResolutionDate = DateTime.Parse(innerItem["ResolutionDate"].S)
                     };
                 }
 
-                if (item.Keys.Any(p => p == "Person"))
+                if (item.Keys.Any(p => p == "person"))
                 {
-                    var innerItem = item["Person"].M;
+                    var innerItem = item["person"].M;
                     person = new Person
                     {
                         Id = Guid.Parse(innerItem["Id"].S),
