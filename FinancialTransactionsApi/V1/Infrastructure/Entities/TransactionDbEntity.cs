@@ -43,8 +43,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "bank_account_number")]
         public string BankAccountNumber { get; set; }
 
-        [DynamoDBProperty(AttributeName = "is_suspense", Converter = typeof(DynamoDbBooleanConverter))]
-        /*[DynamoDBGlobalSecondaryIndexHashKey("is_suspense_dx")]*/
+        [DynamoDBGlobalSecondaryIndexHashKey("is_suspense_dx", AttributeName = "is_suspense", Converter = typeof(DynamoDbBooleanConverter))]
         public bool IsSuspense { get; set; }
 
         [DynamoDBProperty(AttributeName = "suspense_resolution_info", Converter = typeof(DynamoDbObjectConverter<SuspenseResolutionInfoDbEntity>))]
