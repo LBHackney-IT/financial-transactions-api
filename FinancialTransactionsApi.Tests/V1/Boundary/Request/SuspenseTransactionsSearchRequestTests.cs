@@ -16,7 +16,7 @@ namespace FinancialTransactionsApi.Tests.V1.Boundary.Request
             SuspenseTransactionsSearchRequest request =
                 new SuspenseTransactionsSearchRequest();
 
-            request.GetType().GetProperties().Length.Should().Be(2);
+            request.GetType().GetProperties().Length.Should().Be(3);
         }
     }
 }
