@@ -11,7 +11,7 @@ namespace FinancialTransactionsApi.Tests.V1.Boundary.Request
     public class SuspenseTransactionsSearchRequestTests
     {
         [Fact]
-        public void Test1()
+        public void SuspenseTransactionsSearchRequest_Creating_HasProperties()
         {
             SuspenseTransactionsSearchRequest request =
                 new SuspenseTransactionsSearchRequest();
