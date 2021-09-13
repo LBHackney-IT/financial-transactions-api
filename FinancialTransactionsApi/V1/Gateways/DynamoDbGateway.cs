@@ -93,37 +93,31 @@ namespace FinancialTransactionsApi.V1.Gateways
             #endregion
 
             #region Query Execution
-            List<Transaction> transactions = new List<Transaction>();
-            Dictionary<string, AttributeValue> lastKeyEvaluated = null;
-            int localPage = 0;
-            do
+
+            QueryRequest queryRequest = new QueryRequest
             {
-                QueryRequest queryRequest = new QueryRequest
-                {
-                    Limit = request.PageSize,
-                    ExclusiveStartKey = lastKeyEvaluated,
-                    TableName = "Transactions",
-                    IndexName = "is_suspense_dx",
-                    KeyConditionExpression = "is_suspense = :V_is_suspense",
-                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                TableName = "Transactions",
+                IndexName = "is_suspense_dx",
+                KeyConditionExpression = "is_suspense = :V_is_suspense",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                     {
                         {":V_is_suspense", new AttributeValue {S = "true"}}
                     }
-                };
+            };
 
-                var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
-                lastKeyEvaluated = result.LastEvaluatedKey;
-                if (localPage == request.Page)
-                {
-                    transactions = result.ToTransactions();
-                    break;
-                }
-                else
-                {
-                    localPage++;
-                }
+            var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
 
-            } while (localPage <= request.Page && request.Page * request.PageSize <= count);
+            var transactions = result.ToTransactions()
+                .Where(p =>
+                    p.Person.FullName.Contains(request.SearchText) ||
+                    p.PaymentReference.Contains(request.SearchText) ||
+                    p.TransactionDate.ToString("F").Contains(request.SearchText) ||
+                    p.BankAccountNumber.Contains(request.SearchText) ||
+                    p.Fund.Contains(request.SearchText) ||
+                    p.BalanceAmount.ToString("F").Contains(request.SearchText))
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize).ToList();
+
             #endregion
 
             return transactions;

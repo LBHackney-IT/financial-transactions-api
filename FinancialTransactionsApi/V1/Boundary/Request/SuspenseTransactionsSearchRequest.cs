@@ -12,7 +12,10 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         public int PageSize { get; set; } = DefaultPageSize;
 
         [FromQuery(Name = "page")]
-        [Range(0, int.MaxValue, ErrorMessage = "the page number is wrong")]
+        [Range(1, int.MaxValue, ErrorMessage = "the page number must be great and equal than 1")]
         public int Page { get; set; } = 0;
+
+        [FromQuery(Name = "searchText")]
+        public string SearchText { get; set; }
     }
 }
