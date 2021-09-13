@@ -22,14 +22,14 @@ namespace FinancialTransactionsApi.V1.Factories
                 PaymentReference = domain.PaymentReference,
                 BankAccountNumber = domain.BankAccountNumber,
                 IsSuspense = domain.IsSuspense,
-                SuspenseResolutionInfo = domain.SuspenseResolutionInfo.ToDomain(),
+                SuspenseResolutionInfo = domain.SuspenseResolutionInfo,
                 PeriodNo = domain.PeriodNo,
                 TransactionAmount = domain.TransactionAmount,
                 TransactionDate = domain.TransactionDate,
                 TransactionType = domain.TransactionType,
                 TransactionSource = domain.TransactionSource,
                 Address = domain.Address,
-                Person = domain.Person.ToDomain(),
+                Person = domain.Person,
                 Fund = domain.Fund
             };
         }

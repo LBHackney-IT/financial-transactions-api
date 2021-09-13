@@ -33,15 +33,14 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.Charge,
-                Person = new PersonDbEntity()
+                Person = new Person
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
                 },
-                SuspenseResolutionInfo = new SuspenseResolutionInfoDbEntity()
+                SuspenseResolutionInfo = new SuspenseResolutionInfo
                 {
                     ResolutionDate = new DateTime(2021, 8, 1),
-                    IsResolve = true,
                     Note = "Some note"
                 }
             };
@@ -82,7 +81,8 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 SuspenseResolutionInfo = new SuspenseResolutionInfo()
                 {
                     ResolutionDate = new DateTime(2021, 8, 1),
-                    IsResolve = true,
+                    IsConfirmed = true,
+                    IsApproved = true,
                     Note = "Some note"
                 }
             };
@@ -152,7 +152,8 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 SuspenseResolutionInfo = new SuspenseResolutionInfo()
                 {
                     ResolutionDate = new DateTime(2021, 8, 1),
-                    IsResolve = true,
+                    IsConfirmed = true,
+                    IsApproved = true,
                     Note = "Some note"
                 }
             };

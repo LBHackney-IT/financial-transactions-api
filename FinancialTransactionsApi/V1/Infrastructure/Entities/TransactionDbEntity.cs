@@ -46,8 +46,8 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [DynamoDBGlobalSecondaryIndexHashKey("is_suspense_dx", AttributeName = "is_suspense", Converter = typeof(DynamoDbBooleanConverter))]
         public bool IsSuspense { get; set; }
 
-        [DynamoDBProperty(AttributeName = "suspense_resolution_info", Converter = typeof(DynamoDbObjectConverter<SuspenseResolutionInfoDbEntity>))]
-        public SuspenseResolutionInfoDbEntity SuspenseResolutionInfo { get; set; }
+        [DynamoDBProperty(AttributeName = "suspense_resolution_info", Converter = typeof(DynamoDbObjectConverter<SuspenseResolutionInfo>))]
+        public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
 
         [DynamoDBProperty(AttributeName = "paid_amount")]
         public decimal PaidAmount { get; set; }
@@ -64,8 +64,8 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "address")]
         public string Address { get; set; }
 
-        [DynamoDBProperty(AttributeName = "person", Converter = typeof(DynamoDbObjectConverter<PersonDbEntity>))]
-        public PersonDbEntity Person { get; set; }
+        [DynamoDBProperty(AttributeName = "person", Converter = typeof(DynamoDbObjectConverter<Person>))]
+        public Person Person { get; set; }
 
         [DynamoDBProperty(AttributeName = "fund")]
         public string Fund { get; set; }
