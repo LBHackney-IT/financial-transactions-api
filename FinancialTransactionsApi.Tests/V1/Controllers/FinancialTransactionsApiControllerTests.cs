@@ -162,6 +162,18 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         }
 
         [Fact]
+        public async Task GetAll_ModelError_ThrowsException()
+        {
+            _controller.ModelState.AddModelError("TargetId", "The field TargetId cannot be empty or default.");
+
+            var result = await _controller.GetAll(_fixture.Create<Guid>().ToString(), new TransactionQuery())
+                .ConfigureAwait(false);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+
+        }
+
+        [Fact]
         public async Task Add_UseCaseReturnModel_Returns200()
         {
             var guid = Guid.NewGuid();
@@ -401,6 +413,24 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 ex.GetType().Should().Be(typeof(Exception));
                 ex.Message.Should().Be("Test exception");
             }
+        }
+
+        [Fact]
+        public async Task Update_NonSuspenseTransaction_ThrowBadRequest()
+        {
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(new TransactionResponse { IsSuspense = false });
+
+            var request = _fixture.Build<UpdateTransactionRequest>()
+                .With(s => s.IsSuspense, false).Create();
+
+            var result = await _controller.Update("", Guid.NewGuid(), request)
+                .ConfigureAwait(false);
+
+            _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<UpdateTransactionRequest>(), It.IsAny<Guid>()),Times.Never);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+
         }
     }
 }
