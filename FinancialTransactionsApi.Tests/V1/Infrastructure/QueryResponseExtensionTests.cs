@@ -19,12 +19,12 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
         [Fact]
         public void ToTransactionsValidDataReturnsListOfTransactions()
         {
-            QueryResponse queryResponse = FakeDataHelper.MockQueryResponse<Transaction>();
+            QueryResponse queryResponse = FakeDataHelper.MockQueryResponse<Transaction>(5);
 
             List<Transaction> transactions = queryResponse.ToTransactions();
 
             transactions.Should().NotBeNull();
-            transactions.Count.Should().BeGreaterThan(0);
+            transactions.Count.Should().Be(5);
             int index = 0;
             foreach (Transaction transaction in transactions)
             {
@@ -34,8 +34,10 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
                 queryResponse.Items[index]["person"].M["id"].S.Should().BeEquivalentTo(transaction.Person.Id.ToString());
                 queryResponse.Items[index]["person"].M["fullName"].S.Should().BeEquivalentTo(transaction.Person.FullName);
 
-                queryResponse.Items[index]["suspense_resolution_info"].M["isResolve"].S.
-                    Should().BeEquivalentTo(transaction.SuspenseResolutionInfo.IsResolve.ToString());
+                queryResponse.Items[index]["suspense_resolution_info"].M["isConfirmed"].BOOL.
+                    Should().Be(transaction.SuspenseResolutionInfo.IsConfirmed);
+                queryResponse.Items[index]["suspense_resolution_info"].M["isApproved"].BOOL.
+                    Should().Be(transaction.SuspenseResolutionInfo.IsApproved);
                 queryResponse.Items[index]["suspense_resolution_info"].M["resolutionDate"].S.
                     Should().BeEquivalentTo(transaction.SuspenseResolutionInfo.ResolutionDate?.ToString("F"));
                 queryResponse.Items[index]["suspense_resolution_info"].M["note"].S.

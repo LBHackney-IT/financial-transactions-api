@@ -37,7 +37,7 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
                                 "housing_benefit_amount",
                                 new AttributeValue {N = _fixture.Create<decimal>().ToString("F")}
                             },
-                            {"is_suspense", new AttributeValue {S = _fixture.Create<bool>().ToString()}},
+                            {"is_suspense", new AttributeValue {S = _fixture.Create<bool>().ToString()}},// GSI must be string or binary, so the string is implemented instead of boolean
                             {"paid_amount", new AttributeValue {N = _fixture.Create<decimal>().ToString("F")}},
                             {"payment_reference", new AttributeValue {S = _fixture.Create<string>()}},
                             {"period_no", new AttributeValue {N = _fixture.Create<int>().ToString()}},
@@ -73,8 +73,12 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
                                     M = new Dictionary<string, AttributeValue>
                                     {
                                         {
-                                            "isResolve",
-                                            new AttributeValue {S = _fixture.Create<bool>().ToString()}
+                                            "isConfirmed",
+                                            new AttributeValue {BOOL = _fixture.Create<bool>()}
+                                        },
+                                        {
+                                            "isApproved",
+                                            new AttributeValue {BOOL = _fixture.Create<bool>()}
                                         },
                                         {"note", new AttributeValue {S = _fixture.Create<string>()}},
                                         {

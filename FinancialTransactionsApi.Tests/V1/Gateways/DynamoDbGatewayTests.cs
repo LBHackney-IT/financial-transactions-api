@@ -72,7 +72,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.Charge,
-                Person = new PersonDbEntity()
+                Person = new Person
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
