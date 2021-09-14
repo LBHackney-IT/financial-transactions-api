@@ -57,7 +57,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 56.78
         /// </example>
-        [Range(typeof(decimal),"0", "79228162514264337593543950335")]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal TransactionAmount { get; set; }
 
         /// <summary>
