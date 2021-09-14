@@ -74,7 +74,6 @@ namespace FinancialTransactionsApi.V1.Gateways
         }
         public async Task<List<Transaction>> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
         {
-
             #region Count Calculation
             QueryRequest countRequest = new QueryRequest
             {
@@ -107,20 +106,21 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
 
-            var transactions = result.ToTransactions()
-                .Where(p =>
-                    p.Person.FullName.Contains(request.SearchText) ||
-                    p.PaymentReference.Contains(request.SearchText) ||
-                    p.TransactionDate.ToString("F").Contains(request.SearchText) ||
+            var transactions = result.ToTransactions();
+            if (request.SearchText != null)
+            {
+                transactions = transactions.Where(p =>
+                    p.Person.FullName.ToLower().Contains(request.SearchText.ToLower()) ||
+                    p.PaymentReference.ToLower().Contains(request.SearchText.ToLower()) ||
+                    p.TransactionDate.ToString("F").Contains(request.SearchText.ToLower()) ||
                     p.BankAccountNumber.Contains(request.SearchText) ||
-                    p.Fund.Contains(request.SearchText) ||
-                    p.BalanceAmount.ToString("F").Contains(request.SearchText))
-                .Skip((request.Page - 1) * request.PageSize)
-                .Take(request.PageSize).ToList();
+                    p.Fund.ToLower().Contains(request.SearchText.ToLower()) ||
+                    p.BalanceAmount.ToString("F").Contains(request.SearchText)).ToList();
+            }
 
             #endregion
 
-            return transactions;
+            return transactions.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToList();
         }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {

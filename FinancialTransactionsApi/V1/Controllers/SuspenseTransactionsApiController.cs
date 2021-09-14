@@ -27,6 +27,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// Gets a collection of suspense transactions for a tenancy/property
         /// </summary>
         /// <param name="query">Pagination information</param>
+        /// <param name="correlationId">x-correlationId-id</param>
         /// <response code="200">Success. Suspense transaction models were received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
@@ -34,7 +35,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAllSuspense([FromQuery] SuspenseTransactionsSearchRequest query)
+        public async Task<IActionResult> GetAllSuspense([FromHeader(Name = "x-correlation-id")] string correlationId, [FromQuery] SuspenseTransactionsSearchRequest query)
         {
             if (!ModelState.IsValid)
             {

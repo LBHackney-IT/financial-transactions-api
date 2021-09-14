@@ -300,7 +300,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             transaction.HousingBenefitAmount = 999.9M;
             transaction.SuspenseResolutionInfo = new SuspenseResolutionInfo()
             {
-                IsResolve = true,
+                IsConfirmed = true,
+                IsApproved = true,
                 ResolutionDate = new DateTime(2021, 9, 1),
                 Note = "Note"
             };
@@ -361,10 +362,10 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
             apiEntity.Message.Should().Contain("The field TargetId cannot be empty or default.");
             apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
-            apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TransactionAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and 79228162514264337593543950335.");
+            apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and 79228162514264337593543950335.");
+            apiEntity.Message.Should().Contain($"The field TransactionAmount must be between 0 and 79228162514264337593543950335.");
+            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and 79228162514264337593543950335.");
         }
 
         [Theory]

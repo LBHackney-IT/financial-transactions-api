@@ -93,7 +93,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 SuspenseResolutionInfo = new SuspenseResolutionInfo()
                 {
                     ResolutionDate = DateTime.UtcNow,
-                    IsResolve = true,
+                    IsConfirmed = true,
+                    IsApproved = true,
                     Note = "Note"
                 }
             };

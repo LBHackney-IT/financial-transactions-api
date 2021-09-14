@@ -57,7 +57,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 56.78
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal TransactionAmount { get; set; }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 56.78
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal PaidAmount { get; set; }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 87.53
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal ChargedAmount { get; set; }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 25.56
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal HousingBenefitAmount { get; set; }
 
         /// <summary>

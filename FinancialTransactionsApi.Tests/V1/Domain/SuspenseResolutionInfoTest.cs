@@ -13,12 +13,15 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
             var suspense = new SuspenseResolutionInfo()
             {
                 ResolutionDate = new DateTime(2021, 8, 1),
-                IsResolve = true,
+                IsConfirmed = true,
+                IsApproved = false,
                 Note = "Some note"
             };
 
             suspense.ResolutionDate.Should().Be(new DateTime(2021, 8, 1));
-            suspense.IsResolve.Should().BeTrue();
+            suspense.IsConfirmed.Should().BeTrue();
+            suspense.IsApproved.Should().BeFalse();
+            suspense.IsResolve.Should().BeFalse();
             suspense.Note.Should().BeEquivalentTo("Some note");
         }
     }

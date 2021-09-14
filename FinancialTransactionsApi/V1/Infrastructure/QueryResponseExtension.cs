@@ -21,7 +21,8 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                     var innerItem = item["suspense_resolution_info"].M;
                     suspenseResolutionInfo = new SuspenseResolutionInfo
                     {
-                        IsResolve = bool.Parse(innerItem["isResolve"].S),
+                        IsConfirmed = innerItem["isConfirmed"].BOOL,
+                        IsApproved = innerItem["isApproved"].BOOL,
                         Note = innerItem["note"].S,
                         ResolutionDate = DateTime.Parse(innerItem["resolutionDate"].S)
                     };
