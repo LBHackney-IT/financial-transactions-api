@@ -16,6 +16,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Response
         /// <example>
         ///     150
         /// </example>
-        public int Total { get; set; }
+        public decimal Total { get; set; }
     }
 }
