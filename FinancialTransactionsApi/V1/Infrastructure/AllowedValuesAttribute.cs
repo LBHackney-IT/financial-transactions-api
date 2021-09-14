@@ -8,37 +8,37 @@ namespace FinancialTransactionsApi.V1.Infrastructure
 {
     public class AllowedValuesAttribute : ValidationAttribute
     {
-        private readonly List<TransactionType> _allowedEnumItems;
+        private readonly Type _type;
 
-        public AllowedValuesAttribute(params TransactionType[] allowedEnumItems)
+        public AllowedValuesAttribute(Type enumType)
         {
-            _allowedEnumItems = allowedEnumItems.ToList();
+            _type = enumType;
         }
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
+            string memberName = "";
+
+            if (!string.IsNullOrWhiteSpace(validationContext.MemberName) ||
+                !string.IsNullOrEmpty(validationContext.MemberName))
+                memberName = validationContext.MemberName;
+
             if (value == null)
-            {
-                return new ValidationResult($"The field {validationContext.MemberName} is required.");
-            }
+                return new ValidationResult($"{memberName} field should not be null");
 
             var valueType = value.GetType();
 
-            if (!valueType.IsEnum || !Enum.IsDefined(typeof(TransactionType), value))
+            if (!valueType.IsEnum)
             {
-                return new ValidationResult($"The field {validationContext.MemberName} should be a type of TransactionType enum.");
+                return new ValidationResult($"{memberName} field should be a type of enum.");
+            }
+            else if (!Enum.IsDefined(_type, value))
+            {
+                var values = Enum.GetNames(_type);
+                return new ValidationResult($"{memberName} field should be a type of {_type.Name} enum. Values: {string.Join(", ", values.Select(a => a))}");
             }
 
-            var isValid = _allowedEnumItems.Contains((TransactionType) value);
-
-            if (isValid)
-            {
-                return ValidationResult.Success;
-            }
-            else
-            {
-                return new ValidationResult($"The field {validationContext.MemberName} should be in a range: [{string.Join(", ", _allowedEnumItems.Select(a => $"{(int) a}({a})"))}].");
-            }
+            return ValidationResult.Success;
         }
     }
 }

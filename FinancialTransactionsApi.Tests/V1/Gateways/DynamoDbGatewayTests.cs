@@ -184,14 +184,13 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
             var transactions = _fixture.Build<Transaction>()
                 .With(s => s.IsSuspense, true).CreateMany(10);
 
-            var responseCount = new QueryResponse { ScannedCount = 10 };
             var responseTransaction = FakeDataHelper.MockQueryResponse<Transaction>(10);
 
-            var eXpectedResult = responseTransaction.ToTransactions();
+            var expectedResult = responseTransaction.ToTransactions();
 
             if (text != null)
             {
-                eXpectedResult = eXpectedResult.Where(p =>
+                expectedResult = expectedResult.Where(p =>
                     p.Person.FullName.ToLower().Contains(text) ||
                     p.PaymentReference.ToLower().Contains(text) ||
                     p.TransactionDate.ToString("F").Contains(text) ||
@@ -200,10 +199,9 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                     p.BalanceAmount.ToString("F").Contains(text)).ToList();
             }
 
-            eXpectedResult = eXpectedResult.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            expectedResult = expectedResult.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-            _amazonDynamoDb.SetupSequence(s => s.QueryAsync(It.IsAny<QueryRequest>(), CancellationToken.None))
-                .ReturnsAsync(responseCount)
+            _amazonDynamoDb.Setup(s => s.QueryAsync(It.IsAny<QueryRequest>(), CancellationToken.None))
                 .ReturnsAsync(responseTransaction);
 
             var result = await _gateway.GetAllSuspenseAsync(
@@ -216,7 +214,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
 
             result.Should().NotBeNull();
             result.Should().NotBeEmpty();
-            result.Should().BeEquivalentTo(eXpectedResult);
+            result.Should().BeEquivalentTo(expectedResult);
         }
     }
 }
