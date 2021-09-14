@@ -45,7 +45,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             var expectedResponse = transactions.ToResponse();
 
-            response.Should().BeEquivalentTo(expectedResponse);
+            response.TransactionsList.Should().BeEquivalentTo(expectedResponse);
+            response.Total.Should().Be(expectedResponse.Count);
         }
     }
 }

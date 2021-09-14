@@ -4,6 +4,7 @@ using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.UseCase
@@ -17,12 +18,16 @@ namespace FinancialTransactionsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task<List<TransactionResponse>> ExecuteAsync(SuspenseTransactionsSearchRequest query)
+        public async Task<TransactionResponses> ExecuteAsync(SuspenseTransactionsSearchRequest query)
         {
             var transactions =
                 await _gateway.GetAllSuspenseAsync(query).ConfigureAwait(false);
 
-            return transactions.ToResponse();
+            return new TransactionResponses
+            {
+                TransactionsList = transactions.Transactions.ToResponse(),
+                Total = transactions.Total
+            };
         }
     }
 }

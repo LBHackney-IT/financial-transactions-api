@@ -7,6 +7,6 @@ namespace FinancialTransactionsApi.V1.UseCase.Interfaces
 {
     public interface IGetAllSuspenseUseCase
     {
-        public Task<List<TransactionResponse>> ExecuteAsync(SuspenseTransactionsSearchRequest query);
+        public Task<TransactionResponses> ExecuteAsync(SuspenseTransactionsSearchRequest query);
     }
 }

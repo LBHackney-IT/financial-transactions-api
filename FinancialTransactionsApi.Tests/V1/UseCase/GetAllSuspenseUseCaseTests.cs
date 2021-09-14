@@ -24,10 +24,13 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task GetAllSuspense_GatewayReturnsList_ReturnsList()
         {
-            List<Transaction> transactions = _fixture.CreateMany<Transaction>(5).ToList();
+            /*List<Transaction> transactions = _fixture.CreateMany<Transaction>(5).ToList();*/
+            TransactionList transactionList = _fixture.Build<TransactionList>()
+                .With(p => p.Transactions, _fixture.CreateMany<Transaction>(5).ToList())
+                .With(p => p.Total, 5).Create();
 
             _gateway.Setup(x => x.GetAllSuspenseAsync(It.IsAny<SuspenseTransactionsSearchRequest>()))
-                .ReturnsAsync(transactions);
+                .ReturnsAsync(transactionList);
 
             _allUseCaseTests = new GetAllSuspenseUseCase(_gateway.Object);
 
@@ -35,18 +38,24 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 await _allUseCaseTests.ExecuteAsync(new SuspenseTransactionsSearchRequest() { Page = 0, PageSize = 12 })
                     .ConfigureAwait(false);
 
-            result.Should().BeOfType(typeof(List<TransactionResponse>));
+            result.Should().BeOfType(typeof(TransactionResponses));
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(transactions);
+            result.TransactionsList.Should().BeEquivalentTo(transactionList.Transactions);
+            result.Total.Should().Be(5);
         }
 
         [Fact]
         public async Task GetAllSuspense_GatewayReturnsEmptyList_ReturnsEmptyList()
         {
-            List<Transaction> transactions = new List<Transaction>(0);
+            TransactionList transactionsList = new TransactionList
+            {
+                Transactions = new List<Transaction>(0),
+                Total = 0
+            };
 
-            _gateway.Setup(x => x.GetAllSuspenseAsync(It.IsAny<SuspenseTransactionsSearchRequest>()))
-                .ReturnsAsync(transactions);
+            _gateway.SetupSequence(x => x.GetAllSuspenseAsync(It.IsAny<SuspenseTransactionsSearchRequest>()))
+                .ReturnsAsync(transactionsList)
+                .ReturnsAsync(transactionsList);
 
             _allUseCaseTests = new GetAllSuspenseUseCase(_gateway.Object);
 
@@ -54,9 +63,10 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 await _allUseCaseTests.ExecuteAsync(new SuspenseTransactionsSearchRequest() { Page = 0, PageSize = 12 })
                     .ConfigureAwait(false);
 
-            result.Should().BeOfType(typeof(List<TransactionResponse>));
+            result.Should().BeOfType(typeof(TransactionResponses));
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(transactions);
+            result.TransactionsList.Should().BeEquivalentTo(transactionsList.Transactions);
+            result.Total.Should().Be(0);
         }
     }
 }

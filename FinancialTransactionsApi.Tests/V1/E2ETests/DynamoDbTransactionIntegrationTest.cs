@@ -189,8 +189,10 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         {
             var transactions = new[] { ConstructTransaction(), ConstructTransaction() };
 
-            transactions[0].TargetId = new Guid("29574614-46e9-447d-9b92-704df528861f");
-            transactions[1].TargetId = new Guid("29574614-46e9-447d-9b92-704df528861f");
+            Guid TargetID = Guid.NewGuid();
+
+            transactions[0].TargetId = TargetID;
+            transactions[1].TargetId = TargetID;
 
             foreach (var transaction in transactions)
             {
@@ -201,31 +203,37 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
             }
 
-            var uri = new Uri("api/v1/transactions?targetId=29574614-46e9-447d-9b92-704df528861f", UriKind.Relative);
+            var uri = new Uri($"api/v1/transactions?targetId={TargetID}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<List<TransactionResponse>>(responseContent);
+            var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.Count.Should().BeGreaterOrEqualTo(2);
+            apiEntity.Total.Should().BeGreaterOrEqualTo(2);
 
-            var firstTransaction = apiEntity.Find(r => r.Id.Equals(transactions[0].Id));
-            var secondTransaction = apiEntity.Find(r => r.Id.Equals(transactions[1].Id));
+            var firstTransaction = apiEntity.TransactionsList.ToList().Find(r => r.Id.Equals(transactions[0].Id));
+            var secondTransaction = apiEntity.TransactionsList.ToList().Find(r => r.Id.Equals(transactions[1].Id));
 
-            firstTransaction.Should().BeEquivalentTo(transactions[0], opt => opt.Excluding(a => a.FinancialYear)
-                                                                                .Excluding(a => a.FinancialMonth));
+            firstTransaction.Should().BeEquivalentTo(transactions[0], opt =>
+                opt.Excluding(a => a.FinancialYear)
+                    .Excluding(a => a.FinancialMonth)
+                    .Excluding(a => a.TransactionDate)
+                    .Excluding(a => a.TransactionDate));
 
-            firstTransaction.FinancialMonth.Should().Be(8);
-            firstTransaction.FinancialYear.Should().Be(2021);
+            firstTransaction?.FinancialMonth.Should().Be(8);
+            firstTransaction?.FinancialYear.Should().Be(2021);
 
-            secondTransaction.Should().BeEquivalentTo(transactions[1], opt => opt.Excluding(a => a.FinancialYear)
-                                                                                 .Excluding(a => a.FinancialMonth));
+            secondTransaction.Should().BeEquivalentTo(transactions[1], opt =>
+                opt.Excluding(a => a.FinancialYear)
+                    .Excluding(a => a.FinancialMonth)
+                    .Excluding(a => a.TransactionDate)
+                    .Excluding(a => a.TransactionDate));
 
-            secondTransaction.FinancialMonth.Should().Be(8);
-            secondTransaction.FinancialYear.Should().Be(2021);
+            secondTransaction?.FinancialMonth.Should().Be(8);
+            secondTransaction?.FinancialYear.Should().Be(2021);
         }
 
         [Fact]
@@ -254,7 +262,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<List<TransactionResponse>>(responseContent);
+            var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             foreach (var item in transactionsObj)
@@ -262,7 +270,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(item.Id).ConfigureAwait(false));
             }
 
-            apiEntity.Count.Should().Be(5);
+            apiEntity.Total.Should().Be(5);
+            apiEntity.TransactionsList.Should().HaveCount(5);
         }
 
         [Fact]
@@ -446,11 +455,11 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
-
             apiEntity.Should().NotBeNull();
 
             apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.FinancialYear)
-                                                                             .Excluding(a => a.FinancialMonth));
+                                                                             .Excluding(a => a.FinancialMonth)
+                                                                             .Excluding(a => a.TransactionDate));
 
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);

@@ -72,27 +72,9 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             return data.Select(p => p?.ToDomain()).ToList();
         }
-        public async Task<List<Transaction>> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
+        public async Task<TransactionList> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
         {
-            #region Count Calculation
-            QueryRequest countRequest = new QueryRequest
-            {
-                TableName = "Transactions",
-                IndexName = "is_suspense_dx",
-                KeyConditionExpression = "is_suspense = :V_is_suspense",
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
-                    {":V_is_suspense", new AttributeValue {S = "true"}}
-                },
-                Select = Select.COUNT
-            };
-
-            var countResult = await _amazonDynamoDb.QueryAsync(countRequest).ConfigureAwait(false);
-            int count = countResult.ScannedCount;
-            #endregion
-
             #region Query Execution
-
             QueryRequest queryRequest = new QueryRequest
             {
                 TableName = "Transactions",
@@ -117,10 +99,15 @@ namespace FinancialTransactionsApi.V1.Gateways
                     p.Fund.ToLower().Contains(request.SearchText.ToLower()) ||
                     p.BalanceAmount.ToString("F").Contains(request.SearchText)).ToList();
             }
-
             #endregion
 
-            return transactions.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToList();
+            var dataList = transactions.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToList();
+
+            return new TransactionList
+            {
+                Transactions = dataList,
+                Total = transactions.Count
+            };
         }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {

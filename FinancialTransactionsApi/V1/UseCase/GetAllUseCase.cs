@@ -17,13 +17,17 @@ namespace FinancialTransactionsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task<List<TransactionResponse>> ExecuteAsync(TransactionQuery query)
+        public async Task<TransactionResponses> ExecuteAsync(TransactionQuery query)
         {
             var transactions =
                 await _gateway.GetAllTransactionsAsync(query.TargetId, query.TransactionType, query.StartDate, query.EndDate)
                     .ConfigureAwait(false);
 
-            return transactions.ToResponse();
+            return new TransactionResponses
+            {
+                TransactionsList = transactions.ToResponse(),
+                Total = transactions.ToResponse().Count
+            };
         }
     }
 }
