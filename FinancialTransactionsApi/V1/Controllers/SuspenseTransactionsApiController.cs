@@ -34,7 +34,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAllSuspense([FromQuery] SuspenseTransactionsSearchRequest query)
+        public async Task<IActionResult> GetAllSuspense([FromHeader(Name = "x-correlation-id")] string correlationId, [FromQuery] SuspenseTransactionsSearchRequest query)
         {
             if (!ModelState.IsValid)
             {
