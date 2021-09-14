@@ -31,7 +31,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _getAllSuspenseTransactions.Setup(p => p.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()))
                 .ReturnsAsync(responses);
 
-            var resultAllSuspense = await _sutApiController.GetAllSuspense(It.IsAny<SuspenseTransactionsSearchRequest>()).ConfigureAwait(false);
+            var resultAllSuspense = await _sutApiController.GetAllSuspense(It.IsAny<string>(),It.IsAny<SuspenseTransactionsSearchRequest>()).ConfigureAwait(false);
 
             resultAllSuspense.Should().NotBeNull();
             Assert.IsType<OkObjectResult>(resultAllSuspense);
@@ -46,7 +46,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _getAllSuspenseTransactions.Setup(p => p.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()))
                 .ReturnsAsync(responses);
 
-            var resultAllSuspense = await _sutApiController.GetAllSuspense(It.IsAny<SuspenseTransactionsSearchRequest>()).ConfigureAwait(false);
+            var resultAllSuspense = await _sutApiController.GetAllSuspense(It.IsAny<string>(), It.IsAny<SuspenseTransactionsSearchRequest>()).ConfigureAwait(false);
 
             resultAllSuspense.Should().NotBeNull();
             Assert.IsType<OkObjectResult>(resultAllSuspense);
@@ -59,7 +59,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             List<TransactionResponse> responses = new List<TransactionResponse>();
             _sutApiController.ModelState.AddModelError("page", "The page number must be great and equal than 1");
 
-            var result =await _sutApiController.GetAllSuspense(new SuspenseTransactionsSearchRequest
+            var result =await _sutApiController.GetAllSuspense(It.IsAny<string>(), new SuspenseTransactionsSearchRequest
             {
                 Page = _fixture.Create<int>(),
                 PageSize = _fixture.Create<int>(),
@@ -76,7 +76,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             List<TransactionResponse> responses = new List<TransactionResponse>();
             _sutApiController.ModelState.AddModelError("pageSize", "The page size must be great and equal than 1");
 
-            var result =await _sutApiController.GetAllSuspense(new SuspenseTransactionsSearchRequest
+            var result =await _sutApiController.GetAllSuspense(It.IsAny<string>(), new SuspenseTransactionsSearchRequest
             {
                 Page = _fixture.Create<int>(),
                 PageSize = _fixture.Create<int>(),
