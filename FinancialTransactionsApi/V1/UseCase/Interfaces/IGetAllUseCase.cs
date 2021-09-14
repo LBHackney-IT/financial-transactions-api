@@ -7,6 +7,6 @@ namespace FinancialTransactionsApi.V1.UseCase.Interfaces
 {
     public interface IGetAllUseCase
     {
-        public Task<List<TransactionResponse>> ExecuteAsync(TransactionQuery query);
+        public Task<TransactionResponses> ExecuteAsync(TransactionQuery query);
     }
 }

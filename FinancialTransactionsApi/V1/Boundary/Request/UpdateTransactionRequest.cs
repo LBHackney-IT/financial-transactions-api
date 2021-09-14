@@ -39,7 +39,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// Rent
         /// </example>
-        [AllowedValues(TransactionType.Charge, TransactionType.Rent)]
+        [AllowedValues(typeof(TransactionType))]
         public TransactionType TransactionType { get; set; }
 
         /// <summary>

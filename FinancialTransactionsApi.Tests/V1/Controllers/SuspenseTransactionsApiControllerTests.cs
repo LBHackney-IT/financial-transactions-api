@@ -26,7 +26,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllSuspenseWithValidRequestReturnData()
         {
-            List<TransactionResponse> responses = _fixture.Create<List<TransactionResponse>>();
+            TransactionResponses responses = _fixture.Create<TransactionResponses>();
 
             _getAllSuspenseTransactions.Setup(p => p.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()))
                 .ReturnsAsync(responses);
@@ -41,7 +41,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllSuspenseWithValidRequestReturnEmpty()
         {
-            List<TransactionResponse> responses = new List<TransactionResponse>();
+            TransactionResponses responses = new TransactionResponses();
 
             _getAllSuspenseTransactions.Setup(p => p.ExecuteAsync(It.IsAny<SuspenseTransactionsSearchRequest>()))
                 .ReturnsAsync(responses);

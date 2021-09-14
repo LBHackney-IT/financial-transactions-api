@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -108,15 +109,15 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAll_UseCaseReturnList_Returns200()
         {
-            var obj1 = _fixture.Create<TransactionResponse>();
-            var obj2 = _fixture.Create<TransactionResponse>();
+            var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
+
+            var obj1 = _fixture.Build<TransactionResponses>()
+                .With(s=>s.Total,5)
+                .With(s=>s.TransactionsList, transactionsList)
+                .Create();
 
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>()))
-                .ReturnsAsync(new List<TransactionResponse>()
-                {
-                    obj1,
-                    obj2
-                });
+                .ReturnsAsync(obj1);
 
             var query = new TransactionQuery()
             {
@@ -131,15 +132,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult.Value.Should().BeOfType<List<TransactionResponse>>();
+            okResult?.Value.Should().BeOfType<TransactionResponses>();
 
-            var list = okResult.Value as List<TransactionResponse>;
+            var responses = okResult?.Value as TransactionResponses;
 
-            list.Should().HaveCount(2);
+            responses?.TransactionsList.Should().HaveCount(5);
+            responses?.Total.Should().Be(5);
 
-            list[0].Should().BeEquivalentTo(obj1);
-
-            list[1].Should().BeEquivalentTo(obj2);
         }
 
         [Fact]

@@ -72,7 +72,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             return data.Select(p => p?.ToDomain()).ToList();
         }
-        public async Task<List<Transaction>> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
+        public async Task<TransactionList> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
         {
             #region Count Calculation
             QueryRequest countRequest = new QueryRequest
@@ -120,7 +120,9 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             #endregion
 
-            return transactions.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToList();
+            var dataList = transactions.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToList();
+
+            TransactionList list = new TransactionList { Transactions = dataList, Total = dataList.Count };
         }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {
