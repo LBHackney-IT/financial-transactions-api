@@ -220,7 +220,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             firstTransaction.Should().BeEquivalentTo(transactions[0], opt =>
                 opt.Excluding(a => a.FinancialYear)
                     .Excluding(a => a.FinancialMonth)
-                    .Excluding(a=>a.TransactionDate)
+                    .Excluding(a => a.TransactionDate)
                     .Excluding(a => a.TransactionDate));
 
             firstTransaction?.FinancialMonth.Should().Be(8);
@@ -459,7 +459,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.FinancialYear)
                                                                              .Excluding(a => a.FinancialMonth)
-                                                                             .Excluding(a=>a.TransactionDate));
+                                                                             .Excluding(a => a.TransactionDate));
 
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);

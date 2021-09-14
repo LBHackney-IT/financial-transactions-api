@@ -112,8 +112,8 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
             var obj1 = _fixture.Build<TransactionResponses>()
-                .With(s=>s.Total,5)
-                .With(s=>s.TransactionsList, transactionsList)
+                .With(s => s.Total, 5)
+                .With(s => s.TransactionsList, transactionsList)
                 .Create();
 
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>()))

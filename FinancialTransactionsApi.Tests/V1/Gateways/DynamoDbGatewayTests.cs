@@ -176,21 +176,18 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
 
         [Theory]
 
-        [InlineData(null, 1, 1)]
-        [InlineData("a", 1, 1)]
-        [InlineData("1", 1, 10)]
-        public async Task GetAllSuspenseValidInputRetursData(string text, int page, int pageSize)
+        [InlineData(null, 1, 1, 0)]
+        [InlineData("a", 1, 1, 1)]
+        [InlineData("1", 2, 4, 20)]
+        public async Task GetAllSuspenseValidInputReturnsData(string text, int page, int pageSize, int count)
         {
-            var transactions = _fixture.Build<Transaction>()
-                .With(s => s.IsSuspense, true).CreateMany(10);
+            var responseTransaction = FakeDataHelper.MockQueryResponse<Transaction>(count);
 
-            var responseTransaction = FakeDataHelper.MockQueryResponse<Transaction>(10);
-
-            var expectedResult = responseTransaction.ToTransactions();
+            var rawExpectedResult = responseTransaction.ToTransactions();
 
             if (text != null)
             {
-                expectedResult = expectedResult.Where(p =>
+                rawExpectedResult = rawExpectedResult.Where(p =>
                     p.Person.FullName.ToLower().Contains(text) ||
                     p.PaymentReference.ToLower().Contains(text) ||
                     p.TransactionDate.ToString("F").Contains(text) ||
@@ -199,7 +196,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                     p.BalanceAmount.ToString("F").Contains(text)).ToList();
             }
 
-            expectedResult = expectedResult.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var expectedResult = rawExpectedResult.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             _amazonDynamoDb.Setup(s => s.QueryAsync(It.IsAny<QueryRequest>(), CancellationToken.None))
                 .ReturnsAsync(responseTransaction);
@@ -213,8 +210,9 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 }).ConfigureAwait(false);
 
             result.Should().NotBeNull();
-            result.Should().NotBeEmpty();
-            result.Should().BeEquivalentTo(expectedResult);
+            result.Total.Should().Be(rawExpectedResult.Count);
+            result.Transactions.Should().BeEquivalentTo(expectedResult);
+            result.Transactions.Should().HaveCountLessOrEqualTo(pageSize);
         }
     }
 }
