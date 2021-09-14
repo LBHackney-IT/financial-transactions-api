@@ -120,7 +120,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             #endregion
 
-            return transactions.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToList(); 
+            return transactions.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToList();
         }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {

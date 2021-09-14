@@ -425,7 +425,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             var result = await _controller.Update("", Guid.NewGuid(), request)
                 .ConfigureAwait(false);
 
-            _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<UpdateTransactionRequest>(), It.IsAny<Guid>()),Times.Never);
+            _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<UpdateTransactionRequest>(), It.IsAny<Guid>()), Times.Never);
 
             result.Should().BeOfType<BadRequestObjectResult>();
 

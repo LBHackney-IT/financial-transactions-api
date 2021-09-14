@@ -176,15 +176,15 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
 
         [Theory]
 
-        [InlineData(null,1,1)]
-        [InlineData("a",1,1)]
-        [InlineData("1",1,10)]
-        public async Task GetAllSuspenseValidInputRetursData(string text,int page,int pageSize)
+        [InlineData(null, 1, 1)]
+        [InlineData("a", 1, 1)]
+        [InlineData("1", 1, 10)]
+        public async Task GetAllSuspenseValidInputRetursData(string text, int page, int pageSize)
         {
             var transactions = _fixture.Build<Transaction>()
-                .With(s=>s.IsSuspense,true).CreateMany(10);
+                .With(s => s.IsSuspense, true).CreateMany(10);
 
-            var responseCount = new QueryResponse{ScannedCount = 10};
+            var responseCount = new QueryResponse { ScannedCount = 10 };
             var responseTransaction = FakeDataHelper.MockQueryResponse<Transaction>(10);
 
             var eXpectedResult = responseTransaction.ToTransactions();
@@ -202,19 +202,21 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
 
             eXpectedResult = eXpectedResult.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-            _amazonDynamoDb.SetupSequence(s => s.QueryAsync(It.IsAny<QueryRequest>(),CancellationToken.None))
+            _amazonDynamoDb.SetupSequence(s => s.QueryAsync(It.IsAny<QueryRequest>(), CancellationToken.None))
                 .ReturnsAsync(responseCount)
                 .ReturnsAsync(responseTransaction);
 
             var result = await _gateway.GetAllSuspenseAsync(
                 new SuspenseTransactionsSearchRequest
                 {
-                    SearchText = text, Page = page, PageSize = pageSize
+                    SearchText = text,
+                    Page = page,
+                    PageSize = pageSize
                 }).ConfigureAwait(false);
 
             result.Should().NotBeNull();
             result.Should().NotBeEmpty();
             result.Should().BeEquivalentTo(eXpectedResult);
-        } 
+        }
     }
 }

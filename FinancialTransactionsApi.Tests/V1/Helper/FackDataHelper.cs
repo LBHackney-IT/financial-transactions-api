@@ -15,7 +15,7 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
     {
         private static readonly Fixture _fixture = new Fixture();
 
-        public static QueryResponse MockQueryResponse<T>(int cnt=1)
+        public static QueryResponse MockQueryResponse<T>(int cnt = 1)
         {
             QueryResponse response = new QueryResponse();
             if (typeof(T) == typeof(Transaction))
