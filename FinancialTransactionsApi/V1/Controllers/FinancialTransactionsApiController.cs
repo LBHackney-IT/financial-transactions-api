@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -20,17 +21,20 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IGetByIdUseCase _getByIdUseCase;
         private readonly IAddUseCase _addUseCase;
         private readonly IUpdateUseCase _updateUseCase;
+        private readonly IAddBatchUseCase _addBatchUseCase;
 
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
-            IUpdateUseCase updateUseCase)
+            IUpdateUseCase updateUseCase,
+            IAddBatchUseCase addBatchUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
             _addUseCase = addUseCase;
             _updateUseCase = updateUseCase;
+            _addBatchUseCase = addBatchUseCase;
         }
 
         /// <summary>
@@ -111,6 +115,39 @@ namespace FinancialTransactionsApi.V1.Controllers
             var transactionResponse = await _addUseCase.ExecuteAsync(transaction).ConfigureAwait(false);
 
             return CreatedAtAction(nameof(Get), new { id = transactionResponse.Id }, transactionResponse);
+        }
+
+        /// <summary>
+        /// Create a list of new transaction records
+        /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="transactions">List of Transaction model for create</param>
+        /// <response code="201">Created. Transaction model was created successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [Route("process-weekly-charge")]
+        public async Task<IActionResult> AddBatch([FromHeader(Name = "x-correlation-id")] string correlationId, [FromBody] IEnumerable<AddTransactionRequest> transactions)
+        {
+            if (transactions == null)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction models cannot be null!"));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
+            }
+
+            var transactionResponse = await _addBatchUseCase.ExecuteAsync(transactions).ConfigureAwait(false);
+
+            if(transactionResponse == transactions.Count())
+                return Ok($"Total {transactionResponse} number of Transactions processed sucecssfully") ;
+
+            return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction entries processing failed!"));
         }
 
         /// <summary>
