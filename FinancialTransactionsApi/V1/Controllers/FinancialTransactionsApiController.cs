@@ -144,8 +144,8 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             var transactionResponse = await _addBatchUseCase.ExecuteAsync(transactions).ConfigureAwait(false);
 
-            if(transactionResponse == transactions.Count())
-                return Ok($"Total {transactionResponse} number of Transactions processed sucecssfully") ;
+            if (transactionResponse == transactions.Count())
+                return Ok($"Total {transactionResponse} number of Transactions processed sucecssfully");
 
             return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction entries processing failed!"));
         }
