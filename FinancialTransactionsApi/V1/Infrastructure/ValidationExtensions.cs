@@ -126,7 +126,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 return false;
             }
 
-            if (!Enum.IsDefined( typeof(TransactionType), transaction.TransactionType) )
+            if (!Enum.IsDefined(typeof(TransactionType), transaction.TransactionType))
             {
                 return false;
             }
