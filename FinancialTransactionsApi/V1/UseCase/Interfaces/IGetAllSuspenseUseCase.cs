@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.UseCase.Interfaces
 {
-    public interface IGetAllUseCase
+    public interface IGetAllSuspenseUseCase
     {
-        public Task<TransactionResponses> ExecuteAsync(TransactionQuery query);
+        public Task<TransactionResponses> ExecuteAsync(SuspenseTransactionsSearchRequest query);
     }
 }

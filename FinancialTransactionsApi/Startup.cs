@@ -37,7 +37,7 @@ namespace FinancialTransactionsApi
         public IConfiguration Configuration { get; }
         private static List<ApiVersionDescription> _apiVersions { get; set; }
         //TODO update the below to the name of your API
-        private const string ApiName = "financial-transaction";
+        private const string ApiName = "financial-transactions-api";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -118,6 +118,11 @@ namespace FinancialTransactionsApi
             RegisterGateways(services);
             RegisterUseCases(services);
 
+            services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()));
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
@@ -153,6 +158,7 @@ namespace FinancialTransactionsApi
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
+            services.AddScoped<IGetAllSuspenseUseCase, GetAllSuspenseUseCase>();
             services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
             services.AddScoped<IAddUseCase, AddUseCase>();
             services.AddScoped<IUpdateUseCase, UpdateUseCase>();
@@ -162,6 +168,8 @@ namespace FinancialTransactionsApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors("corsPolicy");
+
             app.UseCorrelation();
 
             if (env.IsDevelopment())

@@ -39,7 +39,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// Rent
         /// </example>
-        [AllowedValues(TransactionType.Charge, TransactionType.Rent)]
+        [AllowedValues(typeof(TransactionType))]
         public TransactionType TransactionType { get; set; }
 
         /// <summary>
@@ -67,6 +67,15 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// 216704
         /// </example>
         public string PaymentReference { get; set; }
+
+        /// <summary>
+        /// Bank account number
+        /// </summary>
+        /// <example>
+        /// ******78
+        /// </example>
+        [StringLength(8, MinimumLength = 8, ErrorMessage = "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
+        public string BankAccountNumber { get; set; }
 
         /// <summary>
         /// Is this account need to be in suspense

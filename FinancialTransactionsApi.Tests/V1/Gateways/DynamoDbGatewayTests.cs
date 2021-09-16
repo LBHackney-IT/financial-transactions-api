@@ -1,3 +1,4 @@
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
 using FinancialTransactionsApi.V1.Domain;
@@ -11,23 +12,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2.Model;
+using FinancialTransactionsApi.Tests.V1.Helper;
+using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Infrastructure;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Gateways
 {
-
     public class DynamoDbGatewayTests
     {
         private readonly Fixture _fixture = new Fixture();
         private readonly Mock<IDynamoDBContext> _dynamoDb;
         private readonly Mock<DynamoDbContextWrapper> _wrapper;
+        private readonly Mock<IAmazonDynamoDB> _amazonDynamoDb;
         private readonly DynamoDbGateway _gateway;
 
         public DynamoDbGatewayTests()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
             _wrapper = new Mock<DynamoDbContextWrapper>();
-            _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object);
+            _amazonDynamoDb = new Mock<IAmazonDynamoDB>();
+            _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object, _amazonDynamoDb.Object);
         }
 
         [Fact]
@@ -66,7 +72,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.Charge,
-                Person = new PersonDbEntity()
+                Person = new Person
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
@@ -166,6 +172,47 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
             var response = await _gateway.GetAllTransactionsAsync(entity.TargetId, entity.TransactionType, entity.TransactionDate, entity.TransactionDate).ConfigureAwait(false);
 
             response.Should().BeEquivalentTo(entities);
+        }
+
+        [Theory]
+
+        [InlineData(null, 1, 1, 0)]
+        [InlineData("a", 1, 1, 1)]
+        [InlineData("1", 2, 4, 20)]
+        public async Task GetAllSuspenseValidInputReturnsData(string text, int page, int pageSize, int count)
+        {
+            var responseTransaction = FakeDataHelper.MockQueryResponse<Transaction>(count);
+
+            var rawExpectedResult = responseTransaction.ToTransactions();
+
+            if (text != null)
+            {
+                rawExpectedResult = rawExpectedResult.Where(p =>
+                    p.Person.FullName.ToLower().Contains(text) ||
+                    p.PaymentReference.ToLower().Contains(text) ||
+                    p.TransactionDate.ToString("F").Contains(text) ||
+                    p.BankAccountNumber.Contains(text) ||
+                    p.Fund.ToLower().Contains(text) ||
+                    p.BalanceAmount.ToString("F").Contains(text)).ToList();
+            }
+
+            var expectedResult = rawExpectedResult.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            _amazonDynamoDb.Setup(s => s.QueryAsync(It.IsAny<QueryRequest>(), CancellationToken.None))
+                .ReturnsAsync(responseTransaction);
+
+            var result = await _gateway.GetAllSuspenseAsync(
+                new SuspenseTransactionsSearchRequest
+                {
+                    SearchText = text,
+                    Page = page,
+                    PageSize = pageSize
+                }).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+            result.Total.Should().Be(rawExpectedResult.Count);
+            result.Transactions.Should().BeEquivalentTo(expectedResult);
+            result.Transactions.Should().HaveCountLessOrEqualTo(pageSize);
         }
     }
 }

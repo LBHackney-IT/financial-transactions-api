@@ -39,7 +39,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// Rent
         /// </example>
-        [AllowedValues(TransactionType.Charge, TransactionType.Rent)]
+        [AllowedValues(typeof(TransactionType))]
         public TransactionType TransactionType { get; set; }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 56.78
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal TransactionAmount { get; set; }
 
         /// <summary>
@@ -67,6 +67,15 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// 216704
         /// </example>
         public string PaymentReference { get; set; }
+
+        /// <summary>
+        /// Bank account number
+        /// </summary>
+        /// <example>
+        /// ******78
+        /// </example>
+        [StringLength(8, MinimumLength = 8, ErrorMessage = "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
+        public string BankAccountNumber { get; set; }
 
         /// <summary>
         /// Is this account need to be in suspense
@@ -94,7 +103,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 56.78
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal PaidAmount { get; set; }
 
         /// <summary>
@@ -103,7 +112,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 87.53
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal ChargedAmount { get; set; }
 
         /// <summary>
@@ -120,7 +129,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 25.56
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
         public decimal HousingBenefitAmount { get; set; }
 
         /// <summary>

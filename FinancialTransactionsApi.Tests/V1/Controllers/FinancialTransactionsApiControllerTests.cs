@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -108,15 +109,15 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAll_UseCaseReturnList_Returns200()
         {
-            var obj1 = _fixture.Create<TransactionResponse>();
-            var obj2 = _fixture.Create<TransactionResponse>();
+            var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
+
+            var obj1 = _fixture.Build<TransactionResponses>()
+                .With(s => s.Total, 5)
+                .With(s => s.TransactionsList, transactionsList)
+                .Create();
 
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>()))
-                .ReturnsAsync(new List<TransactionResponse>()
-                {
-                    obj1,
-                    obj2
-                });
+                .ReturnsAsync(obj1);
 
             var query = new TransactionQuery()
             {
@@ -131,15 +132,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult.Value.Should().BeOfType<List<TransactionResponse>>();
+            okResult?.Value.Should().BeOfType<TransactionResponses>();
 
-            var list = okResult.Value as List<TransactionResponse>;
+            var responses = okResult?.Value as TransactionResponses;
 
-            list.Should().HaveCount(2);
+            responses?.TransactionsList.Should().HaveCount(5);
+            responses?.Total.Should().Be(5);
 
-            list[0].Should().BeEquivalentTo(obj1);
-
-            list[1].Should().BeEquivalentTo(obj2);
         }
 
         [Fact]
@@ -162,6 +161,18 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         }
 
         [Fact]
+        public async Task GetAll_ModelError_ThrowsException()
+        {
+            _controller.ModelState.AddModelError("TargetId", "The field TargetId cannot be empty or default.");
+
+            var result = await _controller.GetAll(_fixture.Create<Guid>().ToString(), new TransactionQuery())
+                .ConfigureAwait(false);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+
+        }
+
+        [Fact]
         public async Task Add_UseCaseReturnModel_Returns200()
         {
             var guid = Guid.NewGuid();
@@ -175,6 +186,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 ChargedAmount = 134.12M,
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "12345678",
                 IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
@@ -202,6 +214,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
                 IsSuspense = true,
+                BankAccountNumber = "12345678",
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
                 PeriodNo = 2,
@@ -298,6 +311,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 ChargedAmount = 134.12M,
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "12345678",
                 IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
@@ -398,6 +412,24 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 ex.GetType().Should().Be(typeof(Exception));
                 ex.Message.Should().Be("Test exception");
             }
+        }
+
+        [Fact]
+        public async Task Update_NonSuspenseTransaction_ThrowBadRequest()
+        {
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(new TransactionResponse { IsSuspense = false });
+
+            var request = _fixture.Build<UpdateTransactionRequest>()
+                .With(s => s.IsSuspense, false).Create();
+
+            var result = await _controller.Update("", Guid.NewGuid(), request)
+                .ConfigureAwait(false);
+
+            _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<UpdateTransactionRequest>(), It.IsAny<Guid>()), Times.Never);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+
         }
     }
 }

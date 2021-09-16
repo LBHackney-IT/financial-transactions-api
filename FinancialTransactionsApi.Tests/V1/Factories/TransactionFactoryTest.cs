@@ -25,6 +25,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 FinancialYear = 2022,
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "12345678",
                 IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
@@ -32,15 +33,14 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.Charge,
-                Person = new PersonDbEntity()
+                Person = new Person
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
                 },
-                SuspenseResolutionInfo = new SuspenseResolutionInfoDbEntity()
+                SuspenseResolutionInfo = new SuspenseResolutionInfo
                 {
                     ResolutionDate = new DateTime(2021, 8, 1),
-                    IsResolve = true,
                     Note = "Some note"
                 }
             };
@@ -65,6 +65,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 FinancialYear = 2022,
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "12345678",
                 IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
@@ -80,7 +81,8 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 SuspenseResolutionInfo = new SuspenseResolutionInfo()
                 {
                     ResolutionDate = new DateTime(2021, 8, 1),
-                    IsResolve = true,
+                    IsConfirmed = true,
+                    IsApproved = true,
                     Note = "Some note"
                 }
             };
@@ -102,6 +104,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 ChargedAmount = 134.12M,
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "12345678",
                 IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
@@ -133,6 +136,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 ChargedAmount = 134.12M,
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "12345678",
                 IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
@@ -148,7 +152,8 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 SuspenseResolutionInfo = new SuspenseResolutionInfo()
                 {
                     ResolutionDate = new DateTime(2021, 8, 1),
-                    IsResolve = true,
+                    IsConfirmed = true,
+                    IsApproved = true,
                     Note = "Some note"
                 }
             };

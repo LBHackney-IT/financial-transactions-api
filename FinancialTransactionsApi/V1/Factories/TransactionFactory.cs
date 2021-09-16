@@ -19,15 +19,16 @@ namespace FinancialTransactionsApi.V1.Factories
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
                 PaidAmount = transaction.PaidAmount,
                 PaymentReference = transaction.PaymentReference,
+                BankAccountNumber = transaction.BankAccountNumber,
                 IsSuspense = transaction.IsSuspense,
-                SuspenseResolutionInfo = transaction.SuspenseResolutionInfo.ToDatabase(),
+                SuspenseResolutionInfo = transaction.SuspenseResolutionInfo,
                 PeriodNo = transaction.PeriodNo,
                 TransactionAmount = transaction.TransactionAmount,
                 TransactionDate = transaction.TransactionDate,
                 TransactionType = transaction.TransactionType,
                 TransactionSource = transaction.TransactionSource,
                 Address = transaction.Address,
-                Person = transaction.Person.ToDatabase(),
+                Person = transaction.Person,
                 Fund = transaction.Fund
             };
         }
@@ -45,15 +46,16 @@ namespace FinancialTransactionsApi.V1.Factories
                 HousingBenefitAmount = transactionDbEntity.HousingBenefitAmount,
                 PaidAmount = transactionDbEntity.PaidAmount,
                 PaymentReference = transactionDbEntity.PaymentReference,
+                BankAccountNumber = transactionDbEntity.BankAccountNumber,
                 IsSuspense = transactionDbEntity.IsSuspense,
-                SuspenseResolutionInfo = transactionDbEntity.SuspenseResolutionInfo.ToDomain(),
+                SuspenseResolutionInfo = transactionDbEntity.SuspenseResolutionInfo,
                 PeriodNo = transactionDbEntity.PeriodNo,
                 TransactionAmount = transactionDbEntity.TransactionAmount,
                 TransactionDate = transactionDbEntity.TransactionDate,
                 TransactionType = transactionDbEntity.TransactionType,
                 TransactionSource = transactionDbEntity.TransactionSource,
                 Address = transactionDbEntity.Address,
-                Person = transactionDbEntity.Person.ToDomain(),
+                Person = transactionDbEntity.Person,
                 Fund = transactionDbEntity.Fund
             };
         }
@@ -68,6 +70,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
+                BankAccountNumber = transactionRequest.BankAccountNumber,
                 IsSuspense = transactionRequest.IsSuspense,
                 SuspenseResolutionInfo = null,
                 PeriodNo = transactionRequest.PeriodNo,
@@ -76,7 +79,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionType = transactionRequest.TransactionType,
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
-                Person = transactionRequest.Person.ToDomain(),
+                Person = transactionRequest.Person,
                 Fund = transactionRequest.Fund
             };
         }
@@ -91,15 +94,16 @@ namespace FinancialTransactionsApi.V1.Factories
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
+                BankAccountNumber = transactionRequest.BankAccountNumber,
                 IsSuspense = transactionRequest.IsSuspense,
-                SuspenseResolutionInfo = transactionRequest.SuspenseResolutionInfo.ToDomain(),
+                SuspenseResolutionInfo = transactionRequest.SuspenseResolutionInfo,
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
                 TransactionDate = transactionRequest.TransactionDate,
                 TransactionType = transactionRequest.TransactionType,
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
-                Person = transactionRequest.Person.ToDomain(),
+                Person = transactionRequest.Person,
                 Fund = transactionRequest.Fund
             };
         }

@@ -86,6 +86,14 @@ namespace FinancialTransactionsApi.V1.Boundary.Response
         public string PaymentReference { get; set; }
 
         /// <summary>
+        /// Partially filled bank account number
+        /// </summary>
+        /// <example>
+        /// ******78
+        /// </example>
+        public string BankAccountNumber { get; set; }
+
+        /// <summary>
         /// Is this account need to be in suspense
         /// </summary>
         /// <example>

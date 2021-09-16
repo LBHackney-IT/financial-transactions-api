@@ -33,6 +33,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 Address = "Address",
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "12345678",
                 IsSuspense = true,
                 PaidAmount = 123.22M,
                 PeriodNo = 2,
@@ -76,6 +77,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 ChargedAmount = 134.12M,
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "12345678",
                 IsSuspense = false,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
@@ -91,7 +93,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 SuspenseResolutionInfo = new SuspenseResolutionInfo()
                 {
                     ResolutionDate = DateTime.UtcNow,
-                    IsResolve = true,
+                    IsConfirmed = true,
+                    IsApproved = true,
                     Note = "Note"
                 }
             };
@@ -125,6 +128,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 BalanceAmount = 145.23M,
                 ChargedAmount = 134.12M,
                 HousingBenefitAmount = 123.12M,
+                BankAccountNumber = "12345678",
                 IsSuspense = false,
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
