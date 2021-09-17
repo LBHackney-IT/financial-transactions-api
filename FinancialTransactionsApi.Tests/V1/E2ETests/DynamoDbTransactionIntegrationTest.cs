@@ -11,7 +11,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -36,7 +35,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             entity.TransactionDate = new DateTime(2021, 8, 1);
             entity.PeriodNo = 35;
-            entity.Fund = null;
             entity.IsSuspense = true;
             entity.SuspenseResolutionInfo = null;
             entity.BankAccountNumber = "12345678";
@@ -193,6 +191,9 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             transactions[0].TargetId = TargetID;
             transactions[1].TargetId = TargetID;
+            string transType = transactions[0].TransactionType.ToString();
+            var startDate = transactions[0].TransactionDate.AddDays(-1).ToString("yyyy-MM-dd");
+            var endDate = transactions[1].TransactionDate.AddDays(1).ToString("yyyy-MM-dd");
 
             foreach (var transaction in transactions)
             {
@@ -203,7 +204,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
             }
 
-            var uri = new Uri($"api/v1/transactions?targetId={TargetID}", UriKind.Relative);
+            var uri = new Uri($"api/v1/transactions?targetId={TargetID}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -212,10 +213,9 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.Total.Should().BeGreaterOrEqualTo(2);
+            apiEntity.Total.Should().BeGreaterOrEqualTo(1);
 
             var firstTransaction = apiEntity.TransactionsList.ToList().Find(r => r.Id.Equals(transactions[0].Id));
-            var secondTransaction = apiEntity.TransactionsList.ToList().Find(r => r.Id.Equals(transactions[1].Id));
 
             firstTransaction.Should().BeEquivalentTo(transactions[0], opt =>
                 opt.Excluding(a => a.FinancialYear)
@@ -225,15 +225,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             firstTransaction?.FinancialMonth.Should().Be(8);
             firstTransaction?.FinancialYear.Should().Be(2021);
-
-            secondTransaction.Should().BeEquivalentTo(transactions[1], opt =>
-                opt.Excluding(a => a.FinancialYear)
-                    .Excluding(a => a.FinancialMonth)
-                    .Excluding(a => a.TransactionDate)
-                    .Excluding(a => a.TransactionDate));
-
-            secondTransaction?.FinancialMonth.Should().Be(8);
-            secondTransaction?.FinancialYear.Should().Be(2021);
         }
 
         [Fact]
@@ -256,7 +247,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 d++;
             }
             var endDate = DateTime.Now.AddDays(d).ToString("yyyy-MM-dd");
-            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}", UriKind.Relative);
+            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
             var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);

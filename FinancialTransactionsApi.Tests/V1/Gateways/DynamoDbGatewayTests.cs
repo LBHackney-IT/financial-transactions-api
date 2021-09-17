@@ -24,25 +24,20 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
     {
         private readonly Fixture _fixture = new Fixture();
         private readonly Mock<IDynamoDBContext> _dynamoDb;
-        private readonly Mock<DynamoDbContextWrapper> _wrapper;
         private readonly Mock<IAmazonDynamoDB> _amazonDynamoDb;
         private readonly DynamoDbGateway _gateway;
 
         public DynamoDbGatewayTests()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
-            _wrapper = new Mock<DynamoDbContextWrapper>();
             _amazonDynamoDb = new Mock<IAmazonDynamoDB>();
-            _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object, _amazonDynamoDb.Object);
+            _gateway = new DynamoDbGateway(_dynamoDb.Object, _amazonDynamoDb.Object);
         }
 
         [Fact]
         public async Task GetById_EntityDoesntExists_ReturnsNull()
         {
-            _wrapper.Setup(x => x.LoadAsync(
-                It.IsAny<IDynamoDBContext>(),
-                It.IsAny<Guid>(),
-                It.IsAny<DynamoDBOperationConfig>()))
+            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(It.IsAny<Guid>(), default))
                 .ReturnsAsync((TransactionDbEntity) null);
 
             var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid()).ConfigureAwait(false);
@@ -79,10 +74,9 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 }
             };
 
-            _wrapper.Setup(x => x.LoadAsync(
-                It.IsAny<IDynamoDBContext>(),
+            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(
                 It.IsAny<Guid>(),
-                It.IsAny<DynamoDBOperationConfig>()))
+                default))
                 .ReturnsAsync(expectedResult);
 
             var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid()).ConfigureAwait(false);
@@ -135,43 +129,43 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         public async Task GetAll_ByTransactionQueryReturnEmptyList_EntitiesDoesntExists()
         {
             var databaseEntities = new List<TransactionDbEntity>();
+            var transactionQuery = new TransactionQuery
+            {
+                TargetId = Guid.NewGuid(),
+                TransactionType = TransactionType.Rent,
+                StartDate = DateTime.Now.AddDays(40),
+                EndDate = DateTime.Now.AddDays(30)
+            };
+            _amazonDynamoDb.Setup(p => p.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new QueryResponse());
 
-            var targetId = Guid.NewGuid();
-            var transType = TransactionType.Rent;
-            var startDate = DateTime.Now.AddDays(40);
-            var endDate = DateTime.Now.AddDays(30);
+            var responseResult = await _gateway.GetAllTransactionsAsync(transactionQuery).ConfigureAwait(false);
 
-            _wrapper.Setup(x => x.ScanAsync(
-               It.IsAny<IDynamoDBContext>(),
-               It.IsAny<IEnumerable<ScanCondition>>(),
-               It.IsAny<DynamoDBOperationConfig>()))
-               .ReturnsAsync(new List<TransactionDbEntity>(databaseEntities));
-            var response = await _gateway.GetAllTransactionsAsync(targetId, transType, startDate, endDate).ConfigureAwait(false);
-
-            response.Should().HaveCount(0);
+            responseResult.Total.Should().Be(0);
+            responseResult.Transactions.Should().BeEmpty();
         }
 
         [Fact]
         public async Task GetAll_ByTransactionQueryReturnsListWithEntities_ReturnsAllCorrect()
         {
-            var entities = _fixture.Build<Transaction>()
-               .With(x => x.TargetId, Guid.NewGuid())
-               .With(x => x.TransactionType, TransactionType.Charge)
-               .With(x => x.TransactionDate, DateTime.Now).CreateMany(3).ToList();
+            QueryResponse response = FakeDataHelper.MockQueryResponse<Transaction>(3);
+            var expectedResponse = response.ToTransactions();
 
-            var entity = entities.FirstOrDefault();
+            _amazonDynamoDb.Setup(p => p.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response);
 
-            var databaseEntities = entities.Select(entity => entity.ToDatabase());
+            var transactionQuery = new TransactionQuery
+            {
+                TargetId = expectedResponse.First().TargetId,
+                TransactionType = expectedResponse.First().TransactionType,
+                StartDate = expectedResponse.First().TransactionDate.AddDays(-2),
+                EndDate = expectedResponse.First().TransactionDate.AddDays(2),
+                Page = 1,
+                PageSize = 2
+            };
+            var responseResult = await _gateway.GetAllTransactionsAsync(transactionQuery).ConfigureAwait(false);
 
-            _wrapper.Setup(x => x.ScanAsync(
-                It.IsAny<IDynamoDBContext>(),
-                It.IsAny<IEnumerable<ScanCondition>>(),
-                It.IsAny<DynamoDBOperationConfig>()))
-                .ReturnsAsync(new List<TransactionDbEntity>(databaseEntities));
-
-            var response = await _gateway.GetAllTransactionsAsync(entity.TargetId, entity.TransactionType, entity.TransactionDate, entity.TransactionDate).ConfigureAwait(false);
-
-            response.Should().BeEquivalentTo(entities);
+            responseResult.Transactions.Should().BeEquivalentTo(expectedResponse.First());
         }
 
         [Theory]

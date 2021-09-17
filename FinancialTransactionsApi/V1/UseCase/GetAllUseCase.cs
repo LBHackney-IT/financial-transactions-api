@@ -3,7 +3,6 @@ using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.UseCase
@@ -20,13 +19,13 @@ namespace FinancialTransactionsApi.V1.UseCase
         public async Task<TransactionResponses> ExecuteAsync(TransactionQuery query)
         {
             var transactions =
-                await _gateway.GetAllTransactionsAsync(query.TargetId, query.TransactionType, query.StartDate, query.EndDate)
+                await _gateway.GetAllTransactionsAsync(query)
                     .ConfigureAwait(false);
 
             return new TransactionResponses
             {
-                TransactionsList = transactions.ToResponse(),
-                Total = transactions.ToResponse().Count
+                TransactionsList = transactions.Transactions.ToResponse(),
+                Total = transactions.Total
             };
         }
     }
