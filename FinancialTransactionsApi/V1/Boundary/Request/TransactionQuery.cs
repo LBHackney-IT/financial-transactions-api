@@ -1,11 +1,14 @@
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace FinancialTransactionsApi.V1.Boundary.Request
 {
     public class TransactionQuery
     {
+        private const int DefaultPageSize = 11;
         /// <summary>
         /// The guid of a tenancy/property
         /// </summary>
@@ -14,6 +17,27 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// </example>
         [NonEmptyGuid]
         public Guid TargetId { get; set; }
+
+        /// <summary>
+        /// The Page Size per page
+        /// </summary>
+        /// <example>
+        /// 1
+        /// </example>
+        [FromQuery(Name = "pageSize")]
+        [Range(1, int.MaxValue, ErrorMessage = "The page size must be great and equal than 1")]
+        public int PageSize { get; set; } = DefaultPageSize;
+
+        /// <summary>
+        /// The Page Number 
+        /// </summary>
+        /// <example>
+        /// 1
+        /// </example>
+        [FromQuery(Name = "page")]
+        [Range(1, int.MaxValue, ErrorMessage = "The page number must be great and equal than 1")]
+        public int Page { get; set; } = 0;
+
 
         /// <summary>
         /// Type of transactioin tenancy/property

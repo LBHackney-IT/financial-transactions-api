@@ -7,7 +7,6 @@ using FinancialTransactionsApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,7 +28,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task GetAll_GatewayReturnsList_ReturnsList()
         {
-            var transactions = _fixture.CreateMany<Transaction>(3).ToList();
+            var transactions = _fixture.Create<TransactionList>();
 
             var transactionQuery = new TransactionQuery()
             {
@@ -39,14 +38,14 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 StartDate = DateTime.UtcNow
             };
 
-            _mockGateway.Setup(x => x.GetAllTransactionsAsync(It.IsAny<Guid>(), It.IsAny<TransactionType>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(transactions);
+            _mockGateway.Setup(x => x.GetAllTransactionsAsync(It.IsAny<TransactionQuery>())).ReturnsAsync(transactions);
 
             var response = await _getAllUseCase.ExecuteAsync(transactionQuery).ConfigureAwait(false);
 
-            var expectedResponse = transactions.ToResponse();
+            var expectedResponse = transactions.Transactions.ToResponse();
 
             response.TransactionsList.Should().BeEquivalentTo(expectedResponse);
-            response.Total.Should().Be(expectedResponse.Count);
+            response.Total.Should().Be(transactions.Total);
         }
     }
 }
