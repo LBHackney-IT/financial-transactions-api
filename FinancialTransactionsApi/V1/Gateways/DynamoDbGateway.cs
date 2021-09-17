@@ -54,19 +54,18 @@ namespace FinancialTransactionsApi.V1.Gateways
             };
             var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
             var transactions = result.ToTransactions();
-            var filteredList = new List<Transaction>();
             if (query.StartDate.HasValue)
             {
                 if (!query.EndDate.HasValue)
                 {
                     query.EndDate = DateTime.Now;
                 }
-                filteredList = transactions.Where(x => x.TransactionDate >= query.StartDate && x.TransactionDate <= query.EndDate).ToList();
+                transactions = transactions.Where(x => x.TransactionDate >= query.StartDate && x.TransactionDate <= query.EndDate).ToList();
             }
             return new TransactionList
             {
-                Transactions = filteredList.Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToList(),
-                Total = filteredList.Count
+                Transactions = transactions.Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToList(),
+                Total = transactions.Count
             };
         }
         public async Task<TransactionList> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
