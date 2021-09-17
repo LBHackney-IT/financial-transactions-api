@@ -33,6 +33,14 @@ namespace FinancialTransactionsApi.Tests
                         KeyScalarType = ScalarAttributeType.S,
                         KeyType = KeyType.HASH,
                         ProjectionType = "ALL"
+                    },
+                    new GlobalIndexDef()
+                    {
+                        IndexName = "target_id_dx",
+                        KeyName = "target_id",
+                        KeyScalarType = ScalarAttributeType.S,
+                        KeyType = KeyType.HASH,
+                        ProjectionType = "ALL"
                     }
                 }
             }
