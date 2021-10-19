@@ -84,10 +84,11 @@ data "aws_subnet_ids" "development" {
   ebs_volume_size  = "10"
   region           = data.aws_region.current.name
   account_id       = data.aws_caller_identity.current.account_id
-}*/
+}
 
 resource "aws_ssm_parameter" "financial_elasticsearch_domain" {
   name = "/financial-search-api/development/elasticsearch-domain"
   type = "String"
   value = "https://vpc-housing-search-api-es-klp5oycl6thlxaub2mzu5zlj5u.eu-west-2.es.amazonaws.com"  
 }
+*/
