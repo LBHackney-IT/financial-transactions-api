@@ -168,15 +168,15 @@ workflows:
           requires:
             - check-code-formatting
             - build-and-test
-          filters:
-            branches:
-              only: development
+          # filters:
+          #   branches:
+          #     only: development
       - terraform-init-and-apply-to-development:
           requires:
             - assume-role-development
-          filters:
-            branches:
-              only: development
+          # filters:
+          #   branches:
+          #     only: development
       - deploy-to-development:
           context: api-assume-role-housing-development-context
           requires:
