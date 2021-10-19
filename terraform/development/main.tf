@@ -66,8 +66,10 @@ data "aws_subnet_ids" "development" {
   }
 }
 
+/*github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/database/elasticsearch*/
+
 module "elasticsearch_db_development" {
-  source           = "github.com/LBHackney-IT/aws-hackney-common-terraform.git"
+  source           = "git@github.com:LBHackney-IT/aws-hackney-common-terraform.git"
   vpc_id           = data.aws_vpc.development_vpc.id
   environment_name = "development"
   port             = 443
