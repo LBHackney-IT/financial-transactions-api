@@ -68,7 +68,7 @@ data "aws_subnet_ids" "development" {
 
 /*github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/database/elasticsearch*/
 
-/*module "elasticsearch_db_development" {
+module "elasticsearch_db_development" {
   source           = "git@github.com:LBHackney-IT/aws-hackney-common-terraform.git"
   vpc_id           = data.aws_vpc.development_vpc.id
   environment_name = "development"
@@ -91,4 +91,3 @@ resource "aws_ssm_parameter" "financial_elasticsearch_domain" {
   type = "String"
   value = "https://vpc-housing-search-api-es-klp5oycl6thlxaub2mzu5zlj5u.eu-west-2.es.amazonaws.com"  
 }
-*/
