@@ -67,7 +67,7 @@ data "aws_subnet_ids" "development" {
 }
 /*lbh_es instead of elasticsearch_db_development*/
 module "lbh_es" {
-  source           = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/database/elasticsearch"
+  source           = "https://github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/database/elasticsearch"
   vpc_id           = data.aws_vpc.development_vpc.id
   environment_name = "development"
   port             = 443
