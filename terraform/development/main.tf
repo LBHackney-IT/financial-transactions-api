@@ -65,15 +65,15 @@ data "aws_subnet_ids" "development" {
     values = ["private"]
   }
 }
-/*lbh_es instead of elasticsearch_db_development*/
-module "lbh_es" {
-  source           = "git@github.com:LBHackney-IT/aws-hackney-common-terraform.git//modules/database/elasticsearch"
+
+module "elasticsearch_db_development" {
+  source           = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/database/elasticsearch"
   vpc_id           = data.aws_vpc.development_vpc.id
   environment_name = "development"
   port             = 443
-  domain_name      = "financial-transaction-api-es"
+  domain_name      = "financial-search-api-es"
   subnet_ids       = [tolist(data.aws_subnet_ids.development.ids)[0]]
-  project_name     = "financial-transaction"
+  project_name     = "financial-search"
   es_version       = "7.8"
   encrypt_at_rest  = "true"
   instance_type    = "t3.small.elasticsearch"
@@ -84,8 +84,8 @@ module "lbh_es" {
   account_id       = data.aws_caller_identity.current.account_id
 }
 
-resource "aws_ssm_parameter" "search_elasticsearch_domain" {
-  name = "/housing-search-api/development/elasticsearch-domain"
+resource "aws_ssm_parameter" "financial_elasticsearch_domain" {
+  name = "/financial-search-api/development/elasticsearch-domain"
   type = "String"
   value = "https://vpc-housing-search-api-es-klp5oycl6thlxaub2mzu5zlj5u.eu-west-2.es.amazonaws.com"  
 }
