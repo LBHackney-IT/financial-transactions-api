@@ -22,6 +22,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using FinancialTransactionsApi.V1.ElasticSearch;
+using FinancialTransactionsApi.V1.ElasticSearch.Interfaces;
+using FinancialTransactionsApi.V1.Gateways.ElasticSearch;
+using FinancialTransactionsApi.V1.Helpers;
 
 namespace FinancialTransactionsApi
 {
@@ -117,6 +121,14 @@ namespace FinancialTransactionsApi
 
             RegisterGateways(services);
             RegisterUseCases(services);
+            services.ConfigureElasticSearch(Configuration);
+            //services.AddElasticSearchHealthCheck();
+
+            services.AddScoped<IWildCardAppenderAndPrePender, WildCardAppenderAndPrePender>();
+            services.AddScoped<IQueryFactory, QueryFactory>();
+            services.AddScoped<IIndexSelector, IndexSelector>();
+            services.AddScoped(typeof(IQueryBuilder<>), typeof(QueryBuilder<>)); ;
+
 
             services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
                 builder
@@ -152,6 +164,7 @@ namespace FinancialTransactionsApi
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<ITransactionGateway, DynamoDbGateway>();
+            services.AddScoped<ISearchGateway, SearchGateway>();
             services.AddSingleton<DynamoDbContextWrapper>();
         }
 
@@ -163,6 +176,11 @@ namespace FinancialTransactionsApi
             services.AddScoped<IAddUseCase, AddUseCase>();
             services.AddScoped<IUpdateUseCase, UpdateUseCase>();
             services.AddScoped<IAddBatchUseCase, AddBatchUseCase>();
+
+            services.AddScoped<IGetTransactionListUseCase, GetTransactionListUseCase>();
+            services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
+            services.AddScoped<IPagingHelper, PagingHelper>();
+            services.AddScoped<ISortFactory, SortFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

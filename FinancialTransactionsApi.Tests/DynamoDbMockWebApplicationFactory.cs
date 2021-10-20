@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
+using Nest;
 
 namespace FinancialTransactionsApi.Tests
 {
@@ -18,6 +19,9 @@ namespace FinancialTransactionsApi.Tests
     {
         private readonly List<TableDef> _tables;
 
+        private IConfiguration _configuration;
+
+        public IElasticClient ElasticSearchClient { get; private set; }
         public IAmazonDynamoDB DynamoDb { get; private set; }
         public IDynamoDBContext DynamoDbContext { get; private set; }
 
@@ -28,16 +32,20 @@ namespace FinancialTransactionsApi.Tests
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureAppConfiguration(b => b.AddEnvironmentVariables())
+            builder.ConfigureAppConfiguration(b =>
+                {
+                    b.AddEnvironmentVariables();
+                    _configuration = b.Build();
+                })
                 .UseStartup<Startup>();
             builder.ConfigureServices(services =>
             {
                 services.ConfigureDynamoDB();
-
+                services.ConfigureElasticSearch(_configuration);
                 var serviceProvider = services.BuildServiceProvider();
                 DynamoDb = serviceProvider.GetRequiredService<IAmazonDynamoDB>();
                 DynamoDbContext = serviceProvider.GetRequiredService<IDynamoDBContext>();
-
+                ElasticSearchClient = serviceProvider.GetRequiredService<IElasticClient>();
                 EnsureTablesExist(DynamoDb, _tables);
             });
         }
