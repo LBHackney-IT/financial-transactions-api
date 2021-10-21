@@ -338,13 +338,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             result.Should().NotBeNull();
 
-            var OkResult = result as OkObjectResult;
+            var okResult = result as OkObjectResult;
 
-            OkResult.Should().NotBeNull();
+            okResult.Should().NotBeNull();
 
-            OkResult.Value.Should().BeOfType(typeof(TransactionResponse));
+            okResult?.Value.Should().BeOfType(typeof(TransactionResponse));
 
-            OkResult.Value.Should().BeEquivalentTo(request);
+            okResult?.Value.Should().BeEquivalentTo(request);
         }
 
         [Fact]
@@ -358,15 +358,15 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             badRequestResult.Should().NotBeNull();
 
-            var response = badRequestResult.Value as BaseErrorResponse;
+            var response = badRequestResult?.Value as BaseErrorResponse;
 
             response.Should().NotBeNull();
 
-            response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+            response?.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
 
-            response.Message.Should().BeEquivalentTo("Transaction model cannot be null!");
+            response?.Message.Should().BeEquivalentTo("Transaction model cannot be null!");
 
-            response.Details.Should().BeEquivalentTo(string.Empty);
+            response?.Details.Should().BeEquivalentTo(string.Empty);
         }
 
         [Fact]
@@ -432,6 +432,21 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             result.Should().BeOfType<BadRequestObjectResult>();
 
+        }
+
+        [Fact]
+        public async Task GetTransactionListShouldCallGetTransactionListUseCase()
+        {
+            // given
+            var request = new TransactionSearchRequest();
+            var response = new GetTransactionListResponse();
+            _getTransactionListUseCase.Setup(x => x.ExecuteAsync(request)).ReturnsAsync(response);
+
+            // when
+            await _controller.GetTransactionList(request).ConfigureAwait(false);
+
+            // then
+            _getTransactionListUseCase.Verify(x => x.ExecuteAsync(request), Times.Once);
         }
     }
 }
