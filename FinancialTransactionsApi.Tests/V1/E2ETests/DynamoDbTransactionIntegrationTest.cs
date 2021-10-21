@@ -1,3 +1,9 @@
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
@@ -10,20 +16,13 @@ using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
+namespace FinancialTransactionsApi.Tests.V1.E2ETests
 {
     public class DynamoDbTransactionIntegrationTest : DynamoDbIntegrationTests<Startup>
     {
-        private readonly Fixture _fixture = new Fixture();
+        private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
 
         /// <summary>
         /// Method to construct a test entity that can be used in a test

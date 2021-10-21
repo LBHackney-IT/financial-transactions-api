@@ -1,0 +1,146 @@
+{
+  "transactions": {
+    "aliases": {},
+    "mappings": {
+      "properties": {
+        "address": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "balanceAmount": {
+          "type": "float"
+        },
+        "bankAccountNumber": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "chargedAmount": {
+          "type": "float"
+        },
+        "financialMonth": {
+          "type": "long"
+        },
+        "financialYear": {
+          "type": "long"
+        },
+        "fund": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "housingBenefitAmount": {
+          "type": "float"
+        },
+        "id": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "isSuspense": {
+          "type": "boolean"
+        },
+        "paidAmount": {
+          "type": "float"
+        },
+        "paymentReference": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "periodNo": {
+          "type": "long"
+        },
+        "person": {
+          "properties": {
+            "fullName": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "id": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "targetId": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "transactionAmount": {
+          "type": "float"
+        },
+        "transactionDate": {
+          "type": "date"
+        },
+        "transactionSource": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "transactionType": {
+          "type": "long"
+        }
+      }
+    },
+    "settings": {
+      "index": {
+        "routing": {
+          "allocation": {
+            "include": {
+              "_tier_preference": "data_content"
+            }
+          }
+        },
+        "number_of_shards": "1",
+        "provided_name": "transactions",
+        "creation_date": "1634300473440",
+        "number_of_replicas": "1",
+        "uuid": "kqaNT87ETWq9l2-ms1KemQ",
+        "version": {
+          "created": "7140099"
+        }
+      }
+    }
+  }
+}
