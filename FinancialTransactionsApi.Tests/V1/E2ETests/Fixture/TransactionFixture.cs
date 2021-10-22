@@ -28,7 +28,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
 
             if (!ElasticSearchClient.Indices.Exists(Indices.Index(Index)).Exists)
             {
-                var transactionSettingsDoc = File.ReadAllTextAsync("./data/elasticsearch/transactionIndex.json").Result;
+                var transactionSettingsDoc = File.ReadAllTextAsync("data/indexes/transactions.json").Result;
                 ElasticSearchClient.LowLevel.Indices.CreateAsync<BytesResponse>(Index, transactionSettingsDoc)
                     .ConfigureAwait(true);
 
