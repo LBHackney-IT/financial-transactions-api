@@ -31,15 +31,12 @@ services:
       - AWS_SECRET_ACCESS_KEY=local
     links:
       - dynamodb-database
+      - test-elasticsearch
     networks:
       - elastic
     depends_on:
       #- kibana
       - test-elasticsearch
-  dynamodb-database:
-    image: amazon/dynamodb-local
-    ports:
-      - 8000:8000
   test-elasticsearch:
     image: test-elasticsearch
     container_name: test-elasticsearch
@@ -58,15 +55,11 @@ services:
       - esdata-test:/usr/share/elasticsearch/data
     networks:
       - elastic
-
-  kibana:
-        image: docker.elastic.co/kibana/kibana:7.9.3
-        ports:
-            - "5601:5601"
-        networks:
-            - elastic
-        depends_on:
-            - test-elasticsearch
+      
+  dynamodb-database:
+    image: amazon/dynamodb-local
+    ports:
+      - 8000:8000
 volumes:
     esdata-test:
         driver: local

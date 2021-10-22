@@ -21,14 +21,13 @@ namespace FinancialTransactionsApi.V1.Gateways.Models
                 Fund = Fund,
                 FinancialYear = FinancialYear,
                 HousingBenefitAmount = HousingBenefitAmount,
-                Id = Guid.Parse(Id),
+                Id = Id,
                 IsSuspense = IsSuspense,
                 PaidAmount = PaidAmount,
                 TransactionAmount = TransactionAmount,
                 TransactionType = TransactionType,
                 TransactionDate = TransactionDate,
                 SuspenseResolutionInfo = SuspenseResolutionInfo,
-                //TargetId = Tar
                 PeriodNo = PeriodNo,
                 TransactionSource = TransactionSource,
                 PaymentReference = PaymentReference,
@@ -37,12 +36,12 @@ namespace FinancialTransactionsApi.V1.Gateways.Models
         }
 
         [Text(Name = "id")]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         [Number(Name = "periodNo")]
         public short PeriodNo { get; set; }
 
         [Number(Name = "financialYear")]
-        public short FinancialYear { get; set; }
+        private short FinancialYear { get; set; }
 
         [Number(Name = "financialMonth")]
         public short FinancialMonth { get; set; }

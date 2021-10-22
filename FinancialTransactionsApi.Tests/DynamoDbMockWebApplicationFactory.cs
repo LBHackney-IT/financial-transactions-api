@@ -20,9 +20,7 @@ namespace FinancialTransactionsApi.Tests
         private readonly List<TableDef> _tables;
 
         private IConfiguration _configuration;
-
-        public IElasticClient ElasticSearchClient { get; private set; }
-        public IAmazonDynamoDB DynamoDb { get; private set; }
+        public IAmazonDynamoDB DynamoDb { get; set; }
         public IDynamoDBContext DynamoDbContext { get; private set; }
 
         public DynamoDbMockWebApplicationFactory(List<TableDef> tables)
@@ -41,11 +39,10 @@ namespace FinancialTransactionsApi.Tests
             builder.ConfigureServices(services =>
             {
                 services.ConfigureDynamoDB();
-                services.ConfigureElasticSearch(_configuration);
+                // services.ConfigureElasticSearch(_configuration);
                 var serviceProvider = services.BuildServiceProvider();
                 DynamoDb = serviceProvider.GetRequiredService<IAmazonDynamoDB>();
                 DynamoDbContext = serviceProvider.GetRequiredService<IDynamoDBContext>();
-                ElasticSearchClient = serviceProvider.GetRequiredService<IElasticClient>();
                 EnsureTablesExist(DynamoDb, _tables);
             });
         }

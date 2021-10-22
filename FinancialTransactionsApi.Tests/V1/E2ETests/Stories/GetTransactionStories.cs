@@ -13,11 +13,11 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
     [Collection("ElasticSearch collection")]
     public class GetTransactionStories
     {
-        private readonly DynamoDbMockWebApplicationFactory<Startup> _factory;
+        private readonly MockWebApplicationFactory<Startup> _factory;
         private readonly TransactionFixture _transactionFixture;
         private readonly GetTransactionSteps _steps;
 
-        public GetTransactionStories(DynamoDbMockWebApplicationFactory<Startup> factory)
+        public GetTransactionStories(MockWebApplicationFactory<Startup> factory)
         {
             _factory = factory;
             var httpClient = factory.CreateClient();
@@ -27,14 +27,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             _transactionFixture = new TransactionFixture(elasticClient, httpClient);
         }
 
-        [Fact]
-        public void ServiceReturnsBadResult()
-        {
-            this.Given(g => _transactionFixture.GivenAnTransactionIndexExists())
-                .When(w => _steps.WhenRequestDoesNotContainSearchString())
-                .Then(t => _steps.ThenTheLastRequestShouldBeBadRequestResult())
-                .BDDfy();
-        }
 
         [Fact]
         public void ServiceReturnsOkResult()
@@ -54,6 +46,22 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 .BDDfy();
         }
 
+        [Fact]
+        public void ServiceRequestDoesNotContainSearchStringReturnsOkResult()
+        {
+            this.Given(g => _transactionFixture.GivenAnTransactionIndexExists())
+                .When(w => _steps.WhenRequestDoesNotContainSearchString())
+                .Then(t => _steps.ThenTheLastRequestShouldBe200())
+                .BDDfy();
+        }
 
+        [Fact]
+        public void ServiceRequestByPaymentReferenceAndAddressReturnsOkResult()
+        {
+            this.Given(g => _transactionFixture.GivenAnTransactionIndexExists())
+                .When(w => _steps.WhenSearchingByPaymentReferenceAndAddress("payment", "address"))
+                .Then(t => _steps.ThenTheLastRequestShouldBe404())
+                .BDDfy();
+        }
     }
 }

@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Nest;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Infrastructure
