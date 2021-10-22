@@ -39,7 +39,7 @@ namespace FinancialTransactionsApi.Tests
             builder.ConfigureServices(services =>
             {
                 services.ConfigureDynamoDB();
-                // services.ConfigureElasticSearch(_configuration);
+                services.ConfigureElasticSearch(_configuration);
                 var serviceProvider = services.BuildServiceProvider();
                 DynamoDb = serviceProvider.GetRequiredService<IAmazonDynamoDB>();
                 DynamoDbContext = serviceProvider.GetRequiredService<IDynamoDBContext>();

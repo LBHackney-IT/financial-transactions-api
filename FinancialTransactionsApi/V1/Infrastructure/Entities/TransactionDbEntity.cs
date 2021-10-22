@@ -2,7 +2,6 @@ using Amazon.DynamoDBv2.DataModel;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure.Conventers;
 using System;
-using Amazon.DynamoDBv2.DocumentModel;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 {
