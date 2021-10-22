@@ -1,7 +1,11 @@
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using FinancialTransactionsApi.V1;
 using FinancialTransactionsApi.V1.Controllers;
+using FinancialTransactionsApi.V1.ElasticSearch;
+using FinancialTransactionsApi.V1.ElasticSearch.Interfaces;
 using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.Gateways.ElasticSearch;
+using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
@@ -22,10 +26,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using FinancialTransactionsApi.V1.ElasticSearch;
-using FinancialTransactionsApi.V1.ElasticSearch.Interfaces;
-using FinancialTransactionsApi.V1.Gateways.ElasticSearch;
-using FinancialTransactionsApi.V1.Helpers;
 
 namespace FinancialTransactionsApi
 {
@@ -118,16 +118,15 @@ namespace FinancialTransactionsApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
-
             RegisterGateways(services);
             RegisterUseCases(services);
-            services.ConfigureElasticSearch(Configuration);
+            //services.ConfigureElasticSearch(Configuration);
             //services.AddElasticSearchHealthCheck();
 
-            services.AddScoped<IWildCardAppenderAndPrePender, WildCardAppenderAndPrePender>();
-            services.AddScoped<IQueryFactory, QueryFactory>();
-            services.AddScoped<IIndexSelector, IndexSelector>();
-            services.AddScoped(typeof(IQueryBuilder<>), typeof(QueryBuilder<>)); ;
+            //services.AddScoped<IWildCardAppenderAndPrePender, WildCardAppenderAndPrePender>();
+            //services.AddScoped<IQueryFactory, QueryFactory>();
+            //services.AddScoped<IIndexSelector, IndexSelector>();
+            //services.AddScoped(typeof(IQueryBuilder<>), typeof(QueryBuilder<>));
 
 
             services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>

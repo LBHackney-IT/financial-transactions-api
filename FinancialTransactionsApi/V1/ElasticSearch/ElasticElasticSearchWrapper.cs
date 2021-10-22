@@ -1,34 +1,26 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.ElasticSearch.Interfaces;
-using FinancialTransactionsApi.V1.Gateways.Models;
 using FinancialTransactionsApi.V1.Helpers;
 using Microsoft.Extensions.Logging;
 using Nest;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.ElasticSearch
 {
     public class ElasticElasticSearchWrapper : IElasticSearchWrapper
     {
         private readonly IElasticClient _esClient;
-        private readonly IQueryFactory _queryFactory;
         private readonly IPagingHelper _pagingHelper;
-        private readonly ISortFactory _iSortFactory;
         private readonly ILogger<ElasticElasticSearchWrapper> _logger;
-        private readonly IIndexSelector _indexSelector;
 
-        public ElasticElasticSearchWrapper(IElasticClient esClient, IQueryFactory queryFactory,
-            IPagingHelper pagingHelper, ISortFactory iSortFactory, ILogger<ElasticElasticSearchWrapper> logger, IIndexSelector indexSelector)
+        public ElasticElasticSearchWrapper(IElasticClient esClient,
+            IPagingHelper pagingHelper, ILogger<ElasticElasticSearchWrapper> logger)
         {
             _esClient = esClient;
-            _queryFactory = queryFactory;
             _pagingHelper = pagingHelper;
-            _iSortFactory = iSortFactory;
             _logger = logger;
-            _indexSelector = indexSelector;
         }
 
         public async Task<ISearchResponse<T>> Search<T>(TransactionSearchRequest request) where T : class
@@ -74,9 +66,9 @@ namespace FinancialTransactionsApi.V1.ElasticSearch
             }
         }
 
-        private IQueryGenerator<T> BaseQuery<T>(TransactionSearchRequest request) where T : class
-        {
-            return _queryFactory.CreateQuery<T>(request);
-        }
+        //private IQueryGenerator<T> BaseQuery<T>(TransactionSearchRequest request) where T : class
+        //{
+        //    return _queryFactory.CreateQuery<T>(request);
+        //}
     }
 }

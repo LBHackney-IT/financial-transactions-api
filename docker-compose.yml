@@ -9,6 +9,7 @@ services:
     ports:
       - 3000:3000
     environment:
+      - Sns_LocalMode=true
       - DynamoDb_LocalMode=true
       - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
       - AWS_REGION=eu-west-2
