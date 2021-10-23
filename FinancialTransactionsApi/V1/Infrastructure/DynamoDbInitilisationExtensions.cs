@@ -21,8 +21,9 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 {
                     var clientConfig = new AmazonDynamoDBConfig { ServiceURL = url };
                     var credentials = new BasicAWSCredentials(accessKey, secretKey);
-                    return new AmazonDynamoDBClient(credentials, clientConfig);
+                    return new AmazonDynamoDBClient(clientConfig);
                 });
+
             }
             else
             {

@@ -1,3 +1,4 @@
+using Amazon.DynamoDBv2.DataModel;
 using Nest;
 using System;
 using System.Net.Http;
@@ -8,6 +9,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
     public class BaseFixture
     {
         protected readonly IElasticClient ElasticSearchClient;
+        //public readonly IDynamoDBContext _dbContext;
         private HttpClient HttpClient { get; set; }
 
         private string _elasticSearchAddress;
@@ -16,6 +18,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
         {
             ElasticSearchClient = elasticClient;
             HttpClient = httpHttpClient;
+            // _dbContext = dbContext;
         }
 
         protected void WaitForEsInstance()

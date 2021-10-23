@@ -1,6 +1,7 @@
 using FinancialTransactionsApi.Tests.V1.E2ETests.Fixture;
 using FinancialTransactionsApi.Tests.V1.E2ETests.Steps.Base;
 using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Domain;
 using FluentAssertions;
 using System;
 using System.Linq;
@@ -63,6 +64,27 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             result.Results.Transactions.Count.Should().Be(pageSize);
         }
 
+        public async Task Add_WithInvalidModel_Returns400()
+        {
+            var transaction =
+
+            _lastResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var responseContent = await _lastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonSerializer.Deserialize<BaseErrorResponse>(responseContent, _jsonOptions);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.Details.Should().Be(string.Empty);
+
+            apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
+            apiEntity.Message.Should().Contain("The field TargetId cannot be empty or default.");
+            apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
+            apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TransactionAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and {(double) decimal.MaxValue}.");
+        }
 
     }
 }

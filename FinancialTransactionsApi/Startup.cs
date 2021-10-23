@@ -120,7 +120,7 @@ namespace FinancialTransactionsApi
             services.ConfigureDynamoDB();
             RegisterGateways(services);
             RegisterUseCases(services);
-            //services.ConfigureElasticSearch(Configuration);
+            services.ConfigureElasticSearch(Configuration);
             //services.AddElasticSearchHealthCheck();
 
             //services.AddScoped<IWildCardAppenderAndPrePender, WildCardAppenderAndPrePender>();
