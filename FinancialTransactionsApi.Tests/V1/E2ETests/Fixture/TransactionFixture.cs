@@ -1,19 +1,28 @@
+using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
 using Elasticsearch.Net;
+using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways.Models;
 using Nest;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
+
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
 {
 
     public class TransactionFixture : BaseFixture
     {
-        // public List<QueryableTransaction> Transactions { get; private set; }
+        public List<Transaction> Transactions { get; private set; }
+        private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
+        // public List<Transaction> Contacts { get; private set; } = new List<ContactDetailsEntity>();
+        public AddTransactionRequest TransactionRequestObject { get; private set; } = new AddTransactionRequest();
+
         private const string Index = "transactions";
         public static readonly string[] Alphabet = { "aa", "bb", "cc", "dd", "ee", "vv", "ww", "xx", "yy", "zz" };
 
@@ -43,18 +52,45 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 Thread.Sleep(5000);
             }
         }
+        public void GivenANewTransactionRequest()
+        {
+            var transaction = ConstructTransaction();
+            TransactionRequestObject = new AddTransactionRequest()
+            {
 
-        private static IEnumerable<QueryableTransaction> CreateTransactionsData()
+                TransactionDate = transaction.TransactionDate,
+                Address = transaction.Address,
+                BalanceAmount = transaction.BalanceAmount,
+                ChargedAmount = transaction.ChargedAmount,
+                Fund = transaction.Fund,
+                HousingBenefitAmount = transaction.HousingBenefitAmount,
+                IsSuspense = transaction.IsSuspense,
+                BankAccountNumber = transaction.BankAccountNumber,
+                PaidAmount = transaction.PaidAmount,
+                PaymentReference = transaction.PaymentReference,
+                PeriodNo = transaction.PeriodNo,
+                Person = transaction.Person,
+                TargetId = transaction.TargetId,
+                TransactionAmount = transaction.TransactionAmount,
+                TransactionSource = transaction.TransactionSource,
+                TransactionType = transaction.TransactionType
+            };
+        }
+        public void GivenAnInvalidNewTransactionRequest()
+        {
+            TransactionRequestObject = new AddTransactionRequest();
+        }
+        private IEnumerable<QueryableTransaction> CreateTransactionsData()
         {
             var listOfTransactions = new List<QueryableTransaction>();
-            var fixture = new AutoFixture.Fixture();
+            // var fixture = new AutoFixture.Fixture();
             var random = new Random();
 
             foreach (var value in Alphabet)
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    var transaction = fixture.Create<QueryableTransaction>();
+                    var transaction = _fixture.Create<QueryableTransaction>();
                     transaction.Address = value;
                     transaction.PaymentReference = value;
 
@@ -65,7 +101,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
             // Add loads more at random
             for (int i = 0; i < 900; i++)
             {
-                var transaction = fixture.Create<QueryableTransaction>();
+                var transaction = _fixture.Create<QueryableTransaction>();
 
                 var value = Alphabet[random.Next(0, Alphabet.Length)];
                 transaction.Address = value;
@@ -75,5 +111,19 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
 
             return listOfTransactions;
         }
+        private Transaction ConstructTransaction()
+        {
+            var entity = _fixture.Create<Transaction>();
+
+            entity.TransactionDate = new DateTime(2021, 8, 1);
+            entity.PeriodNo = 35;
+            entity.Fund = null;
+            entity.IsSuspense = true;
+            entity.SuspenseResolutionInfo = null;
+            entity.BankAccountNumber = "12345678";
+
+            return entity;
+        }
+
     }
 }

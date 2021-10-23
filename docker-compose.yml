@@ -24,7 +24,7 @@ services:
       context: .
       dockerfile: FinancialTransactionsApi.Tests/Dockerfile
     environment:
-      - ELASTICSEARCH_DOMAIN_URL=http://test-elasticsearch:9200
+      - ELASTICSEARCH_DOMAIN_URL=http://financial-transactions-api-elasticsearch:9200
       - DynamoDb_LocalMode=true
       - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
       - AWS_REGION=eu-west-2
@@ -32,15 +32,15 @@ services:
       - AWS_SECRET_ACCESS_KEY=local
     links:
       - dynamodb-database
-      - test-elasticsearch
+      - financial-transactions-api-elasticsearch
     networks:
       - elastic
-    depends_on:
-      #- kibana
-      - test-elasticsearch
-  test-elasticsearch:
-    image: test-elasticsearch
-    container_name: test-elasticsearch
+    #depends_on:
+    #  #- kibana
+    #  - financial-transactions-api-elasticsearch
+  financial-transactions-api-elasticsearch:
+    image: financial-transactions-api-elasticsearch
+    container_name: financial-transactions-api-elasticsearch
     build:
       context: .
       dockerfile: data/elasticsearch/Dockerfile
@@ -53,7 +53,7 @@ services:
       - 9200:9200
       - 9300:9300
     volumes:
-      - esdata-test:/usr/share/elasticsearch/data
+       -  financial-transaction-api-esdata-test:/usr/share/elasticsearch/data
     networks:
       - elastic
       
@@ -62,7 +62,7 @@ services:
     ports:
       - 8000:8000
 volumes:
-    esdata-test:
+     financial-transaction-api-esdata-test:
         driver: local
 
 networks:

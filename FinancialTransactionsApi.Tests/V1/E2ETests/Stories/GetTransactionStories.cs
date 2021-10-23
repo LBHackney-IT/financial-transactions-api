@@ -10,21 +10,18 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
        AsA = "Service",
        IWant = "The Transaction Search Endpoint to return results",
        SoThat = "it is possible to search for assets")]
-    [Collection("ElasticSearch collection")]
+    [Collection("DynamoDb collection")]
     public class GetTransactionStories
     {
-        private readonly MockWebApplicationFactory<Startup> _factory;
+        private readonly DynamoDbIntegrationTests<Startup> _dbFixture;
         private readonly TransactionFixture _transactionFixture;
         private readonly GetTransactionSteps _steps;
 
-        public GetTransactionStories(MockWebApplicationFactory<Startup> factory)
+        public GetTransactionStories(DynamoDbIntegrationTests<Startup> dbFixture)
         {
-            _factory = factory;
-            var httpClient = factory.CreateClient();
-            var elasticClient = factory.ElasticSearchClient;
-
-            _steps = new GetTransactionSteps(httpClient);
-            _transactionFixture = new TransactionFixture(elasticClient, httpClient);
+            _dbFixture = dbFixture;
+            _steps = new GetTransactionSteps(_dbFixture.Client);
+            _transactionFixture = new TransactionFixture(_dbFixture.ElasticSearchClient, _dbFixture.Client);
         }
 
 
