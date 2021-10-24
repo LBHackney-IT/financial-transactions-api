@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
+using FinancialTransactionsApi.V1;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Controllers
