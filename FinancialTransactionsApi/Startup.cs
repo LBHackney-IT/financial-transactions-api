@@ -10,6 +10,8 @@ using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
+using Hackney.Core.DynamoDb;
+using Hackney.Core.ElasticSearch;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -120,13 +122,10 @@ namespace FinancialTransactionsApi
             services.ConfigureDynamoDB();
             RegisterGateways(services);
             RegisterUseCases(services);
-            services.ConfigureElasticSearch(Configuration);
+
+            services.ConfigureElasticSearch(Configuration, "ELASTICSEARCH_DOMAIN_URL");
             //services.AddElasticSearchHealthCheck();
 
-            //services.AddScoped<IWildCardAppenderAndPrePender, WildCardAppenderAndPrePender>();
-            //services.AddScoped<IQueryFactory, QueryFactory>();
-            //services.AddScoped<IIndexSelector, IndexSelector>();
-            //services.AddScoped(typeof(IQueryBuilder<>), typeof(QueryBuilder<>));
 
 
             services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
@@ -179,7 +178,6 @@ namespace FinancialTransactionsApi
             services.AddScoped<IGetTransactionListUseCase, GetTransactionListUseCase>();
             services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
             services.AddScoped<IPagingHelper, PagingHelper>();
-            services.AddScoped<ISortFactory, SortFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -12,13 +12,13 @@
     <NoWarn>1701;1702;CA1707;CA1303</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="V1\E2ETests\DynamoDbTransactionIntegrationTest.cs" />
     <Compile Remove="V1\Gateways\ExampleGatewayTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.11.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.4" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />

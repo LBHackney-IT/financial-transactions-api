@@ -1,4 +1,5 @@
 using FinancialTransactionsApi.V1.Infrastructure;
+using Hackney.Core.ElasticSearch;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +25,7 @@ namespace FinancialTransactionsApi.Tests
 
             builder.ConfigureServices(services =>
             {
-                services.ConfigureElasticSearch(_configuration);
+                services.ConfigureElasticSearch(_configuration, "ELASTICSEARCH_DOMAIN_URL");
 
                 var serviceProvider = services.BuildServiceProvider();
                 ElasticSearchClient = serviceProvider.GetRequiredService<IElasticClient>();

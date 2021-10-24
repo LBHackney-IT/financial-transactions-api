@@ -1,18 +1,13 @@
-using FinancialTransactionsApi.Tests.V1.E2ETests.Fixture;
-using FinancialTransactionsApi.Tests.V1.E2ETests.Steps;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.Tests.V1.E2ETests.Fixture;
+using FinancialTransactionsApi.Tests.V1.E2ETests.Steps;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+using System;
+using System.Linq;
+using Hackney.Core.DynamoDb;
 using TestStack.BDDfy;
 using Xunit;
 
@@ -23,14 +18,14 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
        AsA = "As a service user or application",
        IWant = "to be able to create a new transaction ",
        SoThat = "To be able to process transaction")]
-    [Collection("DynamoDb collection")]
+    [Collection("Aws collection")]
     public class CreateTransactionTests : IDisposable
     {
-        private readonly DynamoDbIntegrationTests<Startup> _dbFixture;
+        private readonly AwsIntegrationTests<Startup> _dbFixture;
         private readonly TransactionDetailsFixture _transactionFixture;
         private readonly CreateTransactionSteps _steps;
 
-        public CreateTransactionTests(DynamoDbIntegrationTests<Startup> dbFixture)
+        public CreateTransactionTests(AwsIntegrationTests<Startup> dbFixture)
         {
             _dbFixture = dbFixture;
 
@@ -114,87 +109,5 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             Environment.SetEnvironmentVariable("DynamoDb_LocalMode", null);
         }
-
-        //[Fact]
-        //public void ServiceSavesMultilineAddressToValueFieldWhenContactTypeIsAddress()
-        //{
-        //    this.Given(g => _contactDetailsFixture.GivenANewContactRequestWhereContactTypeIsAddress())
-        //        .When(w => _steps.WhenTheCreateContactEndpointIsCalled(_contactDetailsFixture.ContactRequestObject))
-        //        .Then(t => _steps.TheMultilineAddressIsSavedInTheValueField(_contactDetailsFixture))
-        //        .BDDfy();
-        //}
-
-        //[Fact]
-        //public void ServiceDoesntSaveMultilineAddressToValueFieldWhenContactTypeIsNotAddress()
-        //{
-        //    this.Given(g => _contactDetailsFixture.GivenANewContactRequestWhereContactTypeIsNotAddress())
-        //        .When(w => _steps.WhenTheCreateContactEndpointIsCalled(_contactDetailsFixture.ContactRequestObject))
-        //        .Then(t => _steps.TheMultilineAddressIsNotSavedInTheValueField(_contactDetailsFixture))
-        //        .BDDfy();
-        //}
-
-        //[Fact]
-        //public void ServiceReturnsBadRequestWithInvalidContactDetails()
-        //{
-        //    this.Given(g => _contactDetailsFixture.GivenAnInvalidNewContactRequest())
-        //        .When(w => _steps.WhenTheCreateContactEndpointIsCalled(_contactDetailsFixture.ContactRequestObject))
-        //        .Then(t => _steps.ThenBadRequestIsReturned())
-        //        .And(t => _steps.ThenTheResponseIncludesValidationErrors())
-        //        .BDDfy();
-        //}
-
-        //[Fact]
-        //public void ServiceReturnsBadRequestWithInvalidPhoneNumber()
-        //{
-        //    this.Given(g => _contactDetailsFixture.GivenAnNewContactRequestWithAnInvalidPhoneNumber())
-        //        .When(w => _steps.WhenTheCreateContactEndpointIsCalled(_contactDetailsFixture.ContactRequestObject))
-        //        .Then(t => _steps.ThenBadRequestValidationErrorResultIsReturned("Value", ErrorCodes.InvalidPhoneNumber))
-        //        .BDDfy();
-        //}
-
-        //[Fact]
-        //public void ServiceReturnsBadRequestWithInvalidEmail()
-        //{
-        //    this.Given(g => _contactDetailsFixture.GivenAnNewContactRequestWithAnInvalidEmail())
-        //        .When(w => _steps.WhenTheCreateContactEndpointIsCalled(_contactDetailsFixture.ContactRequestObject))
-        //        .Then(t => _steps.ThenBadRequestValidationErrorResultIsReturned("Value", ErrorCodes.InvalidEmail))
-        //        .BDDfy();
-        //}
-
-        //[Fact]
-        //public void ServiceDoesntValidateAddressLine1WhenContactTypeNotAddress()
-        //{
-        //    this.Given(g => _contactDetailsFixture.GivenANewContactRequestWithInvalidAddressLine1WhenTheContactTypeNotAddress())
-        //        .When(w => _steps.WhenTheCreateContactEndpointIsCalled(_contactDetailsFixture.ContactRequestObject))
-        //        .Then(t => _steps.ThenThereIsNoValidationErrorForField("AddressLine1"))
-        //        .BDDfy();
-        //}
-
-        //[Fact]
-        //public void ServiceDoesntValidatePostCodeWhenContactTypeNotAddress()
-        //{
-        //    this.Given(g => _contactDetailsFixture.GivenANewContactRequestWithInvalidPostCodeWhenTheContactTypeNotAddress())
-        //        .When(w => _steps.WhenTheCreateContactEndpointIsCalled(_contactDetailsFixture.ContactRequestObject))
-        //        .Then(t => _steps.ThenThereIsNoValidationErrorForField("PostCode"))
-        //        .BDDfy();
-        //}
-
-        //[Fact]
-        //public void ServiceValidatesAddressLine1WhenContactTypeIsAddress()
-        //{
-        //    this.Given(g => _contactDetailsFixture.GivenANewContactRequestWithInvalidAddressLine1WhenTheContactTypeIsAddress())
-        //        .When(w => _steps.WhenTheCreateContactEndpointIsCalled(_contactDetailsFixture.ContactRequestObject))
-        //        .Then(t => _steps.ThenThereIsAValidationErrorForField("AddressLine1"))
-        //        .BDDfy();
-        //}
-
-        //[Fact]
-        //public void ServiceValidatesPostCodeWhenContactTypeIsAddress()
-        //{
-        //    this.Given(g => _contactDetailsFixture.GivenANewContactRequestWithInvalidPostCodeWhenTheContactTypeIsAddress())
-        //        .When(w => _steps.WhenTheCreateContactEndpointIsCalled(_contactDetailsFixture.ContactRequestObject))
-        //        .Then(t => _steps.ThenThereIsAValidationErrorForField("PostCode"))
-        //        .BDDfy();
-        //}
     }
 }

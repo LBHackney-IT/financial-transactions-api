@@ -1,4 +1,3 @@
-using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
 using Elasticsearch.Net;
 using FinancialTransactionsApi.V1.Boundary.Request;
@@ -8,27 +7,26 @@ using Nest;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Threading;
 
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
 {
 
-    public class TransactionFixture : BaseFixture
+    public class TransactionFixture //: BaseFixture
     {
         public List<Transaction> Transactions { get; private set; }
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
-        // public List<Transaction> Contacts { get; private set; } = new List<ContactDetailsEntity>();
+        public readonly IElasticClient ElasticSearchClient;
         public AddTransactionRequest TransactionRequestObject { get; private set; } = new AddTransactionRequest();
 
         private const string Index = "transactions";
         public static readonly string[] Alphabet = { "aa", "bb", "cc", "dd", "ee", "vv", "ww", "xx", "yy", "zz" };
 
-        public TransactionFixture(IElasticClient elasticClient, HttpClient httpClient) : base(elasticClient, httpClient)
+        public TransactionFixture(IElasticClient elasticClient)
         {
-            WaitForEsInstance();
+            ElasticSearchClient = elasticClient;
+            //WaitForEsInstance();
         }
 
         public void GivenAnTransactionIndexExists()
@@ -83,7 +81,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
         private IEnumerable<QueryableTransaction> CreateTransactionsData()
         {
             var listOfTransactions = new List<QueryableTransaction>();
-            // var fixture = new AutoFixture.Fixture();
             var random = new Random();
 
             foreach (var value in Alphabet)
