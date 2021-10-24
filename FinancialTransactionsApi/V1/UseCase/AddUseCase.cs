@@ -6,6 +6,7 @@ using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System;
 using System.Threading.Tasks;
+using Hackney.Core.Sns;
 
 namespace FinancialTransactionsApi.V1.UseCase
 {
@@ -13,9 +14,14 @@ namespace FinancialTransactionsApi.V1.UseCase
     {
         private readonly ITransactionGateway _gateway;
 
-        public AddUseCase(ITransactionGateway gateway)
+        private readonly ISnsGateway _snsGateway;
+        private readonly ISnsFactory _snsFactory;
+
+        public AddUseCase(ITransactionGateway gateway, ISnsGateway snsGateway, ISnsFactory snsFactory)
         {
             _gateway = gateway;
+            _snsGateway = snsGateway;
+            _snsFactory = snsFactory;
         }
 
         public async Task<TransactionResponse> ExecuteAsync(AddTransactionRequest transaction)
@@ -38,7 +44,9 @@ namespace FinancialTransactionsApi.V1.UseCase
             transactionDomain.Id = Guid.NewGuid();
 
             await _gateway.AddAsync(transactionDomain).ConfigureAwait(false);
-
+            //var transactionSnsMessage = _snsFactory.Create(transactionDomain);
+            //var transactionTopicArn = Environment.GetEnvironmentVariable("TRANSACTION_SNS_ARN");
+            //await _snsGateway.Publish(transactionSnsMessage, transactionTopicArn).ConfigureAwait(false);
             return transactionDomain.ToResponse();
         }
     }

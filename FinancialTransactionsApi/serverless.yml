@@ -27,6 +27,8 @@ functions:
     name: ${self:service}-${self:provider.stage}
     handler: FinancialTransactionsApi::FinancialTransactionsApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
+    environment:
+     TRANSACTION_SNS_ARN: ${ssm:/sns-topic/${self:provider.stage}/transactions/arn}
     events:
       - http:
           path: /{proxy+}

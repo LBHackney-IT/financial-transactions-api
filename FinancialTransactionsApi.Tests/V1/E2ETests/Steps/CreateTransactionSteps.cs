@@ -15,6 +15,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
@@ -50,33 +51,33 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             };
         }
 
-        //public async Task ThenTheContactDetailsCreatedEventIsRaised(SnsEventVerifier<ContactDetailsSns> snsVerifer)
-        //{
-        //    var apiResult = await ExtractResultFromHttpResponse(_lastResponse).ConfigureAwait(false);
+        public async Task ThenTheTransactionCreatedEventIsRaised(SnsEventVerifier<TransactionSns> snsVerifer)
+        {
+            var apiResult = await ExtractResultFromHttpResponse(_lastResponse).ConfigureAwait(false);
 
-        //    Action<ContactDetailsSns> verifyFunc = (actual) =>
-        //    {
-        //        actual.CorrelationId.Should().NotBeEmpty();
-        //        actual.DateTime.Should().BeCloseTo(DateTime.UtcNow, 1000);
-        //        actual.EntityId.Should().Be(apiResult.TargetId);
+            Action<TransactionSns> verifyFunc = (actual) =>
+            {
+                actual.CorrelationId.Should().NotBeEmpty();
+                actual.DateTime.Should().BeCloseTo(DateTime.UtcNow, 1000);
+                actual.EntityId.Should().Be(apiResult.TargetId);
 
-        //        actual.EventData.NewData.ContactType.Should().Be((int) apiResult.ContactInformation.ContactType);
-        //        actual.EventData.NewData.Description.Should().Be(apiResult.ContactInformation.Description);
-        //        actual.EventData.NewData.Id.Should().Be(apiResult.Id);
-        //        actual.EventData.NewData.Value.Should().Be(apiResult.ContactInformation.Value);
-        //        actual.EventData.OldData.Should().BeEquivalentTo(new DataItem());
+                //actual.EventData.NewData.ContactType.Should().Be((int) apiResult.ContactInformation.ContactType);
+                //actual.EventData.NewData.Should().Be(apiResult.Address);
+                //actual.EventData.NewData.Id.Should().Be(apiResult.Id);
+                //actual.EventData.NewData.Value.Should().Be(apiResult.ContactInformation.Value);
+                //actual.EventData.OldData.Should().BeEquivalentTo(new DataItem());
 
-        //        actual.EventType.Should().Be(EventConstants.CREATED);
-        //        actual.Id.Should().NotBeEmpty();
-        //        actual.SourceDomain.Should().Be(EventConstants.SOURCEDOMAIN);
-        //        actual.SourceSystem.Should().Be(EventConstants.SOURCESYSTEM);
-        //        actual.User.Email.Should().Be("e2e-testing@development.com");
-        //        actual.User.Name.Should().Be("Tester");
-        //        actual.Version.Should().Be(EventConstants.V1VERSION);
-        //    };
+                actual.EventType.Should().Be(EventConstants.EVENTTYPE);
+                actual.Id.Should().NotBeEmpty();
+                actual.SourceDomain.Should().Be(EventConstants.SOURCEDOMAIN);
+                actual.SourceSystem.Should().Be(EventConstants.SOURCESYSTEM);
+                //actual.User.Email.Should().Be("e2e-testing@development.com");
+                //actual.User.Name.Should().Be("Tester");
+                actual.Version.Should().Be(EventConstants.VERSION);
+            };
 
-        //    snsVerifer.VerifySnsEventRaised(verifyFunc).Should().BeTrue(snsVerifer.LastException?.Message);
-        //}
+            snsVerifer.VerifySnsEventRaised(verifyFunc).Should().BeTrue(snsVerifer.LastException?.Message);
+        }
 
         public async Task WhenTheAddTransactionEndpointIsCalled(AddTransactionRequest requestObject)
         {

@@ -18,7 +18,9 @@
       "launchUrl": "swagger/index.html",
       "environmentVariables": {
         "Sns_LocalMode": "true",
+        "Localstack_SnsServiceUrl": "http://localstack:4566",
         "DynamoDb_LocalServiceUrl": "http://localhost:8000",
+        "TRANSACTION_SNS_ARN": "some-topic",
         "DynamoDb_LocalAccessKey": "fco1i2",
         "DynamoDb_LocalSecretKey": "8kmm3g",
         "DynamoDb_LocalMode": "true",

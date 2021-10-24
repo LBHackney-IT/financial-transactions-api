@@ -33,10 +33,12 @@ services:
       - AWS_REGION=eu-west-2
       - AWS_ACCESS_KEY_ID=local
       - AWS_SECRET_ACCESS_KEY=local
-      - ELASTICSEARCH_DOMAIN_URL=http://financial-transactions-api-elasticsearch:9200
+      - ELASTICSEARCH_DOMAIN_URL=http://financial-transactions-api-elasticsearch:9200 
+      - Localstack_SnsServiceUrl=http://localstack:4566
     links:
       - dynamodb-database
       - financial-transactions-api-elasticsearch
+      - localstack
     #networks:
     #  - elastic
     depends_on:
@@ -47,6 +49,21 @@ services:
     image: amazon/dynamodb-local
     ports:
       - 8000:8000
+
+  localstack:
+    image: localstack/localstack
+    hostname: awslocal    
+    ports:
+      - "4566:4566"      
+    environment:
+      - SERVICES=sns,sqs
+      - DEBUG=1                  
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=/tmp/localstack      
+    volumes:
+      - "./.localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
 
   financial-transactions-api-elasticsearch:
     image: financial-transactions-api-elasticsearch
