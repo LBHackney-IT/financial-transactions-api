@@ -163,7 +163,7 @@ namespace FinancialTransactionsApi
         {
             services.AddScoped<ITransactionGateway, DynamoDbGateway>();
             services.AddScoped<ISearchGateway, SearchGateway>();
-            services.AddSingleton<DynamoDbContextWrapper>();
+            //services.AddSingleton<DynamoDbContextWrapper>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
