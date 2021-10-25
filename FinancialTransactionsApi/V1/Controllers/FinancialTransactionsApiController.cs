@@ -156,9 +156,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [Route("process-weekly-charge")]
-#pragma warning disable CA1801 // Review unused parameters
         public async Task<IActionResult> AddBatch([FromHeader(Name = "x-correlation-id")] string correlationId, [FromBody] IEnumerable<AddTransactionRequest> transactions)
-#pragma warning restore CA1801 // Review unused parameters
         {
             if (transactions == null)
             {

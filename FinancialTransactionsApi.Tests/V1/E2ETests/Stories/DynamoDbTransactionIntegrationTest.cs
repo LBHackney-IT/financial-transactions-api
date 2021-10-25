@@ -5,9 +5,9 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
-using Hackney.Core.DynamoDb;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
@@ -16,6 +16,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Hackney.Core.DynamoDb;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
@@ -75,7 +76,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         }
 
         [Fact]
-        public async Task HealchCheck_Returns200()
+        public async Task HealthCheck_Returns200()
         {
             var uri = new Uri($"api/v1/healthcheck/ping", UriKind.Relative);
             var response = await Client.GetAsync(uri).ConfigureAwait(false);
@@ -187,10 +188,10 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         {
             var transactions = new[] { ConstructTransaction(), ConstructTransaction() };
 
-            Guid TargetID = Guid.NewGuid();
+            Guid targetId = Guid.NewGuid();
 
-            transactions[0].TargetId = TargetID;
-            transactions[1].TargetId = TargetID;
+            transactions[0].TargetId = targetId;
+            transactions[1].TargetId = targetId;
             string transType = transactions[0].TransactionType.ToString();
             var startDate = transactions[0].TransactionDate.AddDays(-1).ToString("yyyy-MM-dd");
             var endDate = transactions[1].TransactionDate.AddDays(1).ToString("yyyy-MM-dd");
@@ -204,7 +205,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
             }
 
-            var uri = new Uri($"api/v1/transactions?targetId={TargetID}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
+            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -372,7 +373,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         [InlineData(null)]
         [InlineData("false")]
         [InlineData("true")]
-        public void ConfigureDynamoDBTestNoLocalModeEnvVarUsesAWSService(string localModeEnvVar)
+        public void ConfigureDynamoDbTestNoLocalModeEnvVarUsesAwsService(string localModeEnvVar)
         {
             Environment.SetEnvironmentVariable("DynamoDb_LocalMode", localModeEnvVar);
 
