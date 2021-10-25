@@ -1,11 +1,17 @@
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using FinancialTransactionsApi.V1;
 using FinancialTransactionsApi.V1.Controllers;
+using FinancialTransactionsApi.V1.ElasticSearch;
+using FinancialTransactionsApi.V1.ElasticSearch.Interfaces;
 using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.Gateways.ElasticSearch;
+using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
+using Hackney.Core.DynamoDb;
+using Hackney.Core.ElasticSearch;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -114,9 +120,13 @@ namespace FinancialTransactionsApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
-
             RegisterGateways(services);
             RegisterUseCases(services);
+
+            services.ConfigureElasticSearch(Configuration, "ELASTICSEARCH_DOMAIN_URL");
+            //services.AddElasticSearchHealthCheck();
+
+
 
             services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
                 builder
@@ -152,6 +162,8 @@ namespace FinancialTransactionsApi
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<ITransactionGateway, DynamoDbGateway>();
+            services.AddScoped<ISearchGateway, SearchGateway>();
+            //services.AddSingleton<DynamoDbContextWrapper>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -162,6 +174,10 @@ namespace FinancialTransactionsApi
             services.AddScoped<IAddUseCase, AddUseCase>();
             services.AddScoped<IUpdateUseCase, UpdateUseCase>();
             services.AddScoped<IAddBatchUseCase, AddBatchUseCase>();
+
+            services.AddScoped<IGetTransactionListUseCase, GetTransactionListUseCase>();
+            services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
+            services.AddScoped<IPagingHelper, PagingHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
