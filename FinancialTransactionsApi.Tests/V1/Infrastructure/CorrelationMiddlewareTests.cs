@@ -7,7 +7,7 @@ using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Infrastructure
 {
-   
+
     public class CorrelationMiddlewareTest
     {
         private readonly CorrelationMiddleware _sut;

@@ -5,9 +5,9 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
-using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
+using Hackney.Core.DynamoDb;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
@@ -20,9 +20,9 @@ using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
-    public class DynamoDbTransactionIntegrationTest : DynamoDbIntegrationTests<Startup>
+    public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
-        private readonly Fixture _fixture = new Fixture();
+        private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
 
         /// <summary>
         /// Method to construct a test entity that can be used in a test
