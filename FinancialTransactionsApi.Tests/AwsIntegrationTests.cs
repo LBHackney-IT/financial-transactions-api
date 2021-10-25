@@ -18,7 +18,7 @@ namespace FinancialTransactionsApi.Tests
         public IDynamoDBContext DynamoDbContext => Factory?.DynamoDbContext;
         public IElasticClient ElasticSearchClient => Factory.ElasticSearchClient;
         public IAmazonSimpleNotificationService SimpleNotificationService => Factory?.SimpleNotificationService;
-        //public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
+        public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
         {
@@ -65,7 +65,7 @@ namespace FinancialTransactionsApi.Tests
 
             Client = Factory.CreateClient();
             CleanupActions = new List<Action>();
-            //CreateSnsTopic();
+            CreateSnsTopic();
         }
         public void Dispose()
         {
@@ -99,13 +99,13 @@ namespace FinancialTransactionsApi.Tests
 
             var response = SimpleNotificationService.CreateTopicAsync(new CreateTopicRequest
             {
-                Name = "transactions",
+                Name = "transactioncreated",
                 Attributes = snsAttrs
             }).Result;
 
             Environment.SetEnvironmentVariable("TRANSACTION_SNS_ARN", response.TopicArn);
 
-            //SnsVerifer = new SnsEventVerifier<TransactionSns>(Factory.AmazonSqs, SimpleNotificationService, response.TopicArn);
+            SnsVerifer = new SnsEventVerifier<TransactionSns>(Factory.AmazonSqs, SimpleNotificationService, response.TopicArn);
         }
 
     }

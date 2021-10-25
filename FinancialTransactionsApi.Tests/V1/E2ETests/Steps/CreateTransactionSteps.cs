@@ -2,6 +2,9 @@ using FinancialTransactionsApi.Tests.V1.E2ETests.Fixture;
 using FinancialTransactionsApi.Tests.V1.E2ETests.Steps.Base;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
@@ -11,12 +14,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Infrastructure;
-using FinancialTransactionsApi.V1.Infrastructure.Entities;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 {
@@ -58,21 +57,12 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             Action<TransactionSns> verifyFunc = (actual) =>
             {
                 actual.CorrelationId.Should().NotBeEmpty();
-                actual.DateTime.Should().BeCloseTo(DateTime.UtcNow, 1000);
-                actual.EntityId.Should().Be(apiResult.TargetId);
-
-                //actual.EventData.NewData.ContactType.Should().Be((int) apiResult.ContactInformation.ContactType);
-                //actual.EventData.NewData.Should().Be(apiResult.Address);
-                //actual.EventData.NewData.Id.Should().Be(apiResult.Id);
-                //actual.EventData.NewData.Value.Should().Be(apiResult.ContactInformation.Value);
-                //actual.EventData.OldData.Should().BeEquivalentTo(new DataItem());
-
+                //actual.DateTime.Should().BeCloseTo(DateTime.UtcNow.AddHours(1), 7000);
+                actual.EntityId.Should().Be(apiResult.Id);
                 actual.EventType.Should().Be(EventConstants.EVENTTYPE);
                 actual.Id.Should().NotBeEmpty();
                 actual.SourceDomain.Should().Be(EventConstants.SOURCEDOMAIN);
                 actual.SourceSystem.Should().Be(EventConstants.SOURCESYSTEM);
-                //actual.User.Email.Should().Be("e2e-testing@development.com");
-                //actual.User.Name.Should().Be("Tester");
                 actual.Version.Should().Be(EventConstants.VERSION);
             };
 
@@ -163,41 +153,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             updateApiEntity.FinancialMonth.Should().Be(expected.FinancialMonth);
             updateApiEntity.FinancialYear.Should().Be(expected.FinancialYear);
         }
-        //public async Task TheMultilineAddressIsSavedInTheValueField(ContactDetailsFixture fixture)
-        //{
-        //    var expected = fixture.ContactRequestObject;
-        //    var apiResult = await ExtractResultFromHttpResponse(_lastResponse).ConfigureAwait(false);
-
-        //    var dbEntity = await fixture._dbContext.LoadAsync<ContactDetailsEntity>(apiResult.TargetId, apiResult.Id).ConfigureAwait(false);
-
-        //    dbEntity.ContactInformation.ContactType.Should().Be(ContactType.address);
-
-        //    // assert multiline address saved in value field
-        //    dbEntity.ContactInformation.Value.Should().Contain(expected.ContactInformation.AddressExtended.AddressLine1);
-        //    dbEntity.ContactInformation.Value.Should().Contain(expected.ContactInformation.AddressExtended.AddressLine2);
-        //    dbEntity.ContactInformation.Value.Should().Contain(expected.ContactInformation.AddressExtended.AddressLine3);
-        //    dbEntity.ContactInformation.Value.Should().Contain(expected.ContactInformation.AddressExtended.AddressLine4);
-        //    dbEntity.ContactInformation.Value.Should().Contain(expected.ContactInformation.AddressExtended.PostCode);
-        //}
-
-        //public async Task TheMultilineAddressIsNotSavedInTheValueField(ContactDetailsFixture fixture)
-        //{
-        //    var expected = fixture.ContactRequestObject;
-        //    var apiResult = await ExtractResultFromHttpResponse(_lastResponse).ConfigureAwait(false);
-
-        //    var dbEntity = await fixture._dbContext.LoadAsync<ContactDetailsEntity>(apiResult.TargetId, apiResult.Id).ConfigureAwait(false);
-
-        //    dbEntity.ContactInformation.ContactType.Should().NotBe(ContactType.address);
-
-        //    dbEntity.ContactInformation.Value.Should().Be(expected.ContactInformation.Value);
-
-        //    // assert multiline address saved in value field
-        //    dbEntity.ContactInformation.Value.Should().NotContain(expected.ContactInformation.AddressExtended.AddressLine1);
-        //    dbEntity.ContactInformation.Value.Should().NotContain(expected.ContactInformation.AddressExtended.AddressLine2);
-        //    dbEntity.ContactInformation.Value.Should().NotContain(expected.ContactInformation.AddressExtended.AddressLine3);
-        //    dbEntity.ContactInformation.Value.Should().NotContain(expected.ContactInformation.AddressExtended.AddressLine4);
-        //    dbEntity.ContactInformation.Value.Should().NotContain(expected.ContactInformation.AddressExtended.PostCode);
-        //}
 
         public async Task ThenTheResponseIncludesValidationErrors()
         {
@@ -250,11 +205,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
         public async Task ThenBadRequestValidationErrorResultIsReturned(string propertyName)
         {
             await ThenBadRequestValidationErrorResultIsReturned(propertyName, null, null).ConfigureAwait(false);
-        }
-
-        public async Task ThenBadRequestValidationErrorResultIsReturned(string propertyName, string errorCode)
-        {
-            await ThenBadRequestValidationErrorResultIsReturned(propertyName, errorCode, null).ConfigureAwait(false);
         }
 
         public async Task ThenBadRequestValidationErrorResultIsReturned(string propertyName, string errorCode, string errorMsg)

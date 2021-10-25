@@ -153,7 +153,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             // Assert
             _mockSnsFactory.Verify(x => x.Create(It.IsAny<Transaction>()));
-            // _mockSnsGateway.Verify(x => x.Publish(It.IsAny<TransactionSns>(), It.IsAny<string>(), It.IsAny<string>()));
+            _mockSnsGateway.Verify(x => x.Publish(It.IsAny<TransactionSns>(), It.IsAny<string>(), It.IsAny<string>()));
         }
         [Fact]
         public async Task Add_WithInvalidSuspenseInformation_ThrowException()

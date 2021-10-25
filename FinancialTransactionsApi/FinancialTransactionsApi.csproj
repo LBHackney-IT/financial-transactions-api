@@ -34,6 +34,8 @@
     <PackageReference Include="Hackney.Core.Logging" Version="1.49.0" />
     <PackageReference Include="Hackney.Core.Sns" Version="1.52.0" />
     <PackageReference Include="Hackney.Core.Validation" Version="1.49.0" />
+    <PackageReference Include="LocalStack.Client" Version="1.2.2" />
+    <PackageReference Include="LocalStack.Client.Extensions" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />

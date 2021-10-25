@@ -32,6 +32,7 @@ using FinancialTransactionsApi.V1.Factories;
 using Hackney.Core.Http;
 using Hackney.Core.JWT;
 using Hackney.Core.Sns;
+using LocalStack.Client.Extensions;
 
 namespace FinancialTransactionsApi
 {
@@ -126,6 +127,7 @@ namespace FinancialTransactionsApi
             services.ConfigureDynamoDB();
             services.ConfigureSns();
             services.ConfigureElasticSearch(Configuration, "ELASTICSEARCH_DOMAIN_URL");
+            services.AddLocalStack(Configuration);
             //services.AddElasticSearchHealthCheck();
             RegisterGateways(services);
             RegisterUseCases(services);

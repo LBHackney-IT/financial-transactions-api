@@ -1,5 +1,11 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1
+
+ENV DynamoDb_LocalMode='true'
 ENV Sns_LocalMode='true'
+
+ARG LBHPACKAGESTOKEN
+ENV LBHPACKAGESTOKEN=$LBHPACKAGESTOKEN
+
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
