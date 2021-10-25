@@ -9,6 +9,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -16,12 +17,10 @@ namespace FinancialTransactionsApi.V1.Gateways
     {
         private readonly IDynamoDBContext _dynamoDbContext;
         private readonly IAmazonDynamoDB _amazonDynamoDb;
-        private readonly DynamoDbContextWrapper _wrapper;
 
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, DynamoDbContextWrapper wrapper, IAmazonDynamoDB amazonDynamoDb)
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb)
         {
             _dynamoDbContext = dynamoDbContext;
-            _wrapper = wrapper;
             _amazonDynamoDb = amazonDynamoDb;
         }
 
@@ -39,38 +38,35 @@ namespace FinancialTransactionsApi.V1.Gateways
             }
         }
 
-        public async Task<List<Transaction>> GetAllTransactionsAsync(Guid targetId, TransactionType? transactionType, DateTime? startDate, DateTime? endDate)
+        public async Task<TransactionList> GetAllTransactionsAsync(TransactionQuery query)
         {
-            List<ScanCondition> scanConditions = new List<ScanCondition>
+            QueryRequest queryRequest = new QueryRequest
             {
-                new ScanCondition("Id", Amazon.DynamoDBv2.DocumentModel.ScanOperator.NotEqual, Guid.Empty)
+                TableName = "Transactions",
+                IndexName = "target_id_dx",
+                KeyConditionExpression = "target_id = :V_target_id",
+                FilterExpression = "transaction_type = :V_transaction_type",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                    {
+                        {":V_target_id", new AttributeValue {S = query.TargetId.ToString()}},
+                        {":V_transaction_type", new AttributeValue {S = query.TransactionType.ToString()}}
+                    }
             };
-
-            if (transactionType != null)
+            var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
+            var transactions = result.ToTransactions();
+            if (query.StartDate.HasValue)
             {
-                scanConditions.Add(new ScanCondition("TransactionType", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, transactionType));
-            }
-
-            if (targetId != Guid.Empty)
-            {
-                scanConditions.Add(new ScanCondition("TargetId", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, targetId));
-            }
-
-            if (startDate.HasValue)
-            {
-                if (endDate == null)
+                if (!query.EndDate.HasValue)
                 {
-                    endDate = DateTime.Now;
+                    query.EndDate = DateTime.Now;
                 }
-
-                scanConditions.Add(new ScanCondition("TransactionDate", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Between, startDate.Value, endDate.Value));
+                transactions = transactions.Where(x => x.TransactionDate >= query.StartDate && x.TransactionDate <= query.EndDate).ToList();
             }
-
-            var data = await _wrapper
-              .ScanAsync(_dynamoDbContext, scanConditions)
-              .ConfigureAwait(false);
-
-            return data.Select(p => p?.ToDomain()).ToList();
+            return new TransactionList
+            {
+                Transactions = transactions.Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToList(),
+                Total = transactions.Count
+            };
         }
         public async Task<TransactionList> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
         {
@@ -111,7 +107,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         }
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {
-            var data = await _wrapper.LoadAsync(_dynamoDbContext, id).ConfigureAwait(false);
+            var data = await _dynamoDbContext.LoadAsync<TransactionDbEntity>(id).ConfigureAwait(false);
 
             return data?.ToDomain();
         }
