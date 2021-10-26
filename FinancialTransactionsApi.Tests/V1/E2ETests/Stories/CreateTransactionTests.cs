@@ -58,7 +58,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             this.Given(g => _transactionFixture.GivenANewTransactionRequest())
                 .When(w => _steps.WhenTheAddTransactionEndpointIsCalled(_transactionFixture.TransactionRequestObject))
                 .Then(t => _steps.ThenTheTransactionDetailsAreSavedAndReturned(_transactionFixture))
-                //.Then(t => _steps.ThenTheContactDetailsCreatedEventIsRaised(_dbFixture.SnsVerifer))
+                .Then(t => _steps.ThenTheTransactionCreatedEventIsRaised(_dbFixture.SnsVerifer))
                 .BDDfy();
         }
 

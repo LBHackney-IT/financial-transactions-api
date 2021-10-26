@@ -27,14 +27,32 @@ functions:
     name: ${self:service}-${self:provider.stage}
     handler: FinancialTransactionsApi::FinancialTransactionsApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
+    environment:
+     TRANSACTION_SNS_ARN: ${ssm:/sns-topic/${self:provider.stage}/financial-transactions_created/arn}
+     ELASTICSEARCH_DOMAIN_URL: ${ssm:/financial-transactions-api/${self:provider.stage}/elasticsearch-domain}
     events:
       - http:
           path: /{proxy+}
           method: ANY
+          authorizer:
+            arn: ${ssm:/api-authenticator/${self:provider.stage}/arn}
+            type: request
+            resultTtlInSeconds: 0
+            identitySource: method.request.header.Authorization
+            managedExternally: true
           private: true
           cors: true
 resources:
   Resources:
+    LambdaSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupName: ${self:service}-${self:provider.stage}
+        GroupDescription: Allow all outbound traffic
+        SecurityGroupEgress:
+          - IpProtocol: -1
+            CidrIp: 0.0.0.0/0
+        VpcId: ${self:custom.vpcId.${opt:stage}}
     lambdaExecutionRole:
       Type: AWS::IAM::Role
       Properties:
@@ -52,6 +70,15 @@ resources:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
           - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
         Policies:
+          - PolicyName: postToSns
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "sns:Publish"
+                  Resource:
+                    - ${ssm:/sns-topic/${self:provider.stage}/transactions/arn}
           - PolicyName: manageLogs
             PolicyDocument:
               Version: '2012-10-17'
@@ -111,14 +138,20 @@ resources:
 custom:
   vpc:
     development:
+      securityGroupIds:
+        - Ref: LambdaSecurityGroup
       subnetIds:
         - subnet-0deabb5d8fb9c3446
         - subnet-000b89c249f12a8ad
     staging:
+      securityGroupIds:
+        - Ref: LambdaSecurityGroup
       subnetIds:
         - subnet-06d3de1bd9181b0d7
         - subnet-0ed7d7713d1127656
     production:
+      securityGroupIds:
+        - Ref: LambdaSecurityGroup
       subnetIds:
         - subnet-01d3657f97a243261
         - subnet-0b7b8fea07efabf34

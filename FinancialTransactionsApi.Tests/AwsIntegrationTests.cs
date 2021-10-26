@@ -1,10 +1,12 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.SimpleNotificationService;
+using Amazon.SimpleNotificationService.Model;
+using FinancialTransactionsApi.V1.Domain;
 using Nest;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests
@@ -15,6 +17,8 @@ namespace FinancialTransactionsApi.Tests
         public readonly AwsMockWebApplicationFactory<TStartup> Factory;
         public IDynamoDBContext DynamoDbContext => Factory?.DynamoDbContext;
         public IElasticClient ElasticSearchClient => Factory.ElasticSearchClient;
+        public IAmazonSimpleNotificationService SimpleNotificationService => Factory?.SimpleNotificationService;
+        public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
         {
@@ -64,10 +68,12 @@ namespace FinancialTransactionsApi.Tests
             EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "8kmm3g");
             EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "fco1i2");
             EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
+            EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:4566");
             Factory = new AwsMockWebApplicationFactory<TStartup>(_tables);
 
             Client = Factory.CreateClient();
             CleanupActions = new List<Action>();
+            CreateSnsTopic();
         }
         public void Dispose()
         {
@@ -84,12 +90,30 @@ namespace FinancialTransactionsApi.Tests
                 {
                     act();
                 }
+                //if (null != SnsVerifer)
+                //    SnsVerifer.Dispose();
                 if (null != Client)
-                    //Client.Dispose();
-                    if (null != Factory)
-                        Factory.Dispose();
+                    Client.Dispose();
+                if (null != Factory)
+                    Factory.Dispose();
                 _disposed = true;
             }
+        }
+        private void CreateSnsTopic()
+        {
+            var snsAttrs = new Dictionary<string, string>();
+            snsAttrs.Add("fifo_topic", "true");
+            snsAttrs.Add("content_based_deduplication", "true");
+
+            var response = SimpleNotificationService.CreateTopicAsync(new CreateTopicRequest
+            {
+                Name = "transactioncreated",
+                Attributes = snsAttrs
+            }).Result;
+
+            Environment.SetEnvironmentVariable("TRANSACTION_SNS_ARN", response.TopicArn);
+
+            SnsVerifer = new SnsEventVerifier<TransactionSns>(Factory.AmazonSqs, SimpleNotificationService, response.TopicArn);
         }
 
     }

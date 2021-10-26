@@ -28,6 +28,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using FinancialTransactionsApi.V1.Factories;
+using Hackney.Core.Http;
+using Hackney.Core.JWT;
+using Hackney.Core.Sns;
+using LocalStack.Client.Extensions;
 
 namespace FinancialTransactionsApi
 {
@@ -120,11 +125,17 @@ namespace FinancialTransactionsApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
+            services.ConfigureSns();
+            services.ConfigureElasticSearch(Configuration, "ELASTICSEARCH_DOMAIN_URL");
+            services.AddLocalStack(Configuration);
+            //services.AddElasticSearchHealthCheck();
             RegisterGateways(services);
             RegisterUseCases(services);
+            RegisterFactories(services);
+            ConfigureHackneyCoreDi(services);
 
-            services.ConfigureElasticSearch(Configuration, "ELASTICSEARCH_DOMAIN_URL");
-            //services.AddElasticSearchHealthCheck();
+
+
 
 
 
@@ -179,7 +190,17 @@ namespace FinancialTransactionsApi
             services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
             services.AddScoped<IPagingHelper, PagingHelper>();
         }
+        private static void RegisterFactories(IServiceCollection services)
+        {
+            services.AddScoped<ISnsFactory, TransactionSnsFactory>();
+        }
 
+        private static void ConfigureHackneyCoreDi(IServiceCollection services)
+        {
+            services.AddSnsGateway()
+                .AddTokenFactory()
+                .AddHttpContextWrapper();
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
