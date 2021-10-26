@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Amazon.DynamoDBv2.Model;
-using AutoFixture;
 using FinancialTransactionsApi.Tests.V1.Helper;
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Infrastructure;
-using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
+using System.Collections.Generic;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Infrastructure
@@ -19,9 +13,9 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
         [Fact]
         public void ToTransactionsValidDataReturnsListOfTransactions()
         {
-            QueryResponse queryResponse = FakeDataHelper.MockQueryResponse<Transaction>(5);
+            var queryResponse = FakeDataHelper.MockQueryResponse<Transaction>(5);
 
-            List<Transaction> transactions = queryResponse.ToTransactions();
+            var transactions = queryResponse.ToTransactions();
 
             transactions.Should().NotBeNull();
             transactions.Count.Should().Be(5);

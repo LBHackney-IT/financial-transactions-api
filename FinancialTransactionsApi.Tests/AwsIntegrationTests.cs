@@ -1,18 +1,21 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Nest;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Xunit;
 
 namespace FinancialTransactionsApi.Tests
 {
-    public class DynamoDbIntegrationTests<TStartup> : IDisposable where TStartup : class
+    public class AwsIntegrationTests<TStartup> : IDisposable where TStartup : class
     {
-        protected HttpClient Client { get; private set; }
-        private readonly DynamoDbMockWebApplicationFactory<TStartup> _factory;
-        protected IDynamoDBContext DynamoDbContext => _factory?.DynamoDbContext;
+        public HttpClient Client { get; private set; }
+        public readonly AwsMockWebApplicationFactory<TStartup> Factory;
+        public IDynamoDBContext DynamoDbContext => Factory?.DynamoDbContext;
+        public IElasticClient ElasticSearchClient => Factory.ElasticSearchClient;
         protected List<Action> CleanupActions { get; set; }
-
         private readonly List<TableDef> _tables = new List<TableDef>
         {
             new TableDef()
@@ -54,18 +57,18 @@ namespace FinancialTransactionsApi.Tests
             }
         }
 
-        public DynamoDbIntegrationTests()
+        public AwsIntegrationTests()
         {
             EnsureEnvVarConfigured("DynamoDb_LocalMode", "true");
             EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
             EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "8kmm3g");
             EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "fco1i2");
-            _factory = new DynamoDbMockWebApplicationFactory<TStartup>(_tables);
+            EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
+            Factory = new AwsMockWebApplicationFactory<TStartup>(_tables);
 
-            Client = _factory.CreateClient();
+            Client = Factory.CreateClient();
             CleanupActions = new List<Action>();
         }
-
         public void Dispose()
         {
             Dispose(true);
@@ -81,13 +84,14 @@ namespace FinancialTransactionsApi.Tests
                 {
                     act();
                 }
-                Client.Dispose();
-
-                if (null != _factory)
-                    _factory.Dispose();
+                if (null != Client)
+                    //Client.Dispose();
+                    if (null != Factory)
+                        Factory.Dispose();
                 _disposed = true;
             }
         }
+
     }
 
     public class TableDef
@@ -108,5 +112,12 @@ namespace FinancialTransactionsApi.Tests
     {
         public string IndexName { get; set; }
         public string ProjectionType { get; set; }
+    }
+    [CollectionDefinition("Aws collection", DisableParallelization = true)]
+    public class AwsCollection : ICollectionFixture<AwsIntegrationTests<Startup>>
+    {
+        // This class has no code, and is never created. Its purpose is simply
+        // to be the place to apply [CollectionDefinition] and all the
+        // ICollectionFixture<> interfaces.
     }
 }

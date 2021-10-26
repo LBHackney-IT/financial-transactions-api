@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Amazon.Lambda.Core;
 
 namespace FinancialTransactionsApi.V1.Controllers
 {
@@ -22,19 +23,21 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IAddUseCase _addUseCase;
         private readonly IUpdateUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
-
+        private readonly IGetTransactionListUseCase _getTransactionListUseCase;
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase,
-            IAddBatchUseCase addBatchUseCase)
+            IAddBatchUseCase addBatchUseCase,
+            IGetTransactionListUseCase getTransactionListUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
             _addUseCase = addUseCase;
             _updateUseCase = updateUseCase;
             _addBatchUseCase = addBatchUseCase;
+            _getTransactionListUseCase = getTransactionListUseCase;
         }
 
         /// <summary>
@@ -86,6 +89,29 @@ namespace FinancialTransactionsApi.V1.Controllers
             var transactions = await _getAllUseCase.ExecuteAsync(query).ConfigureAwait(false);
 
             return Ok(transactions);
+        }
+        [ProducesResponseType(typeof(GetTransactionListResponse), 200)]
+        //[ProducesResponseType(typeof(APIResponse<NotFoundException>), 404)]
+        [ProducesResponseType(typeof(BaseErrorResponse), 400)]
+        [HttpGet, MapToApiVersion("1")]
+        // [LogCall(LogLevel.Information)]
+        [Route("search")]
+        [HttpGet]
+        public async Task<IActionResult> GetTransactionList([FromQuery] TransactionSearchRequest request)
+        {
+            try
+            {
+                var transactionSearchResult = await _getTransactionListUseCase.ExecuteAsync(request).ConfigureAwait(false);
+                var apiResponse = new APIResponse<GetTransactionListResponse>(transactionSearchResult)
+                { Total = transactionSearchResult.Total() };
+
+                return new OkObjectResult(apiResponse);
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.Message + e.StackTrace);
+                return new BadRequestObjectResult(e.Message);
+            }
         }
 
         /// <summary>
@@ -145,7 +171,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             var transactionResponse = await _addBatchUseCase.ExecuteAsync(transactions).ConfigureAwait(false);
 
             if (transactionResponse == transactions.Count())
-                return Ok($"Total {transactionResponse} number of Transactions processed sucecssfully");
+                return Ok($"Total {transactionResponse} number of Transactions processed successfully");
 
             return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction entries processing failed!"));
         }
