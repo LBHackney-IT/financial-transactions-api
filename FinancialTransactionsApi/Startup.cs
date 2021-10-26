@@ -131,9 +131,11 @@ namespace FinancialTransactionsApi
             //services.AddElasticSearchHealthCheck();
             RegisterGateways(services);
             RegisterUseCases(services);
+            RegisterFactories(services);
+            ConfigureHackneyCoreDi(services);
 
-            services.ConfigureElasticSearch(Configuration, "ELASTICSEARCH_DOMAIN_URL");
-            //services.AddElasticSearchHealthCheck();
+
+
 
 
 
@@ -188,7 +190,17 @@ namespace FinancialTransactionsApi
             services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
             services.AddScoped<IPagingHelper, PagingHelper>();
         }
+        private static void RegisterFactories(IServiceCollection services)
+        {
+            services.AddScoped<ISnsFactory, TransactionSnsFactory>();
+        }
 
+        private static void ConfigureHackneyCoreDi(IServiceCollection services)
+        {
+            services.AddSnsGateway()
+                .AddTokenFactory()
+                .AddHttpContextWrapper();
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
