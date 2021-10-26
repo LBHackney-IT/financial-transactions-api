@@ -8,9 +8,6 @@ using FluentAssertions;
 using Moq;
 using System;
 using System.Threading.Tasks;
-using AutoFixture;
-using FinancialTransactionsApi.V1.Boundary.Response;
-using Hackney.Core.Sns;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
@@ -18,17 +15,12 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
     public class AddUseCaseTests
     {
         private readonly Mock<ITransactionGateway> _mockGateway;
-        private readonly Mock<ISnsGateway> _mockSnsGateway;
-        private readonly Mock<ISnsFactory> _mockSnsFactory;
         private readonly AddUseCase _addUseCase;
-        private readonly Fixture _fixture = new Fixture();
 
         public AddUseCaseTests()
         {
-            _mockSnsFactory = new Mock<ISnsFactory>();
-            _mockSnsGateway = new Mock<ISnsGateway>();
             _mockGateway = new Mock<ITransactionGateway>();
-            _addUseCase = new AddUseCase(_mockGateway.Object, _mockSnsGateway.Object, _mockSnsFactory.Object);
+            _addUseCase = new AddUseCase(_mockGateway.Object);
         }
 
         [Fact]
@@ -118,43 +110,6 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             _mockGateway.Verify(x => x.AddAsync(It.IsAny<Transaction>()), Times.Once);
         }
 
-
-        [Fact]
-        public async Task CreateTransactionPublishes()
-        {
-            // Arrange
-            var transaction = _fixture.Create<TransactionResponse>();
-            var request = new AddTransactionRequest
-            {
-                TransactionDate = new DateTime(2021, 8, 1),
-                Address = "Address",
-                BalanceAmount = 154.12M,
-                ChargedAmount = 123.78M,
-                BankAccountNumber = "12345678",
-                IsSuspense = true,
-                PaidAmount = 125.62M,
-                PeriodNo = 31,
-                TargetId = new Guid("9e067bac-56ed-4802-a83f-b1e32f09177e"),
-                TransactionAmount = 186.90M,
-                TransactionSource = "DD",
-                TransactionType = TransactionType.Rent,
-                Person = new Person()
-                {
-                    Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
-                    FullName = "Hyan Widro"
-                }
-            };
-
-            _mockGateway.Setup(x => x.AddAsync(It.IsAny<Transaction>()))
-                .Returns(Task.CompletedTask);
-
-            // Act
-            _ = await _addUseCase.ExecuteAsync(request).ConfigureAwait(false);
-
-            // Assert
-            _mockSnsFactory.Verify(x => x.Create(It.IsAny<Transaction>()));
-            _mockSnsGateway.Verify(x => x.Publish(It.IsAny<TransactionSns>(), It.IsAny<string>(), It.IsAny<string>()));
-        }
         [Fact]
         public async Task Add_WithInvalidSuspenseInformation_ThrowException()
         {

@@ -13,9 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Nest;
 using System;
 using System.Collections.Generic;
-using Amazon.SimpleNotificationService;
-using Amazon.SQS;
-using Hackney.Core.Sns;
 
 namespace FinancialTransactionsApi.Tests
 {
@@ -28,8 +25,6 @@ namespace FinancialTransactionsApi.Tests
         public IElasticClient ElasticSearchClient { get; private set; }
         public IAmazonDynamoDB DynamoDb { get; set; }
         public IDynamoDBContext DynamoDbContext { get; private set; }
-        public IAmazonSimpleNotificationService SimpleNotificationService { get; private set; }
-        public IAmazonSQS AmazonSqs { get; private set; }
 
         public AwsMockWebApplicationFactory(List<TableDef> tables)
         {
@@ -47,16 +42,11 @@ namespace FinancialTransactionsApi.Tests
             builder.ConfigureServices(services =>
             {
                 services.ConfigureDynamoDB();
-                services.ConfigureSns();
                 services.ConfigureElasticSearch(_configuration, "ELASTICSEARCH_DOMAIN_URL");
                 var serviceProvider = services.BuildServiceProvider();
                 DynamoDb = serviceProvider.GetRequiredService<IAmazonDynamoDB>();
                 DynamoDbContext = serviceProvider.GetRequiredService<IDynamoDBContext>();
                 ElasticSearchClient = serviceProvider.GetRequiredService<IElasticClient>();
-                SimpleNotificationService = serviceProvider.GetRequiredService<IAmazonSimpleNotificationService>();
-
-                var localstackUrl = Environment.GetEnvironmentVariable("Localstack_SnsServiceUrl");
-                AmazonSqs = new AmazonSQSClient(new AmazonSQSConfig() { ServiceURL = localstackUrl });
 
                 EnsureTablesExist(DynamoDb, _tables);
             });

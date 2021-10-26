@@ -1,12 +1,10 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.SimpleNotificationService;
-using Amazon.SimpleNotificationService.Model;
-using FinancialTransactionsApi.V1.Domain;
 using Nest;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests
