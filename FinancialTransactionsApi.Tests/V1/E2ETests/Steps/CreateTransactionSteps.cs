@@ -16,8 +16,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
-using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Infrastructure.Entities;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 {
@@ -52,9 +50,9 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             };
         }
 
-        //public async Task ThenTheContactDetailsCreatedEventIsRaised(SnsEventVerifier<ContactDetailsSns> snsVerifer)
-        //{
-        //    var apiResult = await ExtractResultFromHttpResponse(_lastResponse).ConfigureAwait(false);
+        public async Task ThenTheTransactionCreatedEventIsRaised(SnsEventVerifier<TransactionSns> snsVerifer)
+        {
+            var apiResult = await ExtractResultFromHttpResponse(_lastResponse).ConfigureAwait(false);
 
             Action<TransactionSns> verifyFunc = (actual) =>
             {

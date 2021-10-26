@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.11.0" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.2.7" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.1.13" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Docker.DotNet" Version="3.125.4" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" />
