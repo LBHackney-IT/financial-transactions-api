@@ -29,6 +29,7 @@ functions:
     role: lambdaExecutionRole
     environment:
      TRANSACTION_SNS_ARN: ${ssm:/sns-topic/${self:provider.stage}/financial-transactions_created/arn}
+     ELASTICSEARCH_DOMAIN_URL: ${ssm:/financial-transactions-api/${self:provider.stage}/elasticsearch-domain}
     events:
       - http:
           path: /{proxy+}
