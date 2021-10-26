@@ -37,47 +37,6 @@ terraform {
   }
 }
 
-
-/*    ELASTICSEARCH SETUP    */
-
-data "aws_vpc" "development_vpc" {
-  tags = {
-    Name = "vpc-housing-development"
-  }
-}
-
-data "aws_subnet_ids" "development" {
-  vpc_id = data.aws_vpc.development_vpc.id
-  filter {
-    name   = "tag:Type"
-    values = ["private"]
-  }
-}
-
-module "elasticsearch_db_development" {
-  source           = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/database/elasticsearch"
-  vpc_id           = data.aws_vpc.development_vpc.id
-  environment_name = "development"
-  port             = 443
-  domain_name      = "financial-transactions-api-es"
-  subnet_ids       = [tolist(data.aws_subnet_ids.development.ids)[0]]
-  project_name     = "financial-transactions-api"
-  es_version       = "7.8"
-  encrypt_at_rest  = "true"
-  instance_type    = "t3.small.elasticsearch"
-  instance_count   = "1"
-  ebs_enabled      = "true"
-  ebs_volume_size  = "10"
-  region           = data.aws_region.current.name
-  account_id       = data.aws_caller_identity.current.account_id
-}
-
-resource "aws_ssm_parameter" "search_elasticsearch_domain" {
-  name = "/financial-transactions/development/elasticsearch-domain"
-  type = "String"
-  value = "https://vpc-financial-transactions-api-es-klp5oycl6thlxaub2mzu5zlj5u.eu-west-2.es.amazonaws.com"  
-}
-
 resource "aws_sns_topic" "financial-transactions_topic" {
     name                        = "financial-transactions.fifo"
     fifo_topic                  = true
