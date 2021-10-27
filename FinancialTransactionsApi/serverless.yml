@@ -139,13 +139,13 @@ custom:
   vpc:
     development:
       securityGroupIds:
-        - Ref: LambdaSecurityGroup
+        - sg-0725e7dbc2508c798
       subnetIds:
         - subnet-0deabb5d8fb9c3446
         - subnet-000b89c249f12a8ad
     staging:
       securityGroupIds:
-        - Ref: LambdaSecurityGroup
+        - sg-0fb44f2658c0a5d3b
       subnetIds:
         - subnet-06d3de1bd9181b0d7
         - subnet-0ed7d7713d1127656
