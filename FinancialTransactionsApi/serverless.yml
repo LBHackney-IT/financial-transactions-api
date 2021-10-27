@@ -78,7 +78,7 @@ resources:
                   Action:
                     - "sns:Publish"
                   Resource:
-                    - ${ssm:/sns-topic/${self:provider.stage}/transactions/arn}
+                    - ${ssm:/sns-topic/${self:provider.stage}/financial-transactions_created/arn}
           - PolicyName: manageLogs
             PolicyDocument:
               Version: '2012-10-17'
