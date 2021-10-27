@@ -78,7 +78,7 @@ resources:
                   Action:
                     - "sns:Publish"
                   Resource:
-                    - ${ssm:/sns-topic/${self:provider.stage}/transactions/arn}
+                    - ${ssm:/sns-topic/${self:provider.stage}/financial-transactions_created/arn}
           - PolicyName: manageLogs
             PolicyDocument:
               Version: '2012-10-17'
@@ -138,20 +138,20 @@ resources:
 custom:
   vpc:
     development:
-      securityGroupIds:
-        - sg-0725e7dbc2508c798
+      #securityGroupIds:
+      #  - sg-0725e7dbc2508c798
       subnetIds:
         - subnet-0deabb5d8fb9c3446
         - subnet-000b89c249f12a8ad
     staging:
-      securityGroupIds:
-        - sg-0fb44f2658c0a5d3b
+      #securityGroupIds:
+      #  - sg-0fb44f2658c0a5d3b
       subnetIds:
         - subnet-06d3de1bd9181b0d7
         - subnet-0ed7d7713d1127656
     production:
-      securityGroupIds:
-        - Ref: LambdaSecurityGroup
+      #securityGroupIds:
+      #  - Ref: LambdaSecurityGroup
       subnetIds:
         - subnet-01d3657f97a243261
         - subnet-0b7b8fea07efabf34
