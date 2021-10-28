@@ -82,8 +82,8 @@ namespace FinancialTransactionsApi.Tests
                 {
                     act();
                 }
-                //if (null != SnsVerifer)
-                //    SnsVerifer.Dispose();
+                if (null != SnsVerifer)
+                    SnsVerifer.Dispose();
                 if (null != Client)
                     Client.Dispose();
                 if (null != Factory)
