@@ -45,21 +45,23 @@ namespace FinancialTransactionsApi.V1.Gateways
                 TableName = "Transactions",
                 IndexName = "target_id_dx",
                 KeyConditionExpression = "target_id = :V_target_id",
-                FilterExpression = "transaction_type = :V_transaction_type",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                     {
-                        {":V_target_id", new AttributeValue {S = query.TargetId.ToString()}},
-                        {":V_transaction_type", new AttributeValue {S = query.TransactionType.ToString()}}
+                        {":V_target_id", new AttributeValue {S = query.TargetId.ToString()}}
                     }
             };
+
+            if (query.TransactionType != null)
+            {
+                queryRequest.FilterExpression = "transaction_type = :V_transaction_type";
+                queryRequest.ExpressionAttributeValues.Add(":V_transaction_type", new AttributeValue { S = query.TransactionType.ToString() });
+            }
+
             var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
             var transactions = result.ToTransactions();
             if (query.StartDate.HasValue)
             {
-                if (!query.EndDate.HasValue)
-                {
-                    query.EndDate = DateTime.Now;
-                }
+                query.EndDate ??= DateTime.Now;
                 transactions = transactions.Where(x => x.TransactionDate >= query.StartDate && x.TransactionDate <= query.EndDate).ToList();
             }
             return new TransactionList
