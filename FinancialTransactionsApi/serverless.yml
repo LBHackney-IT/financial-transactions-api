@@ -133,26 +133,25 @@ resources:
                           - Ref: 'AWS::AccountId'
                           - 'table/Transactions'
 custom:
-  vpcId:
-    development: vpc-0d15f152935c8716f
-    staging: vpc-064521a7a4109ba31
-    production: vpc-0ce853ddb64e8fb3c
   vpc:
     development:
       securityGroupIds:
         - sg-00d2e14f38245dd0b
       subnetIds:
-        - subnet-0deabb5d8fb9c3446
-        - subnet-000b89c249f12a8ad
+        - subnet-0140d06fb84fdb547
+        - subnet-05ce390ba88c42bfd
     staging:
       securityGroupIds:
         - sg-00c197e980177983d
       subnetIds:
-        - subnet-06d3de1bd9181b0d7
-        - subnet-0ed7d7713d1127656
+        - subnet-0743d86e9b362fa38
+        - subnet-0ea0020a44b98a2ca
     production:
       securityGroupIds:
         - sg-02a377899622e884c
       subnetIds:
-        - subnet-01d3657f97a243261
-        - subnet-0b7b8fea07efabf34
+        - subnet-0beb266003a56ca82
+        - subnet-06a697d86a9b6ed01
+
+plugins:
+  - serverless-step-functions
