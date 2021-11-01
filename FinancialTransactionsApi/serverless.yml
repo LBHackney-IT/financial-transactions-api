@@ -153,5 +153,5 @@ custom:
         - subnet-0beb266003a56ca82
         - subnet-06a697d86a9b6ed01
 
-plugins:
-  - serverless-step-functions
+#plugins:
+#  - serverless-step-functions
