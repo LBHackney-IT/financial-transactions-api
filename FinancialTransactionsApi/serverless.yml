@@ -50,15 +50,6 @@ functions:
           private: false
 resources:
   Resources:
-    # LambdaSecurityGroup:
-    #   Type: AWS::EC2::SecurityGroup
-    #   Properties:
-    #     GroupName: ${self:service}-${self:provider.stage}
-    #     GroupDescription: Allow all outbound traffic
-    #     SecurityGroupEgress:
-    #       - IpProtocol: -1
-    #         CidrIp: 0.0.0.0/0
-    #     VpcId: ${self:custom.vpcId.${opt:stage}}
     lambdaExecutionRole:
       Type: AWS::IAM::Role
       Properties:
@@ -148,20 +139,20 @@ custom:
     production: vpc-0ce853ddb64e8fb3c
   vpc:
     development:
-      #securityGroupIds:
-      #  - sg-0725e7dbc2508c798
+      securityGroupIds:
+        - sg-00d2e14f38245dd0b
       subnetIds:
         - subnet-0deabb5d8fb9c3446
         - subnet-000b89c249f12a8ad
     staging:
-      #securityGroupIds:
-      #  - sg-0fb44f2658c0a5d3b
+      securityGroupIds:
+        - sg-00c197e980177983d
       subnetIds:
         - subnet-06d3de1bd9181b0d7
         - subnet-0ed7d7713d1127656
     production:
-      #securityGroupIds:
-      #  - Ref: LambdaSecurityGroup
+      securityGroupIds:
+        - sg-02a377899622e884c
       subnetIds:
         - subnet-01d3657f97a243261
         - subnet-0b7b8fea07efabf34
