@@ -22,7 +22,7 @@ resource "aws_dynamodb_table" "transactions_table" {
 
     attribute {
         name              = "is_suspense"
-        type              = "B"
+        type              = "S"
     }    
 
     tags = {
