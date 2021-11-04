@@ -15,6 +15,9 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "target_id")]
         public Guid TargetId { get; set; }
 
+        [DynamoDBProperty(AttributeName = "target_type", Converter = typeof(DynamoDbDateTimeConverter))]
+        public TargetType TargetType { get; set; }
+
         [DynamoDBProperty(AttributeName = "period_no")]
         public short PeriodNo { get; set; }
 
