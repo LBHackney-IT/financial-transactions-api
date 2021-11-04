@@ -5,7 +5,7 @@ namespace FinancialTransactionsApi.V1.Domain
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum TargetType
     {
-        Asset
+        Tenure
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
