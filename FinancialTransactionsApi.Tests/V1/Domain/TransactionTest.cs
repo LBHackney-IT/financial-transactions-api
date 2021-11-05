@@ -14,7 +14,7 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
             {
                 Id = new Guid("9b014c26-88be-466e-a589-0f402c6b94c1"),
                 TargetId = new Guid("58daf21a-e2d5-475f-87f4-1c0c7f1ffb10"),
-                TargetType = TargetType.Asset,
+                TargetType = TargetType.Tenure,
                 TransactionSource = "DD",
                 TransactionDate = new DateTime(2021, 8, 1),
                 BalanceAmount = 1245.12M,
@@ -35,7 +35,7 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
 
             transaction.Id.Should().Be(new Guid("9b014c26-88be-466e-a589-0f402c6b94c1"));
             transaction.TargetId.Should().Be(new Guid("58daf21a-e2d5-475f-87f4-1c0c7f1ffb10"));
-            transaction.TargetType.Should().Be(TargetType.Asset);
+            transaction.TargetType.Should().Be(TargetType.Tenure);
             transaction.TransactionSource.Should().BeEquivalentTo("DD");
             transaction.TransactionDate.Should().Be(new DateTime(2021, 8, 1));
             transaction.BalanceAmount.Should().Be(1245.12M);
