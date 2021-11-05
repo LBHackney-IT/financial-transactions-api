@@ -17,6 +17,13 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         public Guid TargetId { get; set; }
 
         /// <summary>
+        /// The target of the provided id by target_id
+        /// </summary>
+        /// <example>
+        ///     Asset
+        /// </example>
+        public TargetType TargetType { get; set; }
+        /// <summary>
         /// Week number for Rent and Period number for LeaseHolders
         /// </summary>
         /// <example>

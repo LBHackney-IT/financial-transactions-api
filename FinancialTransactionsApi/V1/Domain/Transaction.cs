@@ -11,6 +11,8 @@ namespace FinancialTransactionsApi.V1.Domain
         public Guid Id { get; set; }
         [NotNull]
         public Guid TargetId { get; set; }
+
+        public TargetType TargetType { get; set; }
         [Required]
         public short PeriodNo { get; set; }
         [Required]
