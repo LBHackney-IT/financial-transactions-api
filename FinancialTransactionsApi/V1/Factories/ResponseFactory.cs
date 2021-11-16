@@ -13,6 +13,7 @@ namespace FinancialTransactionsApi.V1.Factories
             {
                 Id = domain.Id,
                 TargetId = domain.TargetId,
+                TargetType = domain.TargetType,
                 BalanceAmount = domain.BalanceAmount,
                 ChargedAmount = domain.ChargedAmount,
                 FinancialMonth = domain.FinancialMonth,

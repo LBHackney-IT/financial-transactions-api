@@ -12,6 +12,7 @@ namespace FinancialTransactionsApi.V1.Factories
             {
                 Id = transaction.Id,
                 TargetId = transaction.TargetId,
+                TargetType = transaction.TargetType,
                 BalanceAmount = transaction.BalanceAmount,
                 ChargedAmount = transaction.ChargedAmount,
                 FinancialMonth = transaction.FinancialMonth,
@@ -39,6 +40,7 @@ namespace FinancialTransactionsApi.V1.Factories
             {
                 Id = transactionDbEntity.Id,
                 TargetId = transactionDbEntity.TargetId,
+                TargetType = transactionDbEntity.TargetType,
                 BalanceAmount = transactionDbEntity.BalanceAmount,
                 ChargedAmount = transactionDbEntity.ChargedAmount,
                 FinancialMonth = transactionDbEntity.FinancialMonth,
@@ -65,6 +67,7 @@ namespace FinancialTransactionsApi.V1.Factories
             return transactionRequest == null ? null : new Transaction
             {
                 TargetId = transactionRequest.TargetId,
+                TargetType = transactionRequest.TargetType,
                 BalanceAmount = transactionRequest.BalanceAmount,
                 ChargedAmount = transactionRequest.ChargedAmount,
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
@@ -89,6 +92,7 @@ namespace FinancialTransactionsApi.V1.Factories
             return transactionRequest == null ? null : new Transaction
             {
                 TargetId = transactionRequest.TargetId,
+                TargetType = transactionRequest.TargetType,
                 BalanceAmount = transactionRequest.BalanceAmount,
                 ChargedAmount = transactionRequest.ChargedAmount,
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,

@@ -164,7 +164,7 @@ workflows:
       - check-code-formatting
       - build-and-test
       - assume-role-development:
-          # context: api-assume-role-housing-development-context
+          context: api-assume-role-housing-development-context
           requires:
             - check-code-formatting
             - build-and-test

@@ -13,7 +13,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
 
         [FromQuery(Name = "page")]
         [Range(1, int.MaxValue, ErrorMessage = "The page number must be great and equal than 1")]
-        public int Page { get; set; } = 0;
+        public int Page { get; set; } = 1;
 
         [FromQuery(Name = "searchText")]
         public string SearchText { get; set; }

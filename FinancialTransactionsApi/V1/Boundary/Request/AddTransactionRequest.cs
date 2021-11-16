@@ -15,7 +15,13 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// </example>
         [NonEmptyGuid]
         public Guid TargetId { get; set; }
-
+        /// <summary>
+        ///     The target of provided id by the target_id
+        /// </summary>
+        /// <example>
+        ///     Asset
+        /// </example>
+        public TargetType TargetType { get; set; }
         /// <summary>
         /// Week number for Rent and Period number for LeaseHolders
         /// </summary>
@@ -143,7 +149,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// ToDO: No information about this field
         /// </summary>
         /// <example>
-        /// HSGSUN
+        ///     HSGSUN
         /// </example>
         public string Fund { get; set; }
     }
