@@ -9,6 +9,9 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
     public class TransactionDbEntity
     {
         [DynamoDBHashKey]
+        [DynamoDBProperty(AttributeName = "pk")]
+        public string Pk { get; set; }
+        [DynamoDBRangeKey]
         [DynamoDBProperty(AttributeName = "id")]
         public Guid Id { get; set; }
 

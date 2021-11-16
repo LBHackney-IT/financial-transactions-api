@@ -91,10 +91,8 @@ namespace FinancialTransactionsApi.V1.Controllers
             return Ok(transactions);
         }
         [ProducesResponseType(typeof(GetTransactionListResponse), 200)]
-        //[ProducesResponseType(typeof(APIResponse<NotFoundException>), 404)]
         [ProducesResponseType(typeof(BaseErrorResponse), 400)]
         [HttpGet, MapToApiVersion("1")]
-        // [LogCall(LogLevel.Information)]
         [Route("search")]
         [HttpGet]
         public async Task<IActionResult> GetTransactionList([FromQuery] TransactionSearchRequest request)
