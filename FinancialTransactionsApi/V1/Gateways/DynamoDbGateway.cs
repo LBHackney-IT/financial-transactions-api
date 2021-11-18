@@ -31,7 +31,6 @@ namespace FinancialTransactionsApi.V1.Gateways
         public async Task AddAsync(Transaction transaction)
         {
             var dbEntity = transaction.ToDatabase();
-            dbEntity.Pk = Pk;
             await _dynamoDbContext.SaveAsync(dbEntity).ConfigureAwait(false);
         }
 
@@ -60,7 +59,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             if (query.TransactionType != null)
             {
-                queryRequest.FilterExpression = "transaction_type = :V_transaction_type";
+                queryRequest.FilterExpression += " AND transaction_type = :V_transaction_type";
                 queryRequest.ExpressionAttributeValues.Add(":V_transaction_type", new AttributeValue { S = query.TransactionType.ToString() });
             }
             if (query.StartDate.HasValue)

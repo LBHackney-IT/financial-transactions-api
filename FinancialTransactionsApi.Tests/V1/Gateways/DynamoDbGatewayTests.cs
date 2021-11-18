@@ -1,9 +1,12 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.Model;
 using AutoFixture;
+using FinancialTransactionsApi.Tests.V1.Helper;
+using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Moq;
@@ -12,10 +15,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2.Model;
-using FinancialTransactionsApi.Tests.V1.Helper;
-using FinancialTransactionsApi.V1.Boundary.Request;
-using FinancialTransactionsApi.V1.Infrastructure;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Gateways
@@ -86,7 +85,8 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
 
             result.Should().NotBeNull();
 
-            result.Should().BeEquivalentTo(expectedResult);
+            result.Should().BeEquivalentTo(expectedResult, opt =>
+                opt.Excluding(a => a.Pk));
         }
 
         [Fact]
@@ -151,7 +151,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         [Fact]
         public async Task GetAll_ByTransactionQueryReturnsListWithEntities_ReturnsAllCorrect()
         {
-            QueryResponse response = FakeDataHelper.MockQueryResponse<Transaction>(3);
+            QueryResponse response = FakeDataHelper.MockQueryResponse<Transaction>(2);
             var expectedResponse = response.ToTransactions();
 
             _amazonDynamoDb.Setup(p => p.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<CancellationToken>()))
@@ -168,7 +168,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
             };
             var responseResult = await _gateway.GetAllTransactionsAsync(transactionQuery).ConfigureAwait(false);
 
-            responseResult.Transactions.Should().BeEquivalentTo(expectedResponse.First());
+            responseResult.Transactions.Should().BeEquivalentTo(expectedResponse);
         }
 
         [Theory]

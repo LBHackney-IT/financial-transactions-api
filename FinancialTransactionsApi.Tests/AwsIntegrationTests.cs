@@ -74,11 +74,9 @@ namespace FinancialTransactionsApi.Tests
         }
         private void CreateSnsTopic()
         {
-            var snsAttrs = new Dictionary<string, string>
-            {
-                { "fifo_topic", "true" },
-                { "content_based_deduplication", "true" }
-            };
+            var snsAttrs = new Dictionary<string, string>();
+            snsAttrs.Add("fifo_topic", "true");
+            snsAttrs.Add("content_based_deduplication", "true");
 
             var response = SimpleNotificationService.CreateTopicAsync(new CreateTopicRequest
             {

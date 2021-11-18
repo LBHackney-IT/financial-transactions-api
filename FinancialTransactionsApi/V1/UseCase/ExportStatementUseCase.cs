@@ -33,7 +33,7 @@ namespace FinancialTransactionsApi.V1.UseCase
             report.TotalHousingBenefit = response.Sum(x => x.HousingBenefitAmount);
             report.BankAccountNumber = string.Join(",", response.Select(x => x.BankAccountNumber).Distinct().ToArray());
             report.FullName = response.FirstOrDefault()?.Person?.FullName;
-            report.StatementPeriod = $"{response.FirstOrDefault().TransactionDate:D}-{response.LastOrDefault().TransactionDate:D}";
+            report.StatementPeriod = $"{response.FirstOrDefault()?.TransactionDate:D}-{response.LastOrDefault()?.TransactionDate:D}";
             foreach (var item in response)
             {
 
