@@ -30,7 +30,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
         {
             return new TransactionDbEntity
             {
-
+                Pk = "#lbhtransaction",
                 TransactionDate = response.TransactionDate,
                 Address = response.Address,
                 BalanceAmount = response.BalanceAmount,

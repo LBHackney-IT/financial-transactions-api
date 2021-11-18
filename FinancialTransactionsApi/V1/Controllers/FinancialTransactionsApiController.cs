@@ -24,13 +24,17 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IUpdateUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
         private readonly IGetTransactionListUseCase _getTransactionListUseCase;
+        private readonly IExportSelectedItemUseCase _exportSelectedItemUseCase;
+        private readonly IExportStatementUseCase _exportStatementUseCase;
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase,
             IAddBatchUseCase addBatchUseCase,
-            IGetTransactionListUseCase getTransactionListUseCase)
+            IGetTransactionListUseCase getTransactionListUseCase,
+            IExportSelectedItemUseCase exportSelectedItemUseCase,
+            IExportStatementUseCase exportStatementUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
@@ -38,6 +42,8 @@ namespace FinancialTransactionsApi.V1.Controllers
             _updateUseCase = updateUseCase;
             _addBatchUseCase = addBatchUseCase;
             _getTransactionListUseCase = getTransactionListUseCase;
+            _exportSelectedItemUseCase = exportSelectedItemUseCase;
+            _exportStatementUseCase = exportStatementUseCase;
         }
 
         /// <summary>
@@ -217,6 +223,39 @@ namespace FinancialTransactionsApi.V1.Controllers
             var transactionResponse = await _updateUseCase.ExecuteAsync(transaction, id).ConfigureAwait(false);
 
             return Ok(transactionResponse);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [Route("export-statement")]
+        public async Task<IActionResult> ExportQuaterlyReportAsync([FromBody] ExportTransactionQuery query)
+        {
+            var result = await _exportStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
+            // var result = await _exportQuarterlyReportUseCase.ExecuteAsync(quaterlyQuery).ConfigureAwait(false);
+            if (result == null)
+                return NotFound("No record found");
+            if (query?.FileType == "pdf")
+            {
+                return File(result, "application/pdf", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
+            }
+            return File(result, "text/csv", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [Route("export-selections")]
+        public async Task<IActionResult> ExportSelectedItemAsync([FromBody] TransactionExportRequest request)
+        {
+            var result = await _exportSelectedItemUseCase.ExecuteAsync(request).ConfigureAwait(false);
+            if (result == null)
+                return NotFound("No record found");
+            return File(result, "text/csv", $"export_{DateTime.UtcNow.Ticks}.csv");
         }
     }
 }

@@ -14,6 +14,9 @@ namespace FinancialTransactionsApi.V1.Gateways
         public Task AddAsync(Transaction transaction);
         public Task AddRangeAsync(List<Transaction> transactions);
         public Task UpdateAsync(Transaction transaction);
+        public Task<List<Transaction>> GetAllTransactionsForTheYearAsync(ExportTransactionQuery query);
+        Task<List<Transaction>> GetAllTransactionRecordAsync(ExportTransactionQuery query);
+        Task<List<Transaction>> GetAllTransactionByDateAsync(TransactionExportRequest request);
 
     }
 }

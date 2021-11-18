@@ -44,9 +44,9 @@ namespace FinancialTransactionsApi.V1.UseCase
             transactionDomain.Id = Guid.NewGuid();
 
             await _gateway.AddAsync(transactionDomain).ConfigureAwait(false);
-            //var transactionSnsMessage = _snsFactory.Create(transactionDomain);
-            //var transactionTopicArn = Environment.GetEnvironmentVariable("TRANSACTION_SNS_ARN");
-            //await _snsGateway.Publish(transactionSnsMessage, transactionTopicArn).ConfigureAwait(false);
+            var transactionSnsMessage = _snsFactory.Create(transactionDomain);
+            var transactionTopicArn = Environment.GetEnvironmentVariable("TRANSACTION_SNS_ARN");
+            await _snsGateway.Publish(transactionSnsMessage, transactionTopicArn).ConfigureAwait(false);
             return transactionDomain.ToResponse();
         }
     }

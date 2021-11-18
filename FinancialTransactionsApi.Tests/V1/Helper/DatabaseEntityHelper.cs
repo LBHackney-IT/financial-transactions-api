@@ -6,6 +6,7 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
 {
     public static class DatabaseEntityHelper
     {
+        private const string Pk = "#lbhtransaction";
         public static TransactionDbEntity CreateDatabaseEntity()
         {
             var entity = new Fixture().Create<Transaction>();
@@ -17,6 +18,7 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
         {
             return new TransactionDbEntity
             {
+                Pk = Pk,
                 Id = entity.Id,
                 TransactionDate = entity.TransactionDate,
             };
@@ -25,6 +27,7 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
         {
             return new TransactionDbEntity
             {
+                Pk = Pk,
                 Id = entity.Id,
                 TargetId = entity.TargetId,
                 TransactionType = entity.TransactionType,

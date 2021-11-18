@@ -5,9 +5,9 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
-using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
+using Hackney.Core.DynamoDb;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
@@ -16,7 +16,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Hackney.Core.DynamoDb;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
@@ -24,6 +23,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
     public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
+        private const string Pk = "#lbhtransaction";
 
         /// <summary>
         /// Method to construct a test entity that can be used in a test
@@ -51,7 +51,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         /// <returns></returns>
         private async Task SetupTestData(Transaction entity)
         {
-            await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
+            var dbEntity = entity.ToDatabase();
+            await DynamoDbContext.SaveAsync(dbEntity).ConfigureAwait(false);
 
             CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(entity.Id).ConfigureAwait(false));
         }
@@ -259,7 +260,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             foreach (var item in transactionsObj)
             {
-                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(item.Id).ConfigureAwait(false));
+                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(Pk, item.Id).ConfigureAwait(false));
             }
 
             apiEntity.Total.Should().Be(5);
@@ -422,7 +423,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(Pk, apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 

@@ -26,6 +26,8 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         private readonly Mock<IDynamoDBContext> _dynamoDb;
         private readonly Mock<IAmazonDynamoDB> _amazonDynamoDb;
         private readonly DynamoDbGateway _gateway;
+        private const string Pk = "#lbhtransaction";
+
 
         public DynamoDbGatewayTests()
         {
@@ -37,7 +39,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         [Fact]
         public async Task GetById_EntityDoesntExists_ReturnsNull()
         {
-            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(It.IsAny<Guid>(), default))
+            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(Pk, It.IsAny<Guid>(), default))
                 .ReturnsAsync((TransactionDbEntity) null);
 
             var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid()).ConfigureAwait(false);
@@ -50,6 +52,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         {
             var expectedResult = new TransactionDbEntity()
             {
+                Pk = Pk,
                 Id = Guid.NewGuid(),
                 TargetId = Guid.NewGuid(),
                 TransactionDate = DateTime.UtcNow,
@@ -74,7 +77,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 }
             };
 
-            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(
+            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(Pk,
                 It.IsAny<Guid>(),
                 default))
                 .ReturnsAsync(expectedResult);

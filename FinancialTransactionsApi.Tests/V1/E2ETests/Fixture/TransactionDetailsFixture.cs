@@ -50,20 +50,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
             }
         }
 
-        private IEnumerable<TransactionDbEntity> CreateTransactions(int count, bool isActive)
-        {
-            return _fixture.Build<TransactionDbEntity>()
-                .With(x => x.BankAccountNumber, "1234567")
-                .With(x => x.TransactionDate, DateTime.UtcNow)
-                .With(x => x.IsSuspense, isActive)
-                .With(x => x.TransactionType, FinancialTransactionsApi.V1.Domain.TransactionType.Charge)
-                .With(x => x.TargetId, Guid.NewGuid()).CreateMany(count);
-        }
-
-        public void GivenATransactionAlreadyExist()
-        {
-            GivenATransactionAlreadyExist(Maxresults);
-        }
 
         public void GivenATransactionAlreadyExist(int count)
         {
@@ -103,20 +89,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
             }
         }
 
-        public void GivenTransactionWithMultiplePagesAlreadyExist()
-        {
-            GivenATransactionAlreadyExist(35);
-        }
-
-        public void GivenATargetIdHasNoActivities()
-        {
-            TargetId = Guid.NewGuid();
-        }
-
-        public void GivenAnInvalidTargetId()
-        {
-            InvalidTargetId = "12345667890";
-        }
 
         public void GivenAnNewTransactionRequestWithAnBankAccountNumberLength(string bankAccountNumber)
         {
@@ -171,6 +143,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
         {
             var transaction = new TransactionDbEntity
             {
+                Pk = "#lbhtransaction",
                 Id = new Guid("6479ffee-b0e8-4c2a-b887-63f2dec086aa"),
                 TransactionDate = new DateTime(2021, 8, 1),
                 Address = "Address",

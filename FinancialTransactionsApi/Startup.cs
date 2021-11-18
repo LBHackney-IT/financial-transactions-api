@@ -3,15 +3,19 @@ using FinancialTransactionsApi.V1;
 using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.ElasticSearch;
 using FinancialTransactionsApi.V1.ElasticSearch.Interfaces;
+using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Gateways.ElasticSearch;
 using FinancialTransactionsApi.V1.Helpers;
-using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
 using Hackney.Core.DynamoDb;
 using Hackney.Core.ElasticSearch;
+using Hackney.Core.Http;
+using Hackney.Core.JWT;
+using Hackney.Core.Sns;
+using LocalStack.Client.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -28,11 +32,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using FinancialTransactionsApi.V1.Factories;
-using Hackney.Core.Http;
-using Hackney.Core.JWT;
-using Hackney.Core.Sns;
-using LocalStack.Client.Extensions;
+using WkHtmlToPdfDotNet;
+using WkHtmlToPdfDotNet.Contracts;
 
 namespace FinancialTransactionsApi
 {
@@ -135,6 +136,11 @@ namespace FinancialTransactionsApi
             RegisterFactories(services);
             ConfigureHackneyCoreDi(services);
 
+            // Add converter to DI
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
 
 
 
@@ -190,6 +196,9 @@ namespace FinancialTransactionsApi
             services.AddScoped<IGetTransactionListUseCase, GetTransactionListUseCase>();
             services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
             services.AddScoped<IPagingHelper, PagingHelper>();
+            services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
+            services.AddScoped<IExportStatementUseCase, ExportStatementUseCase>();
+
         }
         private static void RegisterFactories(IServiceCollection services)
         {

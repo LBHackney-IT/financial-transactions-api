@@ -10,6 +10,7 @@ namespace FinancialTransactionsApi.V1.Factories
         {
             return transaction == null ? null : new TransactionDbEntity
             {
+                Pk = "#lbhtransaction",
                 Id = transaction.Id,
                 TargetId = transaction.TargetId,
                 TargetType = transaction.TargetType,
