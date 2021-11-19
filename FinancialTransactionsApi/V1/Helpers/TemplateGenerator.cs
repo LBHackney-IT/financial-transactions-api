@@ -131,9 +131,10 @@ namespace FinancialTransactionsApi.V1.Helpers
             sb.AppendFormat(@"
 </tbody>
 </table>
-<p class='p20 ft10'>As of 17 November 2021 your account balance was £1008.31 in arrears.</p>
+<p class='p20 ft10 clearfix'>As of 17 November 2021 your account balance was £1008.31 in arrears.</p>
 </div>", 2);
             sb.Append(@"
+<div class='clearfix'></div>
 <div id='id1_2'>
 <p class='p0 ft11'>As your landlord, the council has a duty to make sure all charges are paid up to date. This is because the housing income goes toward the upkeep of council housing and providing services for residents. You must make weekly charges payment a priority. If you don’t pay, you risk losing your home.</p>
 </div>
