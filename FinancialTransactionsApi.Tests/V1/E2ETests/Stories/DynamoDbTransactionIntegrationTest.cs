@@ -184,50 +184,50 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Message.Should().Contain(message);
         }
 
-        //[Fact]
-        //public async Task CreateTwoRentGroupsGetAllReturns200()
-        //{
-        //    var transactions = new[] { ConstructTransaction(), ConstructTransaction() };
+        [Fact]
+        public async Task CreateTwoRentGroupsGetAllReturns200()
+        {
+            var transactions = new[] { ConstructTransaction(), ConstructTransaction() };
 
-        //    Guid targetId = Guid.NewGuid();
+            Guid targetId = Guid.NewGuid();
 
-        //    transactions[0].TargetId = targetId;
-        //    transactions[1].TargetId = targetId;
-        //    string transType = transactions[0].TransactionType.ToString();
-        //    var startDate = transactions[0].TransactionDate.AddDays(-1).ToString("yyyy-MM-dd");
-        //    var endDate = transactions[1].TransactionDate.AddDays(1).ToString("yyyy-MM-dd");
+            transactions[0].TargetId = targetId;
+            transactions[1].TargetId = targetId;
+            string transType = transactions[0].TransactionType.ToString();
+            var startDate = transactions[0].TransactionDate.AddDays(-1).ToString("yyyy-MM-dd");
+            var endDate = transactions[1].TransactionDate.AddDays(1).ToString("yyyy-MM-dd");
 
-        //    foreach (var transaction in transactions)
-        //    {
-        //        var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+            foreach (var transaction in transactions)
+            {
+                var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
 
-        //        transaction.Id = id;
+                transaction.Id = id;
 
-        //        await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
-        //    }
+                await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
+            }
 
-        //    var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
-        //    using var response = await Client.GetAsync(uri).ConfigureAwait(false);
+            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
+            using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
-        //    response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        //    var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        //    var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
 
-        //    apiEntity.Should().NotBeNull();
-        //    apiEntity.Total.Should().BeGreaterOrEqualTo(1);
+            apiEntity.Should().NotBeNull();
+            apiEntity.Total.Should().BeGreaterOrEqualTo(1);
 
-        //    var firstTransaction = apiEntity.TransactionsList.ToList().Find(r => r.Id.Equals(transactions[0].Id));
+            var firstTransaction = apiEntity.TransactionsList.ToList().Find(r => r.Id.Equals(transactions[0].Id));
 
-        //    firstTransaction.Should().BeEquivalentTo(transactions[0], opt =>
-        //        opt.Excluding(a => a.FinancialYear)
-        //            .Excluding(a => a.FinancialMonth)
-        //            .Excluding(a => a.TransactionDate)
-        //            .Excluding(a => a.TransactionDate));
+            firstTransaction.Should().BeEquivalentTo(transactions[0], opt =>
+                opt.Excluding(a => a.FinancialYear)
+                    .Excluding(a => a.FinancialMonth)
+                    .Excluding(a => a.TransactionDate)
+                    .Excluding(a => a.TransactionDate));
 
-        //    firstTransaction?.FinancialMonth.Should().Be(8);
-        //    firstTransaction?.FinancialYear.Should().Be(2021);
-        //}
+            firstTransaction?.FinancialMonth.Should().Be(8);
+            firstTransaction?.FinancialYear.Should().Be(2021);
+        }
 
         //[Fact]
         //public async Task GetTargetIdAndTransactionTypeFoundReturnsResponse()
