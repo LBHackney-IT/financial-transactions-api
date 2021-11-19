@@ -170,7 +170,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             DateTime lastDay;
             if (query.StatementType == StatementType.Quaterly)
             {
-               
+
                 firstDay = DateTime.UtcNow;
                 lastDay = firstDay.AddMonths(-3).AddDays(-1);
 

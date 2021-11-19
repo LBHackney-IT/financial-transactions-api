@@ -81,7 +81,7 @@ namespace FinancialTransactionsApi.V1.Helpers
    </head>
     <body>
       <div>
-         <p style='text-align:justify'><img src='images/Aspose.Words.f6aa76e6-3b31-4a27-b85a-52ed3b73ad65.001.png' width='277' height='69' alt='' style='-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline' /></p>
+         <p style='text-align:justify'><img src='~/images/Aspose.Words.f6aa76e6-3b31-4a27-b85a-52ed3b73ad65.001.png' width='277' height='69' alt='' style='-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline' /></p>
          <p style='margin-top:6.45pt; margin-right:137.2pt; margin-left:3pt; line-height:13.5pt'><span style='font-family:Arial; font-size:10pt; font-weight:bold; color:#222222; background-color:#ffffff'>Income Services, Hackney Service Centre, 1 Hillman Street, London E8 1DY Tel: 0208 356 3100 24 hour payment line: 0208 356 5050 </span><a href='http://www.hackney.gov.uk/your-rent' style='text-decoration:none'><span style='font-size:10pt; text-decoration:underline; color:#000000; background-color:#ffffff'>www.hackney.gov.uk/your-rent</span></a><a href='http://www.hackney.gov.uk/your-rent' target='_blank' style='text-decoration:none'><span style='height:0pt; margin-top:-6.45pt; display:block; position:absolute; z-index:-2'><img src='images/Aspose.Words.f6aa76e6-3b31-4a27-b85a-52ed3b73ad65.002.png' width='346' height='19' alt='' style='margin-top:0.46pt; margin-left:-1.45pt; border-style:none; -aw-left-pos:41pt; -aw-rel-hpos:page; -aw-rel-vpos:paragraph; -aw-top-pos:33.91pt; -aw-wrap-type:none; position:absolute' /></span></a></p>
          <p style='margin-top:0.8pt; margin-left:381.45pt; text-align:justify; line-height:11.15pt'><span style='font-family:Arial; font-size:10pt; color:#222222; background-color:#ffffff'>Date: 17 November 2021</span></p>
          <p style='margin-top:2.35pt; margin-left:383.65pt; text-align:justify; line-height:11.15pt'><span style='font-family:Arial; font-size:10pt; color:#222222; background-color:#ffffff'>Payment : xxxxxxxxx</span></p>
@@ -124,7 +124,7 @@ namespace FinancialTransactionsApi.V1.Helpers
                   <p style='text-align:justify; line-height:10.05pt'><span style='font-family:Arial; font-size:9pt; font-weight:bold; background-color:#ffffff'>£1,113.31</span></p>
                </td>
             </tr>");
-foreach (var item in report.Data)
+            foreach (var item in report.Data)
             {
                 sb.AppendFormat(@"
                 <tr style='height:18pt; -aw-height-rule:exactly'>
@@ -148,8 +148,8 @@ foreach (var item in report.Data)
                                   item.PaidAmount,
                                   item.HousingBenefitAmount,
                                   item.BalanceAmount);
-        }
-        sb.Append(@"</table>
+            }
+            sb.Append(@"</table>
          <p style='margin-top:3.7pt; margin-left:45.65pt; text-align:justify; line-height:14.5pt'><span style='font-family:Arial; font-size:13pt; font-weight:bold; background-color:#ffffff'>As of 17 November 2021 your account balance was £1008.31 in arrears.</span></p>
          <p style='margin-top:27.9pt; margin-left:14.25pt; line-height:10.5pt'><span style='height:0pt; margin-top:-27.9pt; display:block; position:absolute; z-index:-1'><img src='images/Aspose.Words.f6aa76e6-3b31-4a27-b85a-52ed3b73ad65.004.png' width='679' height='64' alt='' style='margin-top:-1.74pt; margin-left:-7.7pt; -aw-left-pos:46pt; -aw-rel-hpos:page; -aw-rel-vpos:paragraph; -aw-top-pos:19.26pt; -aw-wrap-type:none; position:absolute' /></span><span style='font-family:Arial; font-size:9pt; font-weight:bold; color:#ffffff; background-color:#222222'>As your landlord, the council has a duty to make sure all charges are</span><span style='font-family:Arial; font-size:9pt; font-weight:bold; color:#ffffff; background-color:#222222; -aw-import:spaces'>&#xa0; </span><span style='font-family:Arial; font-size:9pt; font-weight:bold; color:#ffffff; background-color:#222222'>paid up to date. This is because the housing income goes toward the upkeep of council housing and providing services for residents.</span><span style='font-family:Arial; font-size:9pt; font-weight:bold; color:#ffffff; background-color:#222222; -aw-import:spaces'>&#xa0; </span><span style='font-family:Arial; font-size:9pt; font-weight:bold; color:#ffffff; background-color:#222222'>You must make weekly charges payment</span><span style='font-family:Arial; font-size:9pt; font-weight:bold; color:#ffffff; background-color:#222222; -aw-import:spaces'>&#xa0; </span><span style='font-family:Arial; font-size:9pt; font-weight:bold; color:#ffffff; background-color:#222222'>a priority. If you don’t pay, you risk losing your home.</span></p>
       </div>
