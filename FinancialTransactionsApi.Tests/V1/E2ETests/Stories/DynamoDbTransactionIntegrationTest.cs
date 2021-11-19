@@ -330,45 +330,45 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         //    updateApiEntity.FinancialYear.Should().Be(2021);
         //}
 
-        //[Fact]
-        //public async Task Update_WithInvalidModel_Returns400()
-        //{
-        //    var transaction = new Transaction()
-        //    {
-        //        TransactionAmount = -2000,
-        //        PaidAmount = -2334,
-        //        ChargedAmount = -213,
-        //        HousingBenefitAmount = -1
-        //    };
+        [Fact]
+        public async Task Update_WithInvalidModel_Returns400()
+        {
+            var transaction = new Transaction()
+            {
+                TransactionAmount = -2000,
+                PaidAmount = -2334,
+                ChargedAmount = -213,
+                HousingBenefitAmount = -1
+            };
 
-        //    var uri = new Uri($"api/v1/transactions/{Guid.NewGuid()}", UriKind.Relative);
-        //    string body = JsonConvert.SerializeObject(transaction);
+            var uri = new Uri($"api/v1/transactions/{Guid.NewGuid()}", UriKind.Relative);
+            string body = JsonConvert.SerializeObject(transaction);
 
-        //    HttpResponseMessage response;
-        //    using (StringContent stringContent = new StringContent(body))
-        //    {
-        //        stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpResponseMessage response;
+            using (StringContent stringContent = new StringContent(body))
+            {
+                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        //        response = await Client.PutAsync(uri, stringContent).ConfigureAwait(false);
-        //    }
+                response = await Client.PutAsync(uri, stringContent).ConfigureAwait(false);
+            }
 
-        //    response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        //    var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        //    var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
 
-        //    apiEntity.Should().NotBeNull();
-        //    apiEntity.StatusCode.Should().Be(400);
-        //    apiEntity.Details.Should().Be(string.Empty);
+            apiEntity.Should().NotBeNull();
+            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.Details.Should().Be(string.Empty);
 
-        //    apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
-        //    apiEntity.Message.Should().Contain("The field TargetId cannot be empty or default.");
-        //    apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
-        //    apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and 79228162514264337593543950335.");
-        //    apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and 79228162514264337593543950335.");
-        //    apiEntity.Message.Should().Contain($"The field TransactionAmount must be between 0 and 79228162514264337593543950335.");
-        //    apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and 79228162514264337593543950335.");
-        //}
+            apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
+            apiEntity.Message.Should().Contain("The field TargetId cannot be empty or default.");
+            apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
+            apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and 79228162514264337593543950335.");
+            apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and 79228162514264337593543950335.");
+            apiEntity.Message.Should().Contain($"The field TransactionAmount must be between 0 and 79228162514264337593543950335.");
+            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and 79228162514264337593543950335.");
+        }
 
         [Theory]
         [InlineData(null)]
