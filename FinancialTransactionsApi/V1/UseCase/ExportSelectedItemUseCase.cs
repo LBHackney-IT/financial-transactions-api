@@ -44,13 +44,13 @@ namespace FinancialTransactionsApi.V1.UseCase
                 data.Add(
                    new ExportTransactionResponse
                    {
-                       BalanceAmount = item.BalanceAmount,
-                       ChargedAmount = item.ChargedAmount,
-                       HousingBenefitAmount = item.HousingBenefitAmount,
-                       PaidAmount = item.PaidAmount,
+                       BalanceAmount = NodaMoney.Money.PoundSterling(item.BalanceAmount).ToString(),
+                       ChargedAmount = NodaMoney.Money.PoundSterling(item.ChargedAmount).ToString(),
+                       HousingBenefitAmount = NodaMoney.Money.PoundSterling(item.HousingBenefitAmount).ToString(),
+                       PaidAmount = NodaMoney.Money.PoundSterling(item.PaidAmount).ToString(),
                        PaymentReference = item.PaymentReference,
                        TransactionType = item.TransactionType.ToString(),
-                       TransactionDate = item.TransactionDate.ToString("dd/MM/yyyy")
+                       TransactionDate = item.TransactionDate.ToString("dd MMM yyyy")
                    });
             }
             report.Data = data;

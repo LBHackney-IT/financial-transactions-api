@@ -170,22 +170,22 @@ namespace FinancialTransactionsApi.V1.Gateways
             DateTime lastDay;
             if (query.StatementType == StatementType.Quaterly)
             {
-                int quarterNumber = (DateTime.Now.Month - 1) / 3 + 1;
-                firstDay = new DateTime(DateTime.Now.Year, (quarterNumber - 1) * 3 + 1, 1);
-                lastDay = firstDay.AddMonths(3).AddDays(-1);
+               
+                firstDay = DateTime.UtcNow;
+                lastDay = firstDay.AddMonths(-3).AddDays(-1);
 
             }
             else
             {
-                firstDay = new DateTime(DateTime.Now.Year, 1, 1);
-                lastDay = new DateTime(DateTime.Now.Year, 12, 31);
+                firstDay = DateTime.UtcNow;
+                lastDay = firstDay.AddMonths(-12);
             }
 
             var config = new DynamoDBOperationConfig()
             {
                 QueryFilter = new List<ScanCondition>() {
                     new ScanCondition("TargetId", ScanOperator.Equal, query.TargetId),
-                    new ScanCondition("TransactionDate", ScanOperator.Between, firstDay,lastDay)
+                    new ScanCondition("TransactionDate", ScanOperator.Between,lastDay,firstDay)
                 }
             };
             var response = await _dynamoDbContext.QueryAsync<TransactionDbEntity>(Pk, config).GetRemainingAsync().ConfigureAwait(false);

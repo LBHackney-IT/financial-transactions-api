@@ -12,6 +12,7 @@ namespace FinancialTransactionsApi.V1.Helpers
     {
         public static byte[] WritePdfFile(ExportResponse transactions, string name)
         {
+            var test = transactions;
             //byte[] result;
             var globalSettings = new GlobalSettings
             {
@@ -24,8 +25,8 @@ namespace FinancialTransactionsApi.V1.Helpers
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
-                HtmlContent = TemplateGenerator.GetHTMLString(transactions, "Quaterly Report"),
-                WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") },
+                HtmlContent = TemplateGenerator.GetHTMLReportString(transactions),
+                WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css")},
                 HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
                 FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = $"{name} Statement Report" }
             };

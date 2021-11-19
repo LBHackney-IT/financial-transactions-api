@@ -25,9 +25,6 @@ namespace FinancialTransactionsApi.V1.UseCase
             var data = new List<ExportTransactionResponse>();
             var name = query.StatementType == StatementType.Quaterly ? StatementType.Quaterly.ToString() : StatementType.Quaterly.ToString();
             var response = await _gateway.GetAllTransactionRecordAsync(query).ConfigureAwait(false);
-            //var groupedByYear = response.GroupBy(_ => new { _.TransactionDate.Year,_.TransactionType })
-            //                        .OrderByDescending(x => x.Key.Year).ToList();
-            //foreach (var item in groupedByYear)
             report.TotalCharge = response.Sum(x => x.ChargedAmount);
             report.TotalPaid = response.Sum(x => x.PaidAmount);
             report.TotalHousingBenefit = response.Sum(x => x.HousingBenefitAmount);
@@ -40,13 +37,13 @@ namespace FinancialTransactionsApi.V1.UseCase
                 data.Add(
                    new ExportTransactionResponse
                    {
-                       BalanceAmount = item.BalanceAmount,
-                       ChargedAmount = item.ChargedAmount,
-                       HousingBenefitAmount = item.HousingBenefitAmount,
-                       PaidAmount = item.PaidAmount,
+                       BalanceAmount = NodaMoney.Money.PoundSterling(item.BalanceAmount).ToString(),
+                       ChargedAmount = NodaMoney.Money.PoundSterling(item.ChargedAmount).ToString(),
+                       HousingBenefitAmount = NodaMoney.Money.PoundSterling(item.HousingBenefitAmount).ToString(),
+                       PaidAmount = NodaMoney.Money.PoundSterling(item.PaidAmount).ToString(),
                        PaymentReference = item.PaymentReference,
                        TransactionType = item.TransactionType.ToString(),
-                       TransactionDate = item.TransactionDate.ToString("dd/MM/yyyy")
+                       TransactionDate = item.TransactionDate.ToString("dd MMM yyyy")
                    });
             }
             report.Data = data;

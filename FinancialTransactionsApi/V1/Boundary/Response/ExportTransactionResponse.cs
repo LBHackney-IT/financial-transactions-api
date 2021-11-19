@@ -17,12 +17,12 @@ namespace FinancialTransactionsApi.V1.Boundary.Response
     {
         public string TransactionType { get; set; }
         public string TransactionDate { get; set; }
-        public decimal TransactionAmount { get; set; }
+        public string TransactionAmount { get; set; }
         public string PaymentReference { get; set; }
-        public decimal PaidAmount { get; set; }
-        public decimal ChargedAmount { get; set; }
-        public decimal BalanceAmount { get; set; }
-        public decimal HousingBenefitAmount { get; set; }
+        public string PaidAmount { get; set; }
+        public string ChargedAmount { get; set; }
+        public string BalanceAmount { get; set; }
+        public string HousingBenefitAmount { get; set; }
 
     }
 }
