@@ -267,68 +267,68 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         //    apiEntity.TransactionsList.Should().HaveCount(5);
         //}
 
-        //[Fact]
-        //public async Task AddAndUpdate_WithValidModel_Returns201And200()
-        //{
-        //    var transaction = new Transaction()
-        //    {
-        //        Id = new Guid("6479ffee-b0e8-4c2a-b887-63f2dec086aa"),
-        //        TransactionDate = new DateTime(2021, 8, 1),
-        //        Address = "Address",
-        //        BalanceAmount = 154.12M,
-        //        ChargedAmount = 123.78M,
-        //        FinancialMonth = 8,
-        //        FinancialYear = 2021,
-        //        BankAccountNumber = "12345678",
-        //        IsSuspense = true,
-        //        PaidAmount = 125.62M,
-        //        PeriodNo = 31,
-        //        TargetId = new Guid("9e067bac-56ed-4802-a83f-b1e32f09177e"),
-        //        TransactionAmount = 186.90M,
-        //        TransactionSource = "DD",
-        //        TransactionType = TransactionType.Rent,
-        //        Person = new Person()
-        //        {
-        //            Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
-        //            FullName = "Hyan Widro"
-        //        }
-        //    };
+        [Fact]
+        public async Task AddAndUpdate_WithValidModel_Returns201And200()
+        {
+            var transaction = new Transaction()
+            {
+                Id = new Guid("6479ffee-b0e8-4c2a-b887-63f2dec086aa"),
+                TransactionDate = new DateTime(2021, 8, 1),
+                Address = "Address",
+                BalanceAmount = 154.12M,
+                ChargedAmount = 123.78M,
+                FinancialMonth = 8,
+                FinancialYear = 2021,
+                BankAccountNumber = "12345678",
+                IsSuspense = true,
+                PaidAmount = 125.62M,
+                PeriodNo = 31,
+                TargetId = new Guid("9e067bac-56ed-4802-a83f-b1e32f09177e"),
+                TransactionAmount = 186.90M,
+                TransactionSource = "DD",
+                TransactionType = TransactionType.Rent,
+                Person = new Person()
+                {
+                    Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
+                    FullName = "Hyan Widro"
+                }
+            };
 
-        //    var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+            var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
 
-        //    transaction.Id = id;
-        //    transaction.PaymentReference = "PaymentReference";
-        //    transaction.Fund = "Fund";
-        //    transaction.HousingBenefitAmount = 999.9M;
-        //    transaction.SuspenseResolutionInfo = new SuspenseResolutionInfo()
-        //    {
-        //        IsConfirmed = true,
-        //        IsApproved = true,
-        //        ResolutionDate = new DateTime(2021, 9, 1),
-        //        Note = "Note"
-        //    };
-        //    transaction.IsSuspense = false;
+            transaction.Id = id;
+            transaction.PaymentReference = "PaymentReference";
+            transaction.Fund = "Fund";
+            transaction.HousingBenefitAmount = 999.9M;
+            transaction.SuspenseResolutionInfo = new SuspenseResolutionInfo()
+            {
+                IsConfirmed = true,
+                IsApproved = true,
+                ResolutionDate = new DateTime(2021, 9, 1),
+                Note = "Note"
+            };
+            transaction.IsSuspense = false;
 
-        //    var updateUri = new Uri($"api/v1/transactions/{transaction.Id}", UriKind.Relative);
-        //    string updateTransaction = JsonConvert.SerializeObject(transaction);
+            var updateUri = new Uri($"api/v1/transactions/{transaction.Id}", UriKind.Relative);
+            string updateTransaction = JsonConvert.SerializeObject(transaction);
 
-        //    HttpResponseMessage updateResponse;
-        //    using var updateStringContent = new StringContent(updateTransaction);
-        //    updateStringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        //    updateResponse = await Client.PutAsync(updateUri, updateStringContent).ConfigureAwait(false);
+            HttpResponseMessage updateResponse;
+            using var updateStringContent = new StringContent(updateTransaction);
+            updateStringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            updateResponse = await Client.PutAsync(updateUri, updateStringContent).ConfigureAwait(false);
 
-        //    updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        //    var updateResponseContent = await updateResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-        //    var updateApiEntity = JsonConvert.DeserializeObject<TransactionResponse>(updateResponseContent);
+            var updateResponseContent = await updateResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var updateApiEntity = JsonConvert.DeserializeObject<TransactionResponse>(updateResponseContent);
 
-        //    updateApiEntity.Should().NotBeNull();
+            updateApiEntity.Should().NotBeNull();
 
-        //    updateApiEntity.Should().BeEquivalentTo(transaction);
+            updateApiEntity.Should().BeEquivalentTo(transaction);
 
-        //    updateApiEntity.FinancialMonth.Should().Be(8);
-        //    updateApiEntity.FinancialYear.Should().Be(2021);
-        //}
+            updateApiEntity.FinancialMonth.Should().Be(8);
+            updateApiEntity.FinancialYear.Should().Be(2021);
+        }
 
         [Fact]
         public async Task Update_WithInvalidModel_Returns400()
