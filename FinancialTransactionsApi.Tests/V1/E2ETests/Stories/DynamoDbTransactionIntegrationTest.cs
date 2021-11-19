@@ -92,25 +92,25 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Success.Should().BeTrue();
         }
 
-        //[Fact]
-        //public async Task Add_WithValidModel_Returns201()
-        //{
-        //    var transaction = ConstructTransaction();
+        [Fact]
+        public async Task Add_WithValidModel_Returns201()
+        {
+            var transaction = ConstructTransaction();
 
-        //    await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
-        //}
+            await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+        }
 
-        //[Fact]
-        //public async Task AddAndThenGetById_WithValidModelAndValidId_Returns201And200()
-        //{
-        //    var transaction = ConstructTransaction();
+        [Fact]
+        public async Task AddAndThenGetById_WithValidModelAndValidId_Returns201And200()
+        {
+            var transaction = ConstructTransaction();
 
-        //    var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+            var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
 
-        //    transaction.Id = id;
+            transaction.Id = id;
 
-        //    await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
-        //}
+            await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
+        }
 
         [Fact]
         public async Task Add_WithInvalidModel_Returns400()
