@@ -22,8 +22,6 @@
     <None Remove="V1\UseCase\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="V1\Controllers\FinancialTransactionsApiControllerTests.cs" />
-    <Compile Remove="V1\Controllers\SuspenseTransactionsApiControllerTests.cs" />
     <Compile Remove="V1\Gateways\DynamoDbGatewayTests.cs" />
     <Compile Remove="V1\Gateways\ExampleGatewayTests.cs" />
   </ItemGroup>
