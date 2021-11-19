@@ -229,43 +229,43 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             firstTransaction?.FinancialYear.Should().Be(2021);
         }
 
-        [Fact]
-        public async Task GetTargetIdAndTransactionTypeFoundReturnsResponse()
-        {
-            var transactionsObj = _fixture.Build<Transaction>()
-                             .With(x => x.TargetId, Guid.NewGuid())
-                             .With(x => x.TransactionType, TransactionType.Charge)
-                             .CreateMany(5);
+        //[Fact]
+        //public async Task GetTargetIdAndTransactionTypeFoundReturnsResponse()
+        //{
+        //    var transactionsObj = _fixture.Build<Transaction>()
+        //                     .With(x => x.TargetId, Guid.NewGuid())
+        //                     .With(x => x.TransactionType, TransactionType.Charge)
+        //                     .CreateMany(5);
 
-            var targetId = transactionsObj.FirstOrDefault().TargetId;
-            var transType = transactionsObj.FirstOrDefault().TransactionType;
+        //    var targetId = transactionsObj.FirstOrDefault().TargetId;
+        //    var transType = transactionsObj.FirstOrDefault().TransactionType;
 
-            int d = -5;
-            var startDate = DateTime.Now.AddDays(d).ToString("yyyy-MM-dd");
-            foreach (var entity in transactionsObj)
-            {
-                entity.TransactionDate = DateTime.Now.AddDays(d);
-                await SetupTestData(entity).ConfigureAwait(false);
-                d++;
-            }
-            var endDate = DateTime.Now.AddDays(d).ToString("yyyy-MM-dd");
-            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
-            var response = await Client.GetAsync(uri).ConfigureAwait(false);
+        //    int d = -5;
+        //    var startDate = DateTime.Now.AddDays(d).ToString("yyyy-MM-dd");
+        //    foreach (var entity in transactionsObj)
+        //    {
+        //        entity.TransactionDate = DateTime.Now.AddDays(d);
+        //        await SetupTestData(entity).ConfigureAwait(false);
+        //        d++;
+        //    }
+        //    var endDate = DateTime.Now.AddDays(d).ToString("yyyy-MM-dd");
+        //    var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
+        //    var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        //    response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        //    var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //    var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
+        //    response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            foreach (var item in transactionsObj)
-            {
-                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(Pk, item.Id).ConfigureAwait(false));
-            }
+        //    foreach (var item in transactionsObj)
+        //    {
+        //        CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(Pk, item.Id).ConfigureAwait(false));
+        //    }
 
-            apiEntity.Total.Should().Be(5);
-            apiEntity.TransactionsList.Should().HaveCount(5);
-        }
+        //    apiEntity.Total.Should().Be(5);
+        //    apiEntity.TransactionsList.Should().HaveCount(5);
+        //}
 
         //[Fact]
         //public async Task AddAndUpdate_WithValidModel_Returns201And200()
