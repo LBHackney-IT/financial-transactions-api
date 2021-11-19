@@ -1,19 +1,43 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Domain;
+using NodaMoney;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using WkHtmlToPdfDotNet;
+using WkHtmlToPdfDotNet.Contracts;
 
 namespace FinancialTransactionsApi.V1.Helpers
 {
     public static class FileGenerator
     {
-        public static byte[] WritePdfFile(ExportResponse transactions, string name)
+        public static byte[] WritePdfFile(List<Transaction> transactions, string name, string period, IConverter converter)
         {
-            var test = transactions;
-            //byte[] result;
+
+            var report = new ExportResponse();
+            var data = new List<ExportTransactionResponse>();
+
+            report.BankAccountNumber = string.Join(",", transactions.Select(x => x.BankAccountNumber).Distinct().ToArray());
+            report.FullName = transactions.FirstOrDefault()?.Person?.FullName;
+            report.StatementPeriod = period;
+            foreach (var item in transactions)
+            {
+
+                data.Add(
+                   new ExportTransactionResponse
+                   {
+                       Date = item.TransactionDate.ToString("dd MMM yyyy"),
+                       TransactionDetail = item.TransactionSource,
+                       Debit = Money.PoundSterling(item.PaidAmount).ToString(),
+                       Credit = Money.PoundSterling(item.HousingBenefitAmount).ToString(),
+                       Balance = Money.PoundSterling(item.BalanceAmount).ToString()
+                   });
+            }
+            report.Data = data;
             var globalSettings = new GlobalSettings
             {
                 ColorMode = ColorMode.Color,
@@ -25,7 +49,7 @@ namespace FinancialTransactionsApi.V1.Helpers
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
-                HtmlContent = TemplateGenerator.GetHTMLReportString(transactions),
+                HtmlContent = TemplateGenerator.GetHTMLReportString(report),
                 WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css"), LoadImages = true },
                 HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
                 FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = $"{name} Statement Report" }
@@ -37,26 +61,26 @@ namespace FinancialTransactionsApi.V1.Helpers
             };
 
 
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            var converter = new SynchronizedConverter(new PdfTools());
-#pragma warning restore CA2000 // Dispose objects before losing scope
-
             var result = converter.Convert(pdf);
             return result;
         }
-        public static byte[] WriteCSVFile(ExportResponse report)
+        public static byte[] WriteCSVFile(List<Transaction> transactions, string name, string period)
         {
-            var export = report.Data.Select(item =>
-             new
-             {
-                 Date = item.TransactionDate,
-                 RentAccountNo = item.PaymentReference,
-                 Type = item.TransactionType,
-                 Charge = item.ChargedAmount,
-                 Paid = item.PaidAmount,
-                 HBCount = item.HousingBenefitAmount,
-                 Balance = item.BalanceAmount
-             });
+            var data = new List<ExportTransactionResponse>();
+            foreach (var item in transactions)
+            {
+
+                data.Add(
+                   new ExportTransactionResponse
+                   {
+                       Date = item.TransactionDate.ToString("dd MMM yyyy"),
+                       TransactionDetail = item.TransactionSource,
+                       Debit = item.PaidAmount.ToString(),
+                       Credit = item.HousingBenefitAmount.ToString(),
+                       Balance = item.BalanceAmount.ToString()
+                   });
+            }
+
             byte[] result;
             var cc = new CsvConfiguration(new System.Globalization.CultureInfo("en-US"));
             using (var ms = new MemoryStream())
@@ -64,12 +88,42 @@ namespace FinancialTransactionsApi.V1.Helpers
                 using (var sw = new StreamWriter(stream: ms, encoding: new UTF8Encoding(true)))
                 {
                     using var cw = new CsvWriter(sw, cc);
-                    cw.WriteRecords(export);
+                    cw.WriteRecords(data);
+                    cw.WriteComment($"{name} STATEMENT OF YOUR ACCOUNT");
+                    cw.WriteComment($"for the period {period}");
+                    cw.WriteComment($"As of {DateTime.Today:D} your account balance was {transactions.LastOrDefault().BalanceAmount} in arrears.");
+                    cw.WriteComment("As your landlord, the council has a duty to make sure all charges are paid up to date. This is because the housing income goes toward the upkeep of council housing and providing services for residents. You must make weekly charges payment a priority. If you don’t pay, you risk losing your home.");
                 }
                 result = ms.ToArray();
             }
             return result;
         }
 
+        public static byte[] WriteManualCSVFile(IEnumerable<Transaction> transactions)
+        {
+            var data = transactions.Select(_ => new
+            {
+                Date = _.TransactionDate.ToString("dd/MM/yyyy"),
+                RentAccountNumber = _.PaymentReference,
+                Type = _.TransactionSource,
+                Charge = _.ChargedAmount,
+                Paid = _.PaidAmount,
+                HBCont = _.HousingBenefitAmount,
+                Balence = _.BalanceAmount
+            });
+
+            byte[] result;
+            var cc = new CsvConfiguration(new System.Globalization.CultureInfo("en-US"));
+            using (var ms = new MemoryStream())
+            {
+                using (var sw = new StreamWriter(stream: ms, encoding: new UTF8Encoding(true)))
+                {
+                    using var cw = new CsvWriter(sw, cc);
+                    cw.WriteRecords(data);
+                }
+                result = ms.ToArray();
+            }
+            return result;
+        }
     }
 }

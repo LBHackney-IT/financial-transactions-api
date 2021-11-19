@@ -1,5 +1,4 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
-using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Helpers;
@@ -20,8 +19,7 @@ namespace FinancialTransactionsApi.V1.UseCase
 
         public async Task<byte[]> ExecuteAsync(TransactionExportRequest request)
         {
-            var report = new ExportResponse();
-            var data = new List<ExportTransactionResponse>();
+
             List<Transaction> response = new List<Transaction>();
             if (request.SelectedItems.Count > 0)
             {
@@ -38,24 +36,7 @@ namespace FinancialTransactionsApi.V1.UseCase
             }
 
 
-            foreach (var item in response)
-            {
-
-                data.Add(
-                   new ExportTransactionResponse
-                   {
-                       BalanceAmount = NodaMoney.Money.PoundSterling(item.BalanceAmount).ToString(),
-                       ChargedAmount = NodaMoney.Money.PoundSterling(item.ChargedAmount).ToString(),
-                       HousingBenefitAmount = NodaMoney.Money.PoundSterling(item.HousingBenefitAmount).ToString(),
-                       PaidAmount = NodaMoney.Money.PoundSterling(item.PaidAmount).ToString(),
-                       PaymentReference = item.PaymentReference,
-                       TransactionType = item.TransactionType.ToString(),
-                       TransactionDate = item.TransactionDate.ToString("dd MMM yyyy")
-                   });
-            }
-            report.Data = data;
-
-            var result = FileGenerator.WriteCSVFile(report);
+            var result = FileGenerator.WriteManualCSVFile(response);
             return result;
         }
     }
