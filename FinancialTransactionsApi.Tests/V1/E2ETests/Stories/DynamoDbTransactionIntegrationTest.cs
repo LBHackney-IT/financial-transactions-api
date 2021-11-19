@@ -184,50 +184,50 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Message.Should().Contain(message);
         }
 
-        [Fact]
-        public async Task CreateTwoRentGroupsGetAllReturns200()
-        {
-            var transactions = new[] { ConstructTransaction(), ConstructTransaction() };
+        //[Fact]
+        //public async Task CreateTwoRentGroupsGetAllReturns200()
+        //{
+        //    var transactions = new[] { ConstructTransaction(), ConstructTransaction() };
 
-            Guid targetId = Guid.NewGuid();
+        //    Guid targetId = Guid.NewGuid();
 
-            transactions[0].TargetId = targetId;
-            transactions[1].TargetId = targetId;
-            string transType = transactions[0].TransactionType.ToString();
-            var startDate = transactions[0].TransactionDate.AddDays(-1).ToString("yyyy-MM-dd");
-            var endDate = transactions[1].TransactionDate.AddDays(1).ToString("yyyy-MM-dd");
+        //    transactions[0].TargetId = targetId;
+        //    transactions[1].TargetId = targetId;
+        //    string transType = transactions[0].TransactionType.ToString();
+        //    var startDate = transactions[0].TransactionDate.AddDays(-1).ToString("yyyy-MM-dd");
+        //    var endDate = transactions[1].TransactionDate.AddDays(1).ToString("yyyy-MM-dd");
 
-            foreach (var transaction in transactions)
-            {
-                var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+        //    foreach (var transaction in transactions)
+        //    {
+        //        var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
 
-                transaction.Id = id;
+        //        transaction.Id = id;
 
-                await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
-            }
+        //        await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
+        //    }
 
-            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
-            using var response = await Client.GetAsync(uri).ConfigureAwait(false);
+        //    var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
+        //    using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        //    response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
+        //    var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //    var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
 
-            apiEntity.Should().NotBeNull();
-            apiEntity.Total.Should().BeGreaterOrEqualTo(1);
+        //    apiEntity.Should().NotBeNull();
+        //    apiEntity.Total.Should().BeGreaterOrEqualTo(1);
 
-            var firstTransaction = apiEntity.TransactionsList.ToList().Find(r => r.Id.Equals(transactions[0].Id));
+        //    var firstTransaction = apiEntity.TransactionsList.ToList().Find(r => r.Id.Equals(transactions[0].Id));
 
-            firstTransaction.Should().BeEquivalentTo(transactions[0], opt =>
-                opt.Excluding(a => a.FinancialYear)
-                    .Excluding(a => a.FinancialMonth)
-                    .Excluding(a => a.TransactionDate)
-                    .Excluding(a => a.TransactionDate));
+        //    firstTransaction.Should().BeEquivalentTo(transactions[0], opt =>
+        //        opt.Excluding(a => a.FinancialYear)
+        //            .Excluding(a => a.FinancialMonth)
+        //            .Excluding(a => a.TransactionDate)
+        //            .Excluding(a => a.TransactionDate));
 
-            firstTransaction?.FinancialMonth.Should().Be(8);
-            firstTransaction?.FinancialYear.Should().Be(2021);
-        }
+        //    firstTransaction?.FinancialMonth.Should().Be(8);
+        //    firstTransaction?.FinancialYear.Should().Be(2021);
+        //}
 
         [Fact]
         public async Task GetTargetIdAndTransactionTypeFoundReturnsResponse()
@@ -267,108 +267,108 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.TransactionsList.Should().HaveCount(5);
         }
 
-        [Fact]
-        public async Task AddAndUpdate_WithValidModel_Returns201And200()
-        {
-            var transaction = new Transaction()
-            {
-                Id = new Guid("6479ffee-b0e8-4c2a-b887-63f2dec086aa"),
-                TransactionDate = new DateTime(2021, 8, 1),
-                Address = "Address",
-                BalanceAmount = 154.12M,
-                ChargedAmount = 123.78M,
-                FinancialMonth = 8,
-                FinancialYear = 2021,
-                BankAccountNumber = "12345678",
-                IsSuspense = true,
-                PaidAmount = 125.62M,
-                PeriodNo = 31,
-                TargetId = new Guid("9e067bac-56ed-4802-a83f-b1e32f09177e"),
-                TransactionAmount = 186.90M,
-                TransactionSource = "DD",
-                TransactionType = TransactionType.Rent,
-                Person = new Person()
-                {
-                    Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
-                    FullName = "Hyan Widro"
-                }
-            };
+        //[Fact]
+        //public async Task AddAndUpdate_WithValidModel_Returns201And200()
+        //{
+        //    var transaction = new Transaction()
+        //    {
+        //        Id = new Guid("6479ffee-b0e8-4c2a-b887-63f2dec086aa"),
+        //        TransactionDate = new DateTime(2021, 8, 1),
+        //        Address = "Address",
+        //        BalanceAmount = 154.12M,
+        //        ChargedAmount = 123.78M,
+        //        FinancialMonth = 8,
+        //        FinancialYear = 2021,
+        //        BankAccountNumber = "12345678",
+        //        IsSuspense = true,
+        //        PaidAmount = 125.62M,
+        //        PeriodNo = 31,
+        //        TargetId = new Guid("9e067bac-56ed-4802-a83f-b1e32f09177e"),
+        //        TransactionAmount = 186.90M,
+        //        TransactionSource = "DD",
+        //        TransactionType = TransactionType.Rent,
+        //        Person = new Person()
+        //        {
+        //            Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
+        //            FullName = "Hyan Widro"
+        //        }
+        //    };
 
-            var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+        //    var id = await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
 
-            transaction.Id = id;
-            transaction.PaymentReference = "PaymentReference";
-            transaction.Fund = "Fund";
-            transaction.HousingBenefitAmount = 999.9M;
-            transaction.SuspenseResolutionInfo = new SuspenseResolutionInfo()
-            {
-                IsConfirmed = true,
-                IsApproved = true,
-                ResolutionDate = new DateTime(2021, 9, 1),
-                Note = "Note"
-            };
-            transaction.IsSuspense = false;
+        //    transaction.Id = id;
+        //    transaction.PaymentReference = "PaymentReference";
+        //    transaction.Fund = "Fund";
+        //    transaction.HousingBenefitAmount = 999.9M;
+        //    transaction.SuspenseResolutionInfo = new SuspenseResolutionInfo()
+        //    {
+        //        IsConfirmed = true,
+        //        IsApproved = true,
+        //        ResolutionDate = new DateTime(2021, 9, 1),
+        //        Note = "Note"
+        //    };
+        //    transaction.IsSuspense = false;
 
-            var updateUri = new Uri($"api/v1/transactions/{transaction.Id}", UriKind.Relative);
-            string updateTransaction = JsonConvert.SerializeObject(transaction);
+        //    var updateUri = new Uri($"api/v1/transactions/{transaction.Id}", UriKind.Relative);
+        //    string updateTransaction = JsonConvert.SerializeObject(transaction);
 
-            HttpResponseMessage updateResponse;
-            using var updateStringContent = new StringContent(updateTransaction);
-            updateStringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            updateResponse = await Client.PutAsync(updateUri, updateStringContent).ConfigureAwait(false);
+        //    HttpResponseMessage updateResponse;
+        //    using var updateStringContent = new StringContent(updateTransaction);
+        //    updateStringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        //    updateResponse = await Client.PutAsync(updateUri, updateStringContent).ConfigureAwait(false);
 
-            updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        //    updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var updateResponseContent = await updateResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var updateApiEntity = JsonConvert.DeserializeObject<TransactionResponse>(updateResponseContent);
+        //    var updateResponseContent = await updateResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //    var updateApiEntity = JsonConvert.DeserializeObject<TransactionResponse>(updateResponseContent);
 
-            updateApiEntity.Should().NotBeNull();
+        //    updateApiEntity.Should().NotBeNull();
 
-            updateApiEntity.Should().BeEquivalentTo(transaction);
+        //    updateApiEntity.Should().BeEquivalentTo(transaction);
 
-            updateApiEntity.FinancialMonth.Should().Be(8);
-            updateApiEntity.FinancialYear.Should().Be(2021);
-        }
+        //    updateApiEntity.FinancialMonth.Should().Be(8);
+        //    updateApiEntity.FinancialYear.Should().Be(2021);
+        //}
 
-        [Fact]
-        public async Task Update_WithInvalidModel_Returns400()
-        {
-            var transaction = new Transaction()
-            {
-                TransactionAmount = -2000,
-                PaidAmount = -2334,
-                ChargedAmount = -213,
-                HousingBenefitAmount = -1
-            };
+        //[Fact]
+        //public async Task Update_WithInvalidModel_Returns400()
+        //{
+        //    var transaction = new Transaction()
+        //    {
+        //        TransactionAmount = -2000,
+        //        PaidAmount = -2334,
+        //        ChargedAmount = -213,
+        //        HousingBenefitAmount = -1
+        //    };
 
-            var uri = new Uri($"api/v1/transactions/{Guid.NewGuid()}", UriKind.Relative);
-            string body = JsonConvert.SerializeObject(transaction);
+        //    var uri = new Uri($"api/v1/transactions/{Guid.NewGuid()}", UriKind.Relative);
+        //    string body = JsonConvert.SerializeObject(transaction);
 
-            HttpResponseMessage response;
-            using (StringContent stringContent = new StringContent(body))
-            {
-                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        //    HttpResponseMessage response;
+        //    using (StringContent stringContent = new StringContent(body))
+        //    {
+        //        stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                response = await Client.PutAsync(uri, stringContent).ConfigureAwait(false);
-            }
+        //        response = await Client.PutAsync(uri, stringContent).ConfigureAwait(false);
+        //    }
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        //    response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
+        //    var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //    var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
 
-            apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
-            apiEntity.Details.Should().Be(string.Empty);
+        //    apiEntity.Should().NotBeNull();
+        //    apiEntity.StatusCode.Should().Be(400);
+        //    apiEntity.Details.Should().Be(string.Empty);
 
-            apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
-            apiEntity.Message.Should().Contain("The field TargetId cannot be empty or default.");
-            apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
-            apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and 79228162514264337593543950335.");
-            apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and 79228162514264337593543950335.");
-            apiEntity.Message.Should().Contain($"The field TransactionAmount must be between 0 and 79228162514264337593543950335.");
-            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and 79228162514264337593543950335.");
-        }
+        //    apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
+        //    apiEntity.Message.Should().Contain("The field TargetId cannot be empty or default.");
+        //    apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
+        //    apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and 79228162514264337593543950335.");
+        //    apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and 79228162514264337593543950335.");
+        //    apiEntity.Message.Should().Contain($"The field TransactionAmount must be between 0 and 79228162514264337593543950335.");
+        //    apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and 79228162514264337593543950335.");
+        //}
 
         [Theory]
         [InlineData(null)]
