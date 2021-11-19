@@ -12,6 +12,19 @@
     <NoWarn>1701;1702;CA1707;CA1303</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="V1\E2ETests\**" />
+    <Compile Remove="V1\UseCase\**" />
+    <Content Remove="V1\E2ETests\**" />
+    <Content Remove="V1\UseCase\**" />
+    <EmbeddedResource Remove="V1\E2ETests\**" />
+    <EmbeddedResource Remove="V1\UseCase\**" />
+    <None Remove="V1\E2ETests\**" />
+    <None Remove="V1\UseCase\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="V1\Controllers\FinancialTransactionsApiControllerTests.cs" />
+    <Compile Remove="V1\Controllers\SuspenseTransactionsApiControllerTests.cs" />
+    <Compile Remove="V1\Gateways\DynamoDbGatewayTests.cs" />
     <Compile Remove="V1\Gateways\ExampleGatewayTests.cs" />
   </ItemGroup>
 
@@ -35,6 +48,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FinancialTransactionsApi\FinancialTransactionsApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="V1\Gateways\" />
   </ItemGroup>
 
 </Project>
