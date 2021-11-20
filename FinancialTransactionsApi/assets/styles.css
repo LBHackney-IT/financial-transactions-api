@@ -15,19 +15,19 @@ body {
 
     #page_1 #id1_1 {
         border: none;
-        margin: 79px 0px 0px 4px !important;
+        margin: 79px 0px 0px 4px;
         padding: 0px;
         border: none;
-        width: 800px;
-        height: auto;
+        width: 654px;
     }
 
     #page_1 #id1_2 {
-        border: none;
-        margin: 39px 0px 0px 19px !important;
+        margin: 39px 0px 0px 19px;
         padding: 0px;
         border: none;
-        width: 800px;
+        width: 652px;
+        background: #000000;
+        color:#fff;
     }
 
     #page_1 #p1dimg1 {
@@ -35,13 +35,13 @@ body {
         top: 0px;
         left: 0px;
         z-index: -1;
-        width: 684px;
-        height: 1073px;
+        width:auto;
+        height: auto;
     }
 
         #page_1 #p1dimg1 #p1img1 {
-            width: 684px;
-            height: 1073px;
+            width: auto;
+            height: auto;
         }
 
 
@@ -481,166 +481,6 @@ body {
     background: #d9d9d9;
 }
 
-.td20 {
-    border-right: #000000 1px solid;
-    border-bottom: #d9d9d9 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 207px;
-    vertical-align: bottom;
-    background: #d9d9d9;
-}
-
-.td21 {
-    border-bottom: #d9d9d9 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 79px;
-    vertical-align: bottom;
-    background: #d9d9d9;
-}
-
-.td22 {
-    border-right: #000000 1px solid;
-    border-bottom: #d9d9d9 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 43px;
-    vertical-align: bottom;
-    background: #d9d9d9;
-}
-
-.td23 {
-    border-right: #000000 1px solid;
-    border-bottom: #d9d9d9 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 104px;
-    vertical-align: bottom;
-    background: #d9d9d9;
-}
-
-.td24 {
-    border-right: #000000 1px solid;
-    border-bottom: #d9d9d9 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 119px;
-    vertical-align: bottom;
-    background: #d9d9d9;
-}
-
-.td25 {
-    border-left: #000000 1px solid;
-    border-right: #000000 1px solid;
-    border-top: #000000 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 113px;
-    vertical-align: bottom;
-}
-
-.td26 {
-    border-left: #000000 1px solid;
-    border-right: #000000 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 113px;
-    vertical-align: bottom;
-}
-
-.td27 {
-    border-right: #000000 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 207px;
-    vertical-align: bottom;
-}
-
-.td28 {
-    padding: 0px;
-    margin: 0px;
-    width: 79px;
-    vertical-align: bottom;
-}
-
-.td29 {
-    border-right: #000000 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 43px;
-    vertical-align: bottom;
-}
-
-.td30 {
-    border-right: #000000 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 104px;
-    vertical-align: bottom;
-}
-
-.td31 {
-    border-right: #000000 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 119px;
-    vertical-align: bottom;
-}
-
-.td32 {
-    border-left: #000000 1px solid;
-    border-bottom: #000000 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 60px;
-    vertical-align: bottom;
-}
-
-.td33 {
-    border-right: #000000 1px solid;
-    border-bottom: #000000 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 53px;
-    vertical-align: bottom;
-}
-
-.td34 {
-    border-left: #000000 1px solid;
-    border-bottom: #d9d9d9 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 60px;
-    vertical-align: bottom;
-    background: #d9d9d9;
-}
-
-.td35 {
-    border-right: #000000 1px solid;
-    border-bottom: #d9d9d9 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 53px;
-    vertical-align: bottom;
-    background: #d9d9d9;
-}
-
-.td36 {
-    border-left: #000000 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 60px;
-    vertical-align: bottom;
-}
-
-.td37 {
-    border-right: #000000 1px solid;
-    padding: 0px;
-    margin: 0px;
-    width: 53px;
-    vertical-align: bottom;
-}
 
 .tr0 {
     height: 23px;
@@ -674,7 +514,7 @@ td, th {
     padding: 0px;
     margin: 0px;
     vertical-align: bottom;
-    background: #d9d9d9;
+    
 }
 p {
     display: block;
@@ -687,8 +527,11 @@ div {
     display: block;
 }
 
-.clearfix::after {
-    content: "";
-    clear: both;
-    display: table;
+.address {
+    border: 2px solid gray;
+    width: 250px;
+    height: 130px;
+}
+tr:nth-child(even) {
+    background: #d9d9d9;
 }
