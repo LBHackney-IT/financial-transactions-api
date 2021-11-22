@@ -22,6 +22,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 PaidAmount = domain.PaidAmount,
                 PaymentReference = domain.PaymentReference,
                 BankAccountNumber = domain.BankAccountNumber,
+                SortCode = domain.SortCode,
                 IsSuspense = domain.IsSuspense,
                 SuspenseResolutionInfo = domain.SuspenseResolutionInfo,
                 PeriodNo = domain.PeriodNo,

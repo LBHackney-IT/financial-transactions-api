@@ -31,6 +31,8 @@ namespace FinancialTransactionsApi.V1.Domain
         public string PaymentReference { get; set; }
         [AllowNull]
         public string BankAccountNumber { get; set; }
+        [AllowNull]
+        public string SortCode { get; set; }
         [Required]
         public bool IsSuspense { get; set; }
         [AllowNull]
