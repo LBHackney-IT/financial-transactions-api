@@ -10,6 +10,7 @@ using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,8 +31,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task AddAsync(Transaction transaction)
         {
-            var dbEntity = transaction.ToDatabase();
-            await _dynamoDbContext.SaveAsync(dbEntity).ConfigureAwait(false);
+            await _dynamoDbContext.SaveAsync(transaction.ToDatabase(Pk)).ConfigureAwait(false);
         }
 
         public async Task AddRangeAsync(List<Transaction> transactions)
@@ -128,7 +128,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task UpdateAsync(Transaction transaction)
         {
-            await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
+            await _dynamoDbContext.SaveAsync(transaction.ToDatabase(Pk)).ConfigureAwait(false);
         }
 
         public async Task<List<Transaction>> GetAllTransactionsForTheYearAsync(ExportTransactionQuery query)
@@ -181,6 +181,20 @@ namespace FinancialTransactionsApi.V1.Gateways
                 lastDay = firstDay.AddMonths(-12);
             }
 
+            var timer1 = new Stopwatch();
+            timer1.Start();
+            List<ScanCondition> conditions = new List<ScanCondition>
+            {
+                new ScanCondition("TargetId", ScanOperator.Equal, query.TargetId),
+                new ScanCondition("TransactionDate", ScanOperator.Between, lastDay, firstDay)
+            };
+            var usingScanAsync = await _dynamoDbContext.ScanAsync<TransactionDbEntity>(conditions).GetRemainingAsync().ConfigureAwait(false);
+            timer1.Stop();
+
+            var timer2 = new Stopwatch();
+            timer2.Start();
+            
+
             var config = new DynamoDBOperationConfig()
             {
                 QueryFilter = new List<ScanCondition>() {
@@ -189,6 +203,10 @@ namespace FinancialTransactionsApi.V1.Gateways
                 }
             };
             var response = await _dynamoDbContext.QueryAsync<TransactionDbEntity>(Pk, config).GetRemainingAsync().ConfigureAwait(false);
+
+            timer2.Stop();
+            TimeSpan timeTaken1 = timer1.Elapsed;
+            TimeSpan timeTaken2 = timer2.Elapsed;
             if (response.Count < 1) return new List<Transaction>();
             var result = response.Select(x => x.ToDomain()).OrderBy(_ => _.TransactionDate).ToList();
             return result;

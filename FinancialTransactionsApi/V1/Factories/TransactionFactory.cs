@@ -6,11 +6,11 @@ namespace FinancialTransactionsApi.V1.Factories
 {
     public static class TransactionFactory
     {
-        public static TransactionDbEntity ToDatabase(this Transaction transaction)
+        public static TransactionDbEntity ToDatabase(this Transaction transaction, string pk)
         {
             return transaction == null ? null : new TransactionDbEntity
             {
-                Pk = "#lbhtransaction",
+                Pk = pk,
                 Id = transaction.Id,
                 TargetId = transaction.TargetId,
                 TargetType = transaction.TargetType,

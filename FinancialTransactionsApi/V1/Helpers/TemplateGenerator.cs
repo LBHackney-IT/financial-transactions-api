@@ -90,7 +90,7 @@ namespace FinancialTransactionsApi.V1.Helpers
             <p class='p0 ft0'>Income Services, Hackney Service Centre, 1 Hillman Street, London E8 1DY</p>
             <p class='p1 ft0'>Tel: 0208 356 3100 24 hour payment line: 0208 356 5050</p>
             <p class='p0 ft1'><nobr><a href='http://www.hackney.gov.uk/your-rent'>www.hackney.gov.uk/your-rent</a></nobr><hr></p>");
-                        sb.AppendFormat(@"
+            sb.AppendFormat(@"
             <p class='p2 ft2'>Date: {0}</p>
             <p class='p3 ft2'>Payment : xxxxxxxxx</p>
             <div class='address'>
@@ -118,9 +118,9 @@ namespace FinancialTransactionsApi.V1.Helpers
 	            <td class='tr1 td11'><p class='p15 ft8'>&nbsp;</p></td>
 	            <td class='tr1 td12'><p class='p15 ft6'>{2}</p></td>
             </tr>", date, report.StatementPeriod, report.BalanceBroughtForward);
-                        foreach (var item in report.Data)
-                        {
-                            sb.AppendFormat(@"
+            foreach (var item in report.Data)
+            {
+                sb.AppendFormat(@"
 				            <tr>
 	            <td colspan='2' class='tr1 td25'><p class='p16 ft8'>{0}</p></td>
 	            <td class='tr1 td8'><p class='p17 ft8'>{1}</p></td>
@@ -128,14 +128,14 @@ namespace FinancialTransactionsApi.V1.Helpers
 	            <td class='tr1 td11'><p class='p15 ft8'><nobr>{3}</nobr></p></td>
 	            <td class='tr1 td12'><p class='p15 ft6'>{4}</p></td>
             </tr>", item.Date, item.TransactionDetail, item.Debit, item.Credit, item.Balance);
-                        };
+            };
 
-                        sb.AppendFormat(@"
+            sb.AppendFormat(@"
             </tbody>
             </table>
             <p class='p20 ft10'>As of {0} your account balance was {1} in arrears.</p>
             </div>", date, report.Balance);
-                        sb.Append(@"
+            sb.Append(@"
             <div id='id1_2'>
             <p class='p0 ft11'>As your landlord, the council has a duty to make sure all charges are paid up to date. This is because the housing income goes toward the upkeep of council housing and providing services for residents. You must make weekly charges payment a priority. If you don’t pay, you risk losing your home.</p>
             </div>
