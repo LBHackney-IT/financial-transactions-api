@@ -19,7 +19,5 @@ namespace FinancialTransactionsApi.V1.Boundary.Response
         public string Debit { get; set; }
         public string Credit { get; set; }
         public string Balance { get; set; }
-
-
     }
 }

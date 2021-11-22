@@ -1,12 +1,9 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
-using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using WkHtmlToPdfDotNet.Contracts;
 
