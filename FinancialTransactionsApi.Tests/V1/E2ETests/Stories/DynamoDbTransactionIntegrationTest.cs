@@ -259,7 +259,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             foreach (var item in transactionsObj)
             {
-                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(item).ConfigureAwait(false));
+                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(item.TargetId, item.Id).ConfigureAwait(false));
             }
 
             apiEntity.Total.Should().Be(5);
@@ -308,7 +308,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             };
             transaction.IsSuspense = false;
 
-            var updateUri = new Uri($"api/v1/transactions/{transaction.Id}", UriKind.Relative);
+            var updateUri = new Uri($"api/v1/transactions/{transaction.Id}?targetId={transaction.TargetId}", UriKind.Relative);
             string updateTransaction = JsonConvert.SerializeObject(transaction);
 
             HttpResponseMessage updateResponse;
