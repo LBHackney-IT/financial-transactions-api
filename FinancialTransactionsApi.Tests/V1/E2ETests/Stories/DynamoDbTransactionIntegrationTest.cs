@@ -52,15 +52,16 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var dbEntity = entity.ToDatabase();
             await DynamoDbContext.SaveAsync(dbEntity).ConfigureAwait(false);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(entity).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(entity.TargetId, entity.Id).ConfigureAwait(false));
         }
 
         [Fact]
         public async Task GetById_WithInvalidId_Returns404()
         {
             var id = Guid.NewGuid();
+            var targetId = Guid.NewGuid();
 
-            var uri = new Uri($"api/v1/transactions/{id}", UriKind.Relative);
+            var uri = new Uri($"api/v1/transactions/{id}?targetId={targetId}", UriKind.Relative);
             var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
