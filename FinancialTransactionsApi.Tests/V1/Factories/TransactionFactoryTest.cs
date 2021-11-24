@@ -88,7 +88,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 }
             };
 
-            var dbEntity = domain.ToDatabase();
+            var dbEntity = domain.ToDatabase("#lbhtransaction");
 
             dbEntity.Should().BeEquivalentTo(domain);
         }

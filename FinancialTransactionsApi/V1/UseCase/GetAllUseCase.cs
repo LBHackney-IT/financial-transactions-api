@@ -19,7 +19,7 @@ namespace FinancialTransactionsApi.V1.UseCase
         public async Task<TransactionResponses> ExecuteAsync(TransactionQuery query)
         {
             var transactions =
-                await _gateway.GetAllTransactionsAsync(query)
+                await _gateway.GetPagedTransactionsAsync(query)
                     .ConfigureAwait(false);
 
             return new TransactionResponses

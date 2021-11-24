@@ -23,7 +23,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
     public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
-        private const string Pk = "#lbhtransaction";
+        private const string PartitionKey = "#lbhtransaction";
 
         /// <summary>
         /// Method to construct a test entity that can be used in a test
@@ -51,10 +51,10 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         /// <returns></returns>
         private async Task SetupTestData(Transaction entity)
         {
-            var dbEntity = entity.ToDatabase();
+            var dbEntity = entity.ToDatabase(PartitionKey);
             await DynamoDbContext.SaveAsync(dbEntity).ConfigureAwait(false);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(Pk, entity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(PartitionKey, entity.Id).ConfigureAwait(false));
         }
 
         [Fact]
@@ -260,7 +260,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             foreach (var item in transactionsObj)
             {
-                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(Pk, item.Id).ConfigureAwait(false));
+                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(PartitionKey, item.Id).ConfigureAwait(false));
             }
 
             apiEntity.Total.Should().Be(5);
@@ -423,7 +423,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(Pk, apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(PartitionKey, apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 

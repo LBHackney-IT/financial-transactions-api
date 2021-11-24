@@ -32,7 +32,7 @@ namespace FinancialTransactionsApi.V1.UseCase
             else
             {
 
-                response = await _gateway.GetAllTransactionByDateAsync(request).ConfigureAwait(false);
+                response = await _gateway.GetTransactionsAsync(request.TargetId, request.TransactionType.ToString(), request.StartDate, request.StartDate).ConfigureAwait(false);
             }
 
 

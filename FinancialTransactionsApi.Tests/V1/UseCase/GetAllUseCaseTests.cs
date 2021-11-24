@@ -38,7 +38,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 StartDate = DateTime.UtcNow
             };
 
-            _mockGateway.Setup(x => x.GetAllTransactionsAsync(It.IsAny<TransactionQuery>())).ReturnsAsync(transactions);
+            _mockGateway.Setup(x => x.GetPagedTransactionsAsync(It.IsAny<TransactionQuery>())).ReturnsAsync(transactions);
 
             var response = await _getAllUseCase.ExecuteAsync(transactionQuery).ConfigureAwait(false);
 

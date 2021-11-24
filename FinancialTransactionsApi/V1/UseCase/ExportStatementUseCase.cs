@@ -24,18 +24,24 @@ namespace FinancialTransactionsApi.V1.UseCase
         {
             string name;
             string period;
+            DateTime startDate;
+            DateTime endDate;
             if (query.StatementType == StatementType.Quaterly)
             {
                 name = StatementType.Quaterly.ToString();
-                period = $"{DateTime.UtcNow.AddMonths(-3).AddDays(-1):D} to {DateTime.UtcNow:D}";
+                startDate = DateTime.UtcNow;
+                endDate = startDate.AddMonths(-3);
+                period = $"{endDate:D} to {startDate:D}";
             }
             else
             {
+                startDate = DateTime.UtcNow;
+                endDate = startDate.AddMonths(-12);
                 name = StatementType.Yearly.ToString();
-                period = $"{DateTime.UtcNow.AddMonths(-12):D} to {DateTime.UtcNow:D}";
+                period = $"{endDate:D} to {startDate:D}";
             }
 
-            var response = await _gateway.GetAllTransactionRecordAsync(query).ConfigureAwait(false);
+            var response = await _gateway.GetTransactionsAsync(query.TargetId, query.TransactionType.ToString(), startDate, endDate).ConfigureAwait(false);
 
 
             var result = query?.FileType switch

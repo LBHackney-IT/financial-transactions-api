@@ -230,11 +230,10 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        [Route("export-statement")]
-        public async Task<IActionResult> ExportQuaterlyReportAsync([FromBody] ExportTransactionQuery query)
+        [Route("statement/export")]
+        public async Task<IActionResult> ExportStatementReportAsync([FromBody] ExportTransactionQuery query)
         {
             var result = await _exportStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
-            // var result = await _exportQuarterlyReportUseCase.ExecuteAsync(quaterlyQuery).ConfigureAwait(false);
             if (result == null)
                 return NotFound("No record found");
             if (query?.FileType == "pdf")
@@ -249,7 +248,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        [Route("export-selections")]
+        [Route("selection/export")]
         public async Task<IActionResult> ExportSelectedItemAsync([FromBody] TransactionExportRequest request)
         {
             var result = await _exportSelectedItemUseCase.ExecuteAsync(request).ConfigureAwait(false);

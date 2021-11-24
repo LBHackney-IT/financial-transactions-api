@@ -142,7 +142,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
             _amazonDynamoDb.Setup(p => p.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new QueryResponse());
 
-            var responseResult = await _gateway.GetAllTransactionsAsync(transactionQuery).ConfigureAwait(false);
+            var responseResult = await _gateway.GetPagedTransactionsAsync(transactionQuery).ConfigureAwait(false);
 
             responseResult.Total.Should().Be(0);
             responseResult.Transactions.Should().BeEmpty();
@@ -166,7 +166,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 Page = 1,
                 PageSize = 2
             };
-            var responseResult = await _gateway.GetAllTransactionsAsync(transactionQuery).ConfigureAwait(false);
+            var responseResult = await _gateway.GetPagedTransactionsAsync(transactionQuery).ConfigureAwait(false);
 
             responseResult.Transactions.Should().BeEquivalentTo(expectedResponse);
         }
