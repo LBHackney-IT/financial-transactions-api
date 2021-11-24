@@ -25,7 +25,6 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         private readonly Mock<IDynamoDBContext> _dynamoDb;
         private readonly Mock<IAmazonDynamoDB> _amazonDynamoDb;
         private readonly DynamoDbGateway _gateway;
-        private const string Pk = "#lbhtransaction";
 
 
         public DynamoDbGatewayTests()
@@ -38,10 +37,10 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         [Fact]
         public async Task GetById_EntityDoesntExists_ReturnsNull()
         {
-            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(Pk, It.IsAny<Guid>(), default))
+            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(It.IsAny<Guid>(), default))
                 .ReturnsAsync((TransactionDbEntity) null);
 
-            var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid()).ConfigureAwait(false);
+            var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid(), Guid.NewGuid()).ConfigureAwait(false);
 
             result.Should().BeNull();
         }
@@ -51,7 +50,6 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         {
             var expectedResult = new TransactionDbEntity()
             {
-                Pk = Pk,
                 Id = Guid.NewGuid(),
                 TargetId = Guid.NewGuid(),
                 TransactionDate = DateTime.UtcNow,
@@ -76,17 +74,15 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 }
             };
 
-            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(Pk,
-                It.IsAny<Guid>(),
+            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(It.IsAny<Guid>(), It.IsAny<Guid>(),
                 default))
                 .ReturnsAsync(expectedResult);
 
-            var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid()).ConfigureAwait(false);
+            var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid(), Guid.NewGuid()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
-            result.Should().BeEquivalentTo(expectedResult, opt =>
-                opt.Excluding(a => a.Pk));
+            result.Should().BeEquivalentTo(expectedResult);
         }
 
         [Fact]
@@ -171,45 +167,6 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
             responseResult.Transactions.Should().BeEquivalentTo(expectedResponse);
         }
 
-        [Theory]
 
-        [InlineData(null, 1, 1, 0)]
-        [InlineData("a", 1, 1, 1)]
-        [InlineData("1", 2, 4, 20)]
-        public async Task GetAllSuspenseValidInputReturnsData(string text, int page, int pageSize, int count)
-        {
-            var responseTransaction = FakeDataHelper.MockQueryResponse<Transaction>(count);
-
-            var rawExpectedResult = responseTransaction.ToTransactions();
-
-            if (text != null)
-            {
-                rawExpectedResult = rawExpectedResult.Where(p =>
-                    p.Person.FullName.ToLower().Contains(text) ||
-                    p.PaymentReference.ToLower().Contains(text) ||
-                    p.TransactionDate.ToString("F").Contains(text) ||
-                    p.BankAccountNumber.Contains(text) ||
-                    p.Fund.ToLower().Contains(text) ||
-                    p.BalanceAmount.ToString("F").Contains(text)).ToList();
-            }
-
-            var expectedResult = rawExpectedResult.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-            _amazonDynamoDb.Setup(s => s.QueryAsync(It.IsAny<QueryRequest>(), CancellationToken.None))
-                .ReturnsAsync(responseTransaction);
-
-            var result = await _gateway.GetAllSuspenseAsync(
-                new SuspenseTransactionsSearchRequest
-                {
-                    SearchText = text,
-                    Page = page,
-                    PageSize = pageSize
-                }).ConfigureAwait(false);
-
-            result.Should().NotBeNull();
-            result.Total.Should().Be(rawExpectedResult.Count);
-            result.Transactions.Should().BeEquivalentTo(expectedResult);
-            result.Transactions.Should().HaveCountLessOrEqualTo(pageSize);
-        }
     }
 }

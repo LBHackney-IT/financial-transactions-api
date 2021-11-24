@@ -23,8 +23,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
     public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
-        private const string PartitionKey = "#lbhtransaction";
-
         /// <summary>
         /// Method to construct a test entity that can be used in a test
         /// </summary>
@@ -51,10 +49,10 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         /// <returns></returns>
         private async Task SetupTestData(Transaction entity)
         {
-            var dbEntity = entity.ToDatabase(PartitionKey);
+            var dbEntity = entity.ToDatabase();
             await DynamoDbContext.SaveAsync(dbEntity).ConfigureAwait(false);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(PartitionKey, entity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(entity).ConfigureAwait(false));
         }
 
         [Fact]
@@ -260,7 +258,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             foreach (var item in transactionsObj)
             {
-                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(PartitionKey, item.Id).ConfigureAwait(false));
+                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(item).ConfigureAwait(false));
             }
 
             apiEntity.Total.Should().Be(5);
@@ -423,7 +421,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(PartitionKey, apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 
@@ -441,7 +439,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
         private async Task GetTransactionByIdAndValidateResponse(Transaction transaction)
         {
-            var uri = new Uri($"api/v1/transactions/{transaction.Id}", UriKind.Relative);
+            var uri = new Uri($"api/v1/transactions/{transaction.Id}?targetId={transaction.TargetId}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);

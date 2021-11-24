@@ -23,7 +23,7 @@ namespace FinancialTransactionsApi.Tests
         private readonly List<TableDef> _tables = new List<TableDef>
         {
 
-            new TableDef { Name = "Transactions", KeyName = "pk", RangeName="id", KeyType = KeyType.HASH,RangeType = KeyType.RANGE,  KeyScalarType= ScalarAttributeType.S}
+            new TableDef { Name = "Transactions", KeyName = "target_id", RangeName="id", KeyType = KeyType.HASH,RangeType = KeyType.RANGE,  KeyScalarType= ScalarAttributeType.S}
         };
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)

@@ -1,7 +1,5 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 
-# Install dependencies
-RUN apt-get update -qq && apt-get -y install libgdiplus libc6-dev
 
 # disable microsoft telematry
 ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'

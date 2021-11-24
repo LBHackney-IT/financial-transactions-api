@@ -8,13 +8,13 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
     [DynamoDBTable("Transactions", LowerCamelCaseProperties = true)]
     public class TransactionDbEntity
     {
-        [DynamoDBHashKey]
-        [DynamoDBProperty(AttributeName = "pk")]
-        public string Pk { get; set; }
+
+
         [DynamoDBRangeKey]
         [DynamoDBProperty(AttributeName = "id")]
         public Guid Id { get; set; }
 
+        [DynamoDBHashKey]
         [DynamoDBProperty(AttributeName = "target_id")]
         public Guid TargetId { get; set; }
 

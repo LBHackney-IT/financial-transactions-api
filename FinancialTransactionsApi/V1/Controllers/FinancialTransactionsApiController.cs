@@ -51,6 +51,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="id">The value by which we are looking for a transaction</param>
+        ///<param name="targetId">The value by which we are looking for a transaction</param>
         /// <response code="200">Success. Transaction model was received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">Transaction by provided id cannot be found</response>
@@ -61,9 +62,9 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get([FromHeader(Name = "x-correlation-id")] string correlationId, [FromRoute] Guid id)
+        public async Task<IActionResult> Get([FromHeader(Name = "x-correlation-id")] string correlationId, [FromRoute] Guid id, [FromQuery] Guid targetId)
         {
-            var transaction = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
+            var transaction = await _getByIdUseCase.ExecuteAsync(id, targetId).ConfigureAwait(false);
 
             if (transaction == null)
             {
@@ -207,8 +208,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
-
-            var existTransaction = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(id, transaction.TargetId).ConfigureAwait(false);
 
             if (existTransaction == null)
             {

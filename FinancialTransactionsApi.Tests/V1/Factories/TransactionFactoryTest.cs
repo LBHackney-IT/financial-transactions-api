@@ -15,7 +15,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
         {
             var dbEntity = new TransactionDbEntity()
             {
-                Pk = "#lbhtransaction",
                 Id = Guid.NewGuid(),
                 TargetId = Guid.NewGuid(),
                 TransactionDate = DateTime.UtcNow,
@@ -48,7 +47,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
 
             var domain = dbEntity.ToDomain();
 
-            domain.Should().BeEquivalentTo(dbEntity, opt => opt.Excluding(a => a.Pk));
+            domain.Should().BeEquivalentTo(dbEntity);
         }
 
         [Fact]
@@ -88,7 +87,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 }
             };
 
-            var dbEntity = domain.ToDatabase("#lbhtransaction");
+            var dbEntity = domain.ToDatabase();
 
             dbEntity.Should().BeEquivalentTo(domain);
         }

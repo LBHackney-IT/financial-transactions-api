@@ -19,7 +19,6 @@ namespace FinancialTransactionsApi.V1.Gateways
     {
         private readonly IDynamoDBContext _dynamoDbContext;
         private readonly IAmazonDynamoDB _amazonDynamoDb;
-        private const string PartitionKey = "#lbhtransaction";
 
         public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb)
         {
@@ -30,7 +29,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task AddAsync(Transaction transaction)
         {
-            await _dynamoDbContext.SaveAsync(transaction.ToDatabase(PartitionKey)).ConfigureAwait(false);
+            await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
         }
 
         public async Task AddRangeAsync(List<Transaction> transactions)
@@ -47,18 +46,16 @@ namespace FinancialTransactionsApi.V1.Gateways
             QueryRequest queryRequest = new QueryRequest
             {
                 TableName = "Transactions",
-                KeyConditionExpression = "pk = :V_pk",
-                FilterExpression = "target_id =:V_target_id",
+                KeyConditionExpression = "target_id = :V_target_id",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                     {
-                     {":V_pk", new AttributeValue {S = PartitionKey} },
                      {":V_target_id", new AttributeValue {S = query.TargetId.ToString()}}
                     }
             };
 
             if (query.TransactionType != null)
             {
-                queryRequest.FilterExpression += " AND transaction_type = :V_transaction_type";
+                queryRequest.FilterExpression += "transaction_type = :V_transaction_type";
                 queryRequest.ExpressionAttributeValues.Add(":V_transaction_type", new AttributeValue { S = query.TransactionType.ToString() });
             }
             if (query.StartDate.HasValue)
@@ -80,91 +77,42 @@ namespace FinancialTransactionsApi.V1.Gateways
                 Total = transactions.Count
             };
         }
-        public async Task<TransactionList> GetAllSuspenseAsync(SuspenseTransactionsSearchRequest request)
+
+        public async Task<Transaction> GetTransactionByIdAsync(Guid targetId, Guid id)
         {
-            #region Query Execution
-            QueryRequest queryRequest = new QueryRequest
-            {
-                TableName = "Transactions",
-                KeyConditionExpression = "pk = :V_pk",
-                FilterExpression = "is_suspense =:V_is_suspense",
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                    {
-                        {":V_pk", new AttributeValue {S = PartitionKey}},
-                        {":V_is_suspense", new AttributeValue {S = "true"}}
-                    }
-            };
-
-            var result = await _amazonDynamoDb.QueryAsync(queryRequest).ConfigureAwait(false);
-
-            var transactions = result.ToTransactions();
-            if (request.SearchText != null)
-            {
-                transactions = transactions.Where(p =>
-                    p.Person.FullName.ToLower().Contains(request.SearchText.ToLower()) ||
-                    p.PaymentReference.ToLower().Contains(request.SearchText.ToLower()) ||
-                    p.TransactionDate.ToString("F").Contains(request.SearchText.ToLower()) ||
-                    p.BankAccountNumber.Contains(request.SearchText) ||
-                    p.Fund.ToLower().Contains(request.SearchText.ToLower()) ||
-                    p.BalanceAmount.ToString("F").Contains(request.SearchText)).ToList();
-            }
-            #endregion
-
-            var dataList = transactions.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToList();
-
-            return new TransactionList
-            {
-                Transactions = dataList,
-                Total = transactions.Count
-            };
-        }
-        public async Task<Transaction> GetTransactionByIdAsync(Guid id)
-        {
-            var data = await _dynamoDbContext.LoadAsync<TransactionDbEntity>(PartitionKey, id).ConfigureAwait(false);
+            var data = await _dynamoDbContext.LoadAsync<TransactionDbEntity>(targetId, id).ConfigureAwait(false);
 
             return data?.ToDomain();
         }
 
         public async Task UpdateAsync(Transaction transaction)
         {
-            await _dynamoDbContext.SaveAsync(transaction.ToDatabase(PartitionKey)).ConfigureAwait(false);
+            await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
         }
 
 
-        public async Task<List<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate, int pageSize = 50)
+        public async Task<List<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate)
         {
-            var table = _dynamoDbContext.GetTargetTable<TransactionDbEntity>();
-            var results = new List<Transaction>();
-            string paginationToken = "{}";
-            var queryFilter = new QueryFilter();
-            queryFilter.AddCondition("pk", QueryOperator.Equal, PartitionKey);
-            queryFilter.AddCondition("target_id", QueryOperator.Equal, targetId);
-            if (string.IsNullOrEmpty(transactionType))
+
+            List<TransactionDbEntity> transactionDetailsEntities = new List<TransactionDbEntity>();
+            List<ScanCondition> scanConditions = new List<ScanCondition>();
+            DynamoDBOperationConfig dbOperationConfig = null;
+            if (!string.IsNullOrEmpty(transactionType))
             {
-                queryFilter.AddCondition("transaction_type", QueryOperator.Equal, transactionType);
+                scanConditions.Add(new ScanCondition(nameof(TransactionDbEntity.TransactionType), ScanOperator.Equal, transactionType));
             }
             if (startDate.HasValue)
             {
                 endDate = endDate ?? startDate;
-                queryFilter.AddCondition("transaction_date", QueryOperator.Between, endDate.Value, startDate.Value);
+                scanConditions.Add(new ScanCondition(nameof(TransactionDbEntity.TransactionType), ScanOperator.Between, endDate.Value, startDate.Value));
             }
-            do
-            {
-                var result1 = table.Query(new QueryOperationConfig
-                {
-                    Filter = queryFilter,
-                    Limit = pageSize,
-                    PaginationToken = paginationToken
-                });
-                var items = await result1.GetNextSetAsync().ConfigureAwait(false);
-                paginationToken = result1.PaginationToken;
+            if (scanConditions.Count > 0)
+                dbOperationConfig = new DynamoDBOperationConfig() { QueryFilter = scanConditions };
+            var queryResult = _dynamoDbContext.QueryAsync<TransactionDbEntity>(targetId, dbOperationConfig);
+            while (!queryResult.IsDone)
+                transactionDetailsEntities.AddRange(await queryResult.GetNextSetAsync().ConfigureAwait(false));
 
-                var data = _dynamoDbContext.FromDocuments<TransactionDbEntity>(items);
-                results.AddRange(data.Select(x => x.ToDomain()));
-            }
-            while (!string.Equals(paginationToken, "{}", StringComparison.Ordinal));
-
-            return results.OrderBy(_ => _.TransactionDate).ToList();
+            return transactionDetailsEntities.ToDomain();
         }
     }
 }

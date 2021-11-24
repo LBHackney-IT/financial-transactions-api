@@ -1,16 +1,17 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FinancialTransactionsApi.V1.Factories
 {
     public static class TransactionFactory
     {
-        public static TransactionDbEntity ToDatabase(this Transaction transaction, string pk)
+        public static TransactionDbEntity ToDatabase(this Transaction transaction)
         {
             return transaction == null ? null : new TransactionDbEntity
             {
-                Pk = pk,
                 Id = transaction.Id,
                 TargetId = transaction.TargetId,
                 TargetType = transaction.TargetType,
@@ -111,6 +112,13 @@ namespace FinancialTransactionsApi.V1.Factories
                 Person = transactionRequest.Person,
                 Fund = transactionRequest.Fund
             };
+        }
+
+        public static List<Transaction> ToDomain(this IEnumerable<TransactionDbEntity> databaseEntity)
+        {
+            return databaseEntity.Select(p => p.ToDomain())
+                                 .OrderBy(x => x.TransactionDate)
+                                 .ToList();
         }
     }
 }

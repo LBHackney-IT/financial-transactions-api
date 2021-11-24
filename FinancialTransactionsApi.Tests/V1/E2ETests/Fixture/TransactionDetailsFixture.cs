@@ -143,7 +143,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
         {
             var transaction = new TransactionDbEntity
             {
-                Pk = "#lbhtransaction",
                 Id = new Guid("6479ffee-b0e8-4c2a-b887-63f2dec086aa"),
                 TransactionDate = new DateTime(2021, 8, 1),
                 Address = "Address",
