@@ -66,7 +66,7 @@ namespace FinancialTransactionsApi.V1.Helpers
             var result = converter.Convert(pdf);
             return result;
         }
-        public static byte[] WriteCSVFile(List<Transaction> transactions, string name, string period)
+        public static byte[] WriteCSVFile(List<Transaction> transactions, List<string> lines)
         {
             var data = new List<ExportTransactionResponse>();
             foreach (var item in transactions)
@@ -91,10 +91,10 @@ namespace FinancialTransactionsApi.V1.Helpers
                 {
                     using var cw = new CsvWriter(sw, cc);
                     cw.WriteRecords(data);
-                    cw.WriteComment($"{name} STATEMENT OF YOUR ACCOUNT");
-                    cw.WriteComment($"for the period {period}");
-                    cw.WriteComment($"As of {DateTime.Today:D} your account balance was {transactions.LastOrDefault().BalanceAmount} in arrears.");
-                    cw.WriteComment("As your landlord, the council has a duty to make sure all charges are paid up to date. This is because the housing income goes toward the upkeep of council housing and providing services for residents. You must make weekly charges payment a priority. If you don’t pay, you risk losing your home.");
+                    foreach (var item in lines)
+                    {
+                        cw.WriteComment(item);
+                    }
                 }
                 result = ms.ToArray();
             }

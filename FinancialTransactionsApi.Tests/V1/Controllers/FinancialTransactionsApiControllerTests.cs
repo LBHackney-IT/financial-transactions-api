@@ -7,6 +7,7 @@ using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
+using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
@@ -123,10 +124,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
-            var obj1 = _fixture.Build<TransactionResponses>()
-                .With(s => s.Total, 5)
-                .With(s => s.TransactionsList, transactionsList)
-                .Create();
+            var obj1 = new PagedResult<TransactionResponse>(transactionsList);
 
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>()))
                 .ReturnsAsync(obj1);
@@ -144,12 +142,11 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeOfType<TransactionResponses>();
+            okResult?.Value.Should().BeOfType<PagedResult<TransactionResponse>>();
 
-            var responses = okResult?.Value as TransactionResponses;
+            var responses = okResult?.Value as PagedResult<TransactionResponse>;
 
-            responses?.TransactionsList.Should().HaveCount(5);
-            responses?.Total.Should().Be(5);
+            responses?.Results.Should().HaveCount(5);
 
         }
 

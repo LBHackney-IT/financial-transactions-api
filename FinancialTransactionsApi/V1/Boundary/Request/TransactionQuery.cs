@@ -26,19 +26,11 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// </example>
         [FromQuery(Name = "pageSize")]
         [Range(1, int.MaxValue, ErrorMessage = "The page size must be great and equal than 1")]
-        public int PageSize { get; set; } = DefaultPageSize;
-
-        /// <summary>
-        /// The Page Number 
-        /// </summary>
-        /// <example>
-        /// 1
-        /// </example>
-        [FromQuery(Name = "page")]
-        [Range(1, int.MaxValue, ErrorMessage = "The page number must be great and equal than 1")]
-        public int Page { get; set; } = 0;
+        public int? PageSize { get; set; } = DefaultPageSize;
 
 
+        [FromQuery]
+        public string PaginationToken { get; set; }
         /// <summary>
         /// Type of transactioin tenancy/property
         /// </summary>

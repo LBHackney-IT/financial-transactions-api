@@ -7,6 +7,7 @@ using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Gateways.ElasticSearch;
 using FinancialTransactionsApi.V1.Helpers;
+using FinancialTransactionsApi.V1.Infrastructure.Settings;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
@@ -135,7 +136,8 @@ namespace FinancialTransactionsApi
             RegisterUseCases(services);
             RegisterFactories(services);
             ConfigureHackneyCoreDi(services);
-
+            services
+                .Configure<ReportExportSettings>(opt => Configuration.GetSection("ReportExportSettings").Bind(opt));
             // Add converter to DI
 #pragma warning disable CA2000 // Dispose objects before losing scope
             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));

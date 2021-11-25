@@ -1,12 +1,12 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
-using System.Collections.Generic;
+using Hackney.Core.DynamoDb;
 using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.UseCase.Interfaces
 {
     public interface IGetAllUseCase
     {
-        public Task<TransactionResponses> ExecuteAsync(TransactionQuery query);
+        public Task<PagedResult<TransactionResponse>> ExecuteAsync(TransactionQuery query);
     }
 }

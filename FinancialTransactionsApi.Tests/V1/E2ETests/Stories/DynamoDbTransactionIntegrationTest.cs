@@ -205,18 +205,18 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 await GetTransactionByIdAndValidateResponse(transaction).ConfigureAwait(false);
             }
 
-            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
+            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
+            var apiEntity = JsonConvert.DeserializeObject<PagedResult<TransactionResponse>>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.Total.Should().BeGreaterOrEqualTo(1);
+            //apiEntity.Should()..BeGreaterOrEqualTo(1);
 
-            var firstTransaction = apiEntity.TransactionsList.ToList().Find(r => r.Id.Equals(transactions[0].Id));
+            var firstTransaction = apiEntity.Results.Find(r => r.Id.Equals(transactions[0].Id));
 
             firstTransaction.Should().BeEquivalentTo(transactions[0], opt =>
                 opt.Excluding(a => a.FinancialYear)
@@ -248,13 +248,13 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 d++;
             }
             var endDate = DateTime.Now.AddDays(d).ToString("yyyy-MM-dd");
-            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11&page=1", UriKind.Relative);
+            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11", UriKind.Relative);
             var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<TransactionResponses>(responseContent);
+            var apiEntity = JsonConvert.DeserializeObject<PagedResult<TransactionResponse>>(responseContent);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             foreach (var item in transactionsObj)
@@ -262,8 +262,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(item.TargetId, item.Id).ConfigureAwait(false));
             }
 
-            apiEntity.Total.Should().Be(5);
-            apiEntity.TransactionsList.Should().HaveCount(5);
+            // apiEntity.Total.Should().Be(5);
+            apiEntity.Results.Should().HaveCount(5);
         }
 
         [Fact]

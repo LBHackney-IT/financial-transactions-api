@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
+using Hackney.Core.DynamoDb;
 
 namespace FinancialTransactionsApi.V1.Controllers
 {
@@ -82,7 +83,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <response code="200">Success. Transaction models were received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(List<TransactionResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<TransactionResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]

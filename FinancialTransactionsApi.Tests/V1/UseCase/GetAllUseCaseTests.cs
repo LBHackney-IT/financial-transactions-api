@@ -5,6 +5,7 @@ using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase;
 using FluentAssertions;
+using Hackney.Core.DynamoDb;
 using Moq;
 using System;
 using System.Threading.Tasks;
@@ -28,24 +29,23 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task GetAll_GatewayReturnsList_ReturnsList()
         {
-            var transactions = _fixture.Create<TransactionList>();
-
+            var transactions = _fixture.CreateMany<Transaction>();
+            var obj = new PagedResult<Transaction>(transactions);
             var transactionQuery = new TransactionQuery()
             {
                 TargetId = Guid.NewGuid(),
                 TransactionType = TransactionType.Charge,
                 EndDate = DateTime.Now,
-                StartDate = DateTime.UtcNow
+                StartDate = DateTime.UtcNow,
+                PaginationToken = null
             };
 
-            _mockGateway.Setup(x => x.GetPagedTransactionsAsync(It.IsAny<TransactionQuery>())).ReturnsAsync(transactions);
-
+            _mockGateway.Setup(_ => _.GetPagedTransactionsAsync(transactionQuery)).ReturnsAsync(obj);
             var response = await _getAllUseCase.ExecuteAsync(transactionQuery).ConfigureAwait(false);
 
-            var expectedResponse = transactions.Transactions.ToResponse();
+            var expectedResponse = transactions.ToResponse();
 
-            response.TransactionsList.Should().BeEquivalentTo(expectedResponse);
-            response.Total.Should().Be(transactions.Total);
+            response.Results.Should().BeEquivalentTo(expectedResponse);
         }
     }
 }

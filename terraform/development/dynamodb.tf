@@ -3,8 +3,8 @@ resource "aws_dynamodb_table" "transactions_table" {
     billing_mode          = "PROVISIONED"
     read_capacity         = 10
     write_capacity        = 10
-    hash_key              = "id"
-    range_key             = "target_id"
+    hash_key              = "target_id"
+    range_key             = "id"
 
 
     attribute {
