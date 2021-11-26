@@ -214,7 +214,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var apiEntity = JsonConvert.DeserializeObject<PagedResult<TransactionResponse>>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            //apiEntity.Should()..BeGreaterOrEqualTo(1);
 
             var firstTransaction = apiEntity.Results.Find(r => r.Id.Equals(transactions[0].Id));
 

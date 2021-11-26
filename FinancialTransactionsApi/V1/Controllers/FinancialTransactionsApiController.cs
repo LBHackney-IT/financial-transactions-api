@@ -25,17 +25,13 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IUpdateUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
         private readonly IGetTransactionListUseCase _getTransactionListUseCase;
-        private readonly IExportSelectedItemUseCase _exportSelectedItemUseCase;
-        private readonly IExportStatementUseCase _exportStatementUseCase;
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase,
             IAddBatchUseCase addBatchUseCase,
-            IGetTransactionListUseCase getTransactionListUseCase,
-            IExportSelectedItemUseCase exportSelectedItemUseCase,
-            IExportStatementUseCase exportStatementUseCase)
+            IGetTransactionListUseCase getTransactionListUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
@@ -43,8 +39,6 @@ namespace FinancialTransactionsApi.V1.Controllers
             _updateUseCase = updateUseCase;
             _addBatchUseCase = addBatchUseCase;
             _getTransactionListUseCase = getTransactionListUseCase;
-            _exportSelectedItemUseCase = exportSelectedItemUseCase;
-            _exportStatementUseCase = exportStatementUseCase;
         }
 
         /// <summary>
@@ -226,36 +220,5 @@ namespace FinancialTransactionsApi.V1.Controllers
             return Ok(transactionResponse);
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [HttpPost]
-        [Route("statement/export")]
-        public async Task<IActionResult> ExportStatementReportAsync([FromBody] ExportTransactionQuery query)
-        {
-            var result = await _exportStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
-            if (result == null)
-                return NotFound("No record found");
-            if (query?.FileType == "pdf")
-            {
-                return File(result, "application/pdf", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
-            }
-            return File(result, "text/csv", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
-        }
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [HttpPost]
-        [Route("selection/export")]
-        public async Task<IActionResult> ExportSelectedItemAsync([FromBody] TransactionExportRequest request)
-        {
-            var result = await _exportSelectedItemUseCase.ExecuteAsync(request).ConfigureAwait(false);
-            if (result == null)
-                return NotFound("No record found");
-            return File(result, "text/csv", $"export_{DateTime.UtcNow.Ticks}.csv");
-        }
     }
 }

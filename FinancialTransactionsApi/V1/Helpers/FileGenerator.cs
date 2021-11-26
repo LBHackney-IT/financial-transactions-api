@@ -21,7 +21,6 @@ namespace FinancialTransactionsApi.V1.Helpers
             var report = new ExportResponse();
             var data = new List<ExportTransactionResponse>();
 
-            report.BankAccountNumber = string.Join(",", transactions.Select(x => x.BankAccountNumber).Distinct().ToArray());
             report.FullName = transactions.FirstOrDefault()?.Person?.FullName;
             report.Balance = Money.PoundSterling(transactions.LastOrDefault().BalanceAmount).ToString();
             report.BalanceBroughtForward = Money.PoundSterling(transactions.FirstOrDefault().BalanceAmount).ToString();

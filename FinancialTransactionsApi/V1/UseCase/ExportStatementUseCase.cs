@@ -2,9 +2,8 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Helpers;
-using FinancialTransactionsApi.V1.Infrastructure.Settings;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +16,41 @@ namespace FinancialTransactionsApi.V1.UseCase
     {
         private readonly ITransactionGateway _gateway;
         private readonly IConverter _converter;
-        private readonly ReportExportSettings _reportExportSettings;
 
-        public ExportStatementUseCase(ITransactionGateway gateway, IConverter converter, IOptions<ReportExportSettings> reportExportSettings)
+        private readonly string _header;
+        private readonly string _subHeader;
+        private readonly string _footer;
+        private readonly string _subFooter;
+
+        private const string Header = "Header";
+        private const string SubHeader = "SubHeader";
+        private const string Footer = "Footer";
+        private const string SubFooter = "SubFooter";
+
+        public ExportStatementUseCase(ITransactionGateway gateway, IConverter converter, IConfiguration configuration)
         {
             _gateway = gateway;
             _converter = converter;
-            _reportExportSettings = reportExportSettings.Value;
+            _header = configuration.GetValue<string>(Header);
+            if (string.IsNullOrEmpty(_header))
+            {
+                throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {Header}.");
+            }
+            _subHeader = configuration.GetValue<string>(Header);
+            if (string.IsNullOrEmpty(_subHeader))
+            {
+                throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {SubHeader}.");
+            }
+            _footer = configuration.GetValue<string>(Footer);
+            if (string.IsNullOrEmpty(_footer))
+            {
+                throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {Footer}.");
+            }
+            _subFooter = configuration.GetValue<string>(SubFooter);
+            if (string.IsNullOrEmpty(_subFooter))
+            {
+                throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {SubFooter}.");
+            }
         }
 
         public async Task<byte[]> ExecuteAsync(ExportTransactionQuery query)
@@ -40,8 +67,8 @@ namespace FinancialTransactionsApi.V1.UseCase
                 startDate = DateTime.UtcNow;
                 endDate = startDate.AddMonths(-3);
                 period = $"{endDate:D} to {startDate:D}";
-                lines.Add(_reportExportSettings.Header.Replace("{itemId}", name));
-                lines.Add(_reportExportSettings.SubHeader.Replace("{itemId}", period));
+                lines.Add(_header.Replace("{itemId}", name));
+                lines.Add(_subHeader.Replace("{itemId}", period));
             }
             else
             {
@@ -49,8 +76,8 @@ namespace FinancialTransactionsApi.V1.UseCase
                 endDate = startDate.AddMonths(-12);
                 name = StatementType.Yearly.ToString();
                 period = $"{endDate:D} to {startDate:D}";
-                lines.Add(_reportExportSettings.Header.Replace("{itemId}", name));
-                lines.Add(_reportExportSettings.SubHeader.Replace("{itemId}", period));
+                lines.Add(_header.Replace("{itemId}", name));
+                lines.Add(_subHeader.Replace("{itemId}", period));
             }
 
             var response = await _gateway.GetTransactionsAsync(query.TargetId, query.TransactionType.ToString(), startDate, endDate).ConfigureAwait(false);
@@ -58,8 +85,8 @@ namespace FinancialTransactionsApi.V1.UseCase
             {
                 var accountBalance = $"{ response.LastOrDefault().BalanceAmount}";
                 var date = $"{DateTime.Today:D}";
-                lines.Add(_reportExportSettings.SubFooter.Replace("{itemId}", date).Replace("{itemId_1}", accountBalance));
-                lines.Add(_reportExportSettings.Footer);
+                lines.Add(_subFooter.Replace("{itemId}", date).Replace("{itemId_1}", accountBalance));
+                lines.Add(_footer);
                 var result = query?.FileType switch
                 {
                     "csv" => FileGenerator.WriteCSVFile(response, lines),

@@ -26,8 +26,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         private readonly Mock<IUpdateUseCase> _updateUseCase;
         private readonly Mock<IAddBatchUseCase> _addBatchUseCase;
         private readonly Mock<IGetTransactionListUseCase> _getTransactionListUseCase;
-        private readonly Mock<IExportSelectedItemUseCase> _exportQuarterlyReportUseCase;
-        private readonly Mock<IExportStatementUseCase> _exportStatementUseCase;
         private readonly Fixture _fixture = new Fixture();
 
         public FinancialTransactionsApiControllerTests()
@@ -38,17 +36,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _updateUseCase = new Mock<IUpdateUseCase>();
             _addBatchUseCase = new Mock<IAddBatchUseCase>();
             _getTransactionListUseCase = new Mock<IGetTransactionListUseCase>();
-            _exportQuarterlyReportUseCase = new Mock<IExportSelectedItemUseCase>();
-            _exportStatementUseCase = new Mock<IExportStatementUseCase>();
             _controller = new FinancialTransactionsApiController(
                 _getAllUseCase.Object,
                 _getByIdUseCase.Object,
                 _addUseCase.Object,
                 _updateUseCase.Object,
                 _addBatchUseCase.Object,
-                _getTransactionListUseCase.Object,
-                _exportQuarterlyReportUseCase.Object,
-                _exportStatementUseCase.Object
+                _getTransactionListUseCase.Object
                 );
         }
 

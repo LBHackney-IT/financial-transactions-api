@@ -7,7 +7,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Response
         public string FullName { get; set; }
         public string StatementPeriod { get; set; }
         public string BalanceBroughtForward { get; set; }
-        public string BankAccountNumber { get; set; }
         public string Balance { get; set; }
 
         public List<ExportTransactionResponse> Data { get; set; }
