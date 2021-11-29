@@ -34,7 +34,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         {
             var result = await _exportStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
             if (result == null)
-                return NotFound("No record found");
+                return NotFound($"No records found for the following ID: {query.TargetId}");
             if (query?.FileType == "pdf")
             {
                 return File(result, "application/pdf", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
