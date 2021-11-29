@@ -66,8 +66,6 @@ namespace FinancialTransactionsApi.V1.Gateways
                 queryConfig.Filter.AddCondition("transaction_date", QueryOperator.Between, startDate, endDate);
             }
             var search = table.Query(queryConfig);
-
-            //_logger.LogDebug($"Querying {queryConfig.IndexName} index for targetId {query.TargetId}");
             var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
 
             var paginationToken = search.PaginationToken;
