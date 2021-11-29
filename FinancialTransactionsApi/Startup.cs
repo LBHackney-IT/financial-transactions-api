@@ -6,6 +6,7 @@ using FinancialTransactionsApi.V1.ElasticSearch.Interfaces;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Gateways.ElasticSearch;
+using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
@@ -180,6 +181,7 @@ namespace FinancialTransactionsApi
 
             services.AddScoped<IGetTransactionListUseCase, GetTransactionListUseCase>();
             services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
+            services.AddScoped<IPagingHelper, PagingHelper>();
 
         }
         private static void RegisterFactories(IServiceCollection services)
