@@ -6,7 +6,6 @@ using FinancialTransactionsApi.V1.ElasticSearch.Interfaces;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Gateways.ElasticSearch;
-using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
@@ -32,8 +31,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using WkHtmlToPdfDotNet;
-using WkHtmlToPdfDotNet.Contracts;
 
 namespace FinancialTransactionsApi
 {
@@ -130,20 +127,10 @@ namespace FinancialTransactionsApi
             services.ConfigureSns();
             services.ConfigureElasticSearch(Configuration, "ELASTICSEARCH_DOMAIN_URL");
             services.AddLocalStack(Configuration);
-            //services.AddElasticSearchHealthCheck();
             RegisterGateways(services);
             RegisterUseCases(services);
             RegisterFactories(services);
             ConfigureHackneyCoreDi(services);
-            // Add converter to DI
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-#pragma warning restore CA2000 // Dispose objects before losing scope
-
-
-
-
-
 
             services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
                 builder
@@ -193,9 +180,6 @@ namespace FinancialTransactionsApi
 
             services.AddScoped<IGetTransactionListUseCase, GetTransactionListUseCase>();
             services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
-            services.AddScoped<IPagingHelper, PagingHelper>();
-            services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
-            services.AddScoped<IExportStatementUseCase, ExportStatementUseCase>();
 
         }
         private static void RegisterFactories(IServiceCollection services)
