@@ -71,5 +71,17 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 
         [DynamoDBProperty(AttributeName = "fund")]
         public string Fund { get; set; }
+
+        [DynamoDBProperty(AttributeName = "last_updated_by")]
+        public string LastUpdatedBy { get; set; }
+
+        [DynamoDBProperty(AttributeName = "last_updated_at")]
+        public DateTime LastUpdatedAt { get; set; }
+
+        [DynamoDBProperty(AttributeName = "created_at")]
+        public DateTime CreatedAt { get; set; }
+
+        [DynamoDBProperty(AttributeName = "created_by")]
+        public string CreatedBy { get; set; }
     }
 }

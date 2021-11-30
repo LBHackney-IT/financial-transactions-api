@@ -9,6 +9,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
+using System.IdentityModel.Tokens.Jwt;
+using FinancialTransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Factories;
 
 namespace FinancialTransactionsApi.V1.Controllers
 {
@@ -118,6 +121,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// Create a new transaction model
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="transaction">Transaction model for create</param>
         /// <response code="201">Created. Transaction model was created successfully</response>
         /// <response code="400">Bad Request</response>
@@ -126,7 +130,9 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public async Task<IActionResult> Add([FromHeader(Name = "x-correlation-id")] string correlationId, [FromBody] AddTransactionRequest transaction)
+        public async Task<IActionResult> Add([FromHeader(Name = "x-correlation-id")] string correlationId,
+                                             [FromHeader(Name = "Authorization")] string token,
+                                             [FromBody] AddTransactionRequest transaction)
         {
             if (transaction == null)
             {
@@ -138,7 +144,20 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
-            var transactionResponse = await _addUseCase.ExecuteAsync(transaction).ConfigureAwait(false);
+            if (!CheckAddTransactionRequest(transaction))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model dont have all information in fields!"));
+            }
+
+            var createdBy = GetName(token);
+            if (string.IsNullOrEmpty(createdBy))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Token doesn't have name!"));
+            }
+
+            var domainTransaction = transaction.ToDomain();
+            domainTransaction.CreatedBy = createdBy;
+            var transactionResponse = await _addUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
 
             return CreatedAtAction(nameof(Get), new { id = transactionResponse.Id }, transactionResponse);
         }
@@ -147,6 +166,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// Create a list of new transaction records
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="transactions">List of Transaction model for create</param>
         /// <response code="201">Created. Transaction model was created successfully</response>
         /// <response code="400">Bad Request</response>
@@ -156,7 +176,9 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [Route("process-weekly-charge")]
-        public async Task<IActionResult> AddBatch([FromHeader(Name = "x-correlation-id")] string correlationId, [FromBody] IEnumerable<AddTransactionRequest> transactions)
+        public async Task<IActionResult> AddBatch([FromHeader(Name = "x-correlation-id")] string correlationId,
+                                                  [FromHeader(Name = "Authorization")] string token,
+                                                  [FromBody] IEnumerable<AddTransactionRequest> transactions)
         {
             if (transactions == null)
             {
@@ -168,7 +190,23 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
-            var transactionResponse = await _addBatchUseCase.ExecuteAsync(transactions).ConfigureAwait(false);
+            if (!CheckAddTransactionRequestCollection(transactions))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model dont have all information in fields!"));
+            }
+
+            var createdBy = GetName(token);
+            if (string.IsNullOrEmpty(createdBy))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Token doesn't have name!"));
+            }
+
+            var domainTransactions = transactions.ToDomain().ToList();
+            foreach (var domainTransaction in domainTransactions)
+            {
+                domainTransaction.CreatedBy = createdBy;
+            }
+            var transactionResponse = await _addBatchUseCase.ExecuteAsync(domainTransactions).ConfigureAwait(false);
 
             if (transactionResponse == transactions.Count())
                 return Ok($"Total {transactionResponse} number of Transactions processed successfully");
@@ -180,6 +218,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// Update a transaction model
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// /// <param name="token">The jwt token value</param>
         /// <param name="id">The value by which we are looking for a transaction</param>
         /// <param name="transaction">Transaction model for update</param>
         /// <response code="200">Success. Transaction model was updated successfully</response>
@@ -192,7 +231,10 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> Update([FromHeader(Name = "x-correlation-id")] string correlationId, [FromRoute] Guid id, [FromBody] UpdateTransactionRequest transaction)
+        public async Task<IActionResult> Update([FromHeader(Name = "x-correlation-id")] string correlationId,
+                                                [FromHeader(Name = "Authorization")] string token,
+                                                [FromRoute] Guid id,
+                                                [FromBody] UpdateTransactionRequest transaction)
         {
             if (transaction == null)
             {
@@ -216,9 +258,61 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
             }
 
-            var transactionResponse = await _updateUseCase.ExecuteAsync(transaction, id).ConfigureAwait(false);
+            if (!CheckUpdateTransactionRequest(transaction))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model dont have all information in fields!"));
+            }
+
+            var lastUpdatedBy = GetName(token);
+
+            if (string.IsNullOrEmpty(lastUpdatedBy))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Token doesn't have name!"));
+            }
+            var domainTransaction = transaction.ToDomain();
+            domainTransaction.CreatedBy = existTransaction.CreatedBy;
+            domainTransaction.CreatedAt = existTransaction.CreatedAt;
+            domainTransaction.LastUpdatedBy = lastUpdatedBy;
+
+            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction, id).ConfigureAwait(false);
 
             return Ok(transactionResponse);
+        }
+
+        private static string GetName(string token)
+        {
+            var schemeName = "Bearer ";
+            if (string.IsNullOrEmpty(token) || !token.StartsWith(schemeName))
+            {
+                return null;
+            }
+            var tokenWithoutScheme = token.Substring(schemeName.Length);
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(tokenWithoutScheme);
+
+            return jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "name")?.Value;
+        }
+
+        private static bool CheckAddTransactionRequest(AddTransactionRequest transaction)
+        {
+            return transaction.IsSuspense || transaction.HaveAllFieldsInAddTransactionModel();
+        }
+
+        private static bool CheckAddTransactionRequestCollection(IEnumerable<AddTransactionRequest> transactions)
+        {
+            foreach (var transaction in transactions)
+            {
+                if (!transaction.IsSuspense || !transaction.HaveAllFieldsInAddWeeklyChargeModel())
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool CheckUpdateTransactionRequest(UpdateTransactionRequest transaction)
+        {
+            return transaction.IsSuspense || transaction.HaveAllFieldsInUpdateTransactionModel();
         }
     }
 }
