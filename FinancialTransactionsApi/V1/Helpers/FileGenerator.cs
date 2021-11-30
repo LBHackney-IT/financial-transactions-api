@@ -83,7 +83,7 @@ namespace FinancialTransactionsApi.V1.Helpers
             }
 
             byte[] result;
-            var cc = new CsvConfiguration(new System.Globalization.CultureInfo("en-US"));
+            var cc = new CsvConfiguration(new System.Globalization.CultureInfo("en-UK"));
             using (var ms = new MemoryStream())
             {
                 using (var sw = new StreamWriter(stream: ms, encoding: new UTF8Encoding(true)))
