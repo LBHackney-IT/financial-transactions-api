@@ -1,5 +1,3 @@
-using FinancialTransactionsApi.V1.Domain;
-using System;
 using System.Collections.Generic;
 
 namespace FinancialTransactionsApi.V1.Boundary.Response
@@ -10,12 +8,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Response
         /// List of transactions
         /// </summary>
         public IEnumerable<TransactionResponse> TransactionsList { get; set; }
-        /// <summary>
-        /// Total record count of the transactions
-        /// </summary>
-        /// <example>
-        ///     150
-        /// </example>
-        public decimal Total { get; set; }
+
     }
 }

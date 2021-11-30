@@ -3,15 +3,19 @@ using FinancialTransactionsApi.V1;
 using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.ElasticSearch;
 using FinancialTransactionsApi.V1.ElasticSearch.Interfaces;
+using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Gateways.ElasticSearch;
 using FinancialTransactionsApi.V1.Helpers;
-using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
 using Hackney.Core.DynamoDb;
 using Hackney.Core.ElasticSearch;
+using Hackney.Core.Http;
+using Hackney.Core.JWT;
+using Hackney.Core.Sns;
+using LocalStack.Client.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -28,11 +32,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using FinancialTransactionsApi.V1.Factories;
-using Hackney.Core.Http;
-using Hackney.Core.JWT;
-using Hackney.Core.Sns;
-using LocalStack.Client.Extensions;
 
 namespace FinancialTransactionsApi
 {
@@ -129,16 +128,10 @@ namespace FinancialTransactionsApi
             services.ConfigureSns();
             services.ConfigureElasticSearch(Configuration, "ELASTICSEARCH_DOMAIN_URL");
             services.AddLocalStack(Configuration);
-            //services.AddElasticSearchHealthCheck();
             RegisterGateways(services);
             RegisterUseCases(services);
             RegisterFactories(services);
             ConfigureHackneyCoreDi(services);
-
-
-
-
-
 
             services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
                 builder
@@ -181,7 +174,6 @@ namespace FinancialTransactionsApi
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
-            services.AddScoped<IGetAllSuspenseUseCase, GetAllSuspenseUseCase>();
             services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
             services.AddScoped<IAddUseCase, AddUseCase>();
             services.AddScoped<IUpdateUseCase, UpdateUseCase>();
@@ -190,6 +182,7 @@ namespace FinancialTransactionsApi
             services.AddScoped<IGetTransactionListUseCase, GetTransactionListUseCase>();
             services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
             services.AddScoped<IPagingHelper, PagingHelper>();
+
         }
         private static void RegisterFactories(IServiceCollection services)
         {

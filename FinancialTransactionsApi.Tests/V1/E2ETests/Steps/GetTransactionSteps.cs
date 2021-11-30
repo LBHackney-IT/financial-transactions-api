@@ -66,7 +66,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
         public async Task Add_WithInvalidModel_Returns400()
         {
-            var transaction =
 
             _lastResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 

@@ -8,10 +8,13 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
     [DynamoDBTable("Transactions", LowerCamelCaseProperties = true)]
     public class TransactionDbEntity
     {
-        [DynamoDBHashKey]
+
+
+        [DynamoDBRangeKey]
         [DynamoDBProperty(AttributeName = "id")]
         public Guid Id { get; set; }
 
+        [DynamoDBHashKey]
         [DynamoDBProperty(AttributeName = "target_id")]
         public Guid TargetId { get; set; }
 
@@ -45,7 +48,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "bank_account_number")]
         public string BankAccountNumber { get; set; }
 
-        [DynamoDBGlobalSecondaryIndexHashKey("is_suspense_dx", AttributeName = "is_suspense", Converter = typeof(DynamoDbBooleanConverter))]
+        [DynamoDBProperty(AttributeName = "is_suspense", Converter = typeof(DynamoDbBooleanConverter))]
         public bool IsSuspense { get; set; }
 
         [DynamoDBProperty(AttributeName = "suspense_resolution_info", Converter = typeof(DynamoDbObjectConverter<SuspenseResolutionInfo>))]

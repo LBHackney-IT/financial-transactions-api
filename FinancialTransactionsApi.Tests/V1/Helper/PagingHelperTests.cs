@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FinancialTransactionsApi.V1.Helpers;
 using FluentAssertions;
+using System;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Helper
 {
     public class PagingHelperTests
     {
-        private PagingHelper _sut;
+        private readonly PagingHelper _sut;
 
         public PagingHelperTests()
         {

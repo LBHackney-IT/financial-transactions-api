@@ -7,6 +7,7 @@ using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
+using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
@@ -35,8 +36,14 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _updateUseCase = new Mock<IUpdateUseCase>();
             _addBatchUseCase = new Mock<IAddBatchUseCase>();
             _getTransactionListUseCase = new Mock<IGetTransactionListUseCase>();
-            _controller = new FinancialTransactionsApiController(_getAllUseCase.Object,
-                _getByIdUseCase.Object, _addUseCase.Object, _updateUseCase.Object, _addBatchUseCase.Object, _getTransactionListUseCase.Object);
+            _controller = new FinancialTransactionsApiController(
+                _getAllUseCase.Object,
+                _getByIdUseCase.Object,
+                _addUseCase.Object,
+                _updateUseCase.Object,
+                _addBatchUseCase.Object,
+                _getTransactionListUseCase.Object
+                );
         }
 
         [Fact]
@@ -44,10 +51,10 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var transactionResponse = _fixture.Create<TransactionResponse>();
 
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync(transactionResponse);
 
-            var result = await _controller.Get("", transactionResponse.Id).ConfigureAwait(false);
+            var result = await _controller.Get("", transactionResponse.Id, transactionResponse.TargetId).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -65,10 +72,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetById_UseCaseReturnNullWithInvalidId_ShouldReturns404()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync((TransactionResponse) null);
-
-            var result = await _controller.Get("", Guid.NewGuid()).ConfigureAwait(false);
+            var result = await _controller.Get("", Guid.NewGuid(), Guid.NewGuid()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -90,12 +96,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetById_UseCaseThrownException_ShouldRethrow()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
             try
             {
-                var result = await _controller.Get("", new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
+
+                var result = await _controller.Get("", new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"), Guid.NewGuid())
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }
@@ -111,10 +118,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
-            var obj1 = _fixture.Build<TransactionResponses>()
-                .With(s => s.Total, 5)
-                .With(s => s.TransactionsList, transactionsList)
-                .Create();
+            var obj1 = new PagedResult<TransactionResponse>(transactionsList);
 
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>()))
                 .ReturnsAsync(obj1);
@@ -132,12 +136,11 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeOfType<TransactionResponses>();
+            okResult?.Value.Should().BeOfType<PagedResult<TransactionResponse>>();
 
-            var responses = okResult?.Value as TransactionResponses;
+            var responses = okResult?.Value as PagedResult<TransactionResponse>;
 
-            responses?.TransactionsList.Should().HaveCount(5);
-            responses?.Total.Should().Be(5);
+            responses?.Results.Should().HaveCount(5);
 
         }
 
@@ -326,7 +329,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 }
             };
 
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync(new TransactionResponse() { Id = guid, IsSuspense = true });
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<UpdateTransactionRequest>(), It.IsAny<Guid>()))
@@ -370,7 +373,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Update_NotFoundEntityWithProvidedId_Returns404()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync((TransactionResponse) null);
 
             var result = await _controller.Update("", Guid.NewGuid(), new UpdateTransactionRequest()).ConfigureAwait(false);
@@ -395,7 +398,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Update_UseCaseThrownException_ShouldRethrow()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync(new TransactionResponse { IsSuspense = true });
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<UpdateTransactionRequest>(), It.IsAny<Guid>()))
@@ -417,7 +420,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Update_NonSuspenseTransaction_ThrowBadRequest()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync(new TransactionResponse { IsSuspense = false });
 
             var request = _fixture.Build<UpdateTransactionRequest>()

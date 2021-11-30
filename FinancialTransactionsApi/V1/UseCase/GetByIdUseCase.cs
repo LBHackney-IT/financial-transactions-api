@@ -1,3 +1,4 @@
+using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
@@ -16,9 +17,9 @@ namespace FinancialTransactionsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task<TransactionResponse> ExecuteAsync(Guid id)
+        public async Task<TransactionResponse> ExecuteAsync(Guid id, Guid targetId)
         {
-            var data = await _gateway.GetTransactionByIdAsync(id).ConfigureAwait(false);
+            var data = await _gateway.GetTransactionByIdAsync(targetId, id).ConfigureAwait(false);
 
             return data?.ToResponse();
         }
