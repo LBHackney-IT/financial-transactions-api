@@ -188,6 +188,7 @@ namespace FinancialTransactionsApi
             services.AddScoped<IGetTransactionListUseCase, GetTransactionListUseCase>();
             services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
             services.AddScoped<IPagingHelper, PagingHelper>();
+            services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
             services.AddScoped<IExportStatementUseCase, ExportStatementUseCase>();
 
         }

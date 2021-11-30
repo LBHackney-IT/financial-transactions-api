@@ -14,11 +14,14 @@ namespace FinancialTransactionsApi.V1.Controllers
     public class StatementController : BaseController
     {
 
+        private readonly IExportSelectedItemUseCase _exportSelectedItemUseCase;
         private readonly IExportStatementUseCase _exportStatementUseCase;
 
-        public StatementController(IExportStatementUseCase exportStatementUseCase)
+        public StatementController(IExportStatementUseCase exportStatementUseCase,
+                                   IExportSelectedItemUseCase exportSelectedItemUseCase)
         {
             _exportStatementUseCase = exportStatementUseCase;
+            _exportSelectedItemUseCase = exportSelectedItemUseCase;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -39,5 +42,18 @@ namespace FinancialTransactionsApi.V1.Controllers
             return File(result, "text/csv", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [Route("selection/export")]
+        public async Task<IActionResult> ExportSelectedItemAsync([FromBody] TransactionExportRequest request)
+        {
+            var result = await _exportSelectedItemUseCase.ExecuteAsync(request).ConfigureAwait(false);
+            if (result == null)
+                return NotFound($"No records found for the following ID: {request.TargetId}");
+            return File(result, "text/csv", $"export_{DateTime.UtcNow.Ticks}.csv");
+        }
     }
 }
