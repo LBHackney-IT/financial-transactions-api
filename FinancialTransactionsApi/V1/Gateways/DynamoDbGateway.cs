@@ -41,7 +41,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         public async Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
         {
 
-            int pageSize = query.PageSize.HasValue ? query.PageSize.Value : MAX_RESULTS;
+            int pageSize = query.PageSize ?? MAX_RESULTS;
             var dbTransactions = new List<TransactionDbEntity>();
             var table = _dynamoDbContext.GetTargetTable<TransactionDbEntity>();
 
@@ -122,7 +122,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             }
             if (startDate.HasValue)
             {
-                endDate = endDate ?? startDate;
+                endDate ??= startDate;
                 queryConfig.Filter.AddCondition("transaction_date", QueryOperator.Between, endDate, startDate);
             }
 
