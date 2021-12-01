@@ -22,7 +22,10 @@ resource "aws_dynamodb_table" "transactions_table" {
         type              = "S"
     }
 
-      
+    attribute {
+        name              = "is_suspense"
+        type              = "S"
+    }    
 
     tags = {
         Name              = "financial-transactions-api-${var.environment_name}"
