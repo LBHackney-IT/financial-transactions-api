@@ -149,11 +149,7 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model dont have all information in fields!"));
             }
 
-            var createdBy = GetName(token);
-            if (string.IsNullOrEmpty(createdBy))
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Token doesn't have name!"));
-            }
+            var createdBy = GetUserName(token);
 
             var domainTransaction = transaction.ToDomain();
             domainTransaction.CreatedBy = createdBy;
@@ -195,11 +191,7 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model dont have all information in fields!"));
             }
 
-            var createdBy = GetName(token);
-            if (string.IsNullOrEmpty(createdBy))
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Token doesn't have name!"));
-            }
+            var createdBy = GetUserName(token);
 
             var domainTransactions = transactions.ToDomain().ToList();
             foreach (var domainTransaction in domainTransactions)
@@ -246,6 +238,10 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
+            if (!CheckUpdateTransactionRequest(transaction))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model dont have all information in fields!"));
+            }
             var existTransaction = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
 
             if (existTransaction == null)
@@ -258,17 +254,8 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
             }
 
-            if (!CheckUpdateTransactionRequest(transaction))
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model dont have all information in fields!"));
-            }
+            var lastUpdatedBy = GetUserName(token);
 
-            var lastUpdatedBy = GetName(token);
-
-            if (string.IsNullOrEmpty(lastUpdatedBy))
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Token doesn't have name!"));
-            }
             var domainTransaction = transaction.ToDomain();
             domainTransaction.CreatedBy = existTransaction.CreatedBy;
             domainTransaction.CreatedAt = existTransaction.CreatedAt;
@@ -279,37 +266,48 @@ namespace FinancialTransactionsApi.V1.Controllers
             return Ok(transactionResponse);
         }
 
-        private static string GetName(string token)
+        /// <summary>
+        ///   Returns the name of the user used in token
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Parameter 'token' is null.</exception>
+        /// <exception cref="ArgumentException">Value of parameter 'name' in token is null or empty.</exception>
+        private static string GetUserName(string token)
         {
-            var schemeName = "Bearer ";
-            if (string.IsNullOrEmpty(token) || !token.StartsWith(schemeName))
+            if (string.IsNullOrEmpty(token))
             {
-                return null;
+                throw new ArgumentNullException(nameof(token));
             }
-            var tokenWithoutScheme = token.Substring(schemeName.Length);
+            var claimTypeName = "name";
             var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(tokenWithoutScheme);
+            var jwtSecurityToken = handler.ReadJwtToken(token);
 
-            return jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "name")?.Value;
+            var name = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == claimTypeName)?.Value;
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Token doesn't contain a value for 'name'");
+            }
+            return name;
         }
 
+        /// <summary>
+        ///  Checks if transaction model is valid for add operation
+        /// </summary>
         private static bool CheckAddTransactionRequest(AddTransactionRequest transaction)
         {
             return transaction.IsSuspense || transaction.HaveAllFieldsInAddTransactionModel();
         }
 
+        /// <summary>
+        ///  Checks if transaction model collection is valid for add-batch operation
+        /// </summary>
         private static bool CheckAddTransactionRequestCollection(IEnumerable<AddTransactionRequest> transactions)
         {
-            foreach (var transaction in transactions)
-            {
-                if (!transaction.IsSuspense || !transaction.HaveAllFieldsInAddWeeklyChargeModel())
-                {
-                    return false;
-                }
-            }
-            return true;
+            return transactions.All(t => t.IsSuspense || (!t.IsSuspense && t.HaveAllFieldsInAddWeeklyChargeModel()));
         }
 
+        /// <summary>
+        ///  Checks if transaction model collection is valid for update operation
+        /// </summary>
         private static bool CheckUpdateTransactionRequest(UpdateTransactionRequest transaction)
         {
             return transaction.IsSuspense || transaction.HaveAllFieldsInUpdateTransactionModel();

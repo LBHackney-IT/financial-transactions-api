@@ -50,14 +50,12 @@ namespace FinancialTransactionsApi.V1.Domain
         [Required]
         public string Fund { get; set; }
 
-        [Required]
         public string LastUpdatedBy { get; set; }
 
         public DateTime LastUpdatedAt { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
-        [Required]
         public string CreatedBy { get; set; }
     }
 }

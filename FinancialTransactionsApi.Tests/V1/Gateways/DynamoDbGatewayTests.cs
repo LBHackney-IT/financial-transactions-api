@@ -71,7 +71,11 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
-                }
+                },
+                CreatedBy = "Admin",
+                CreatedAt = DateTime.UtcNow,
+                LastUpdatedAt = DateTime.UtcNow,
+                LastUpdatedBy = "Admin"
             };
 
             _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(

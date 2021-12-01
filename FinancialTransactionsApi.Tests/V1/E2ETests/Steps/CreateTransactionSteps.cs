@@ -22,6 +22,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
     public class CreateTransactionSteps : BaseSteps
     {
+        private const string _token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdGluZyJ9.jw6U8mE-CxkLQbsCaJMaWXVArXHw0pT_Puo9hCPbN-g";
 
         public CreateTransactionSteps(HttpClient httpClient) : base(httpClient)
         { }
@@ -46,7 +47,11 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
                 TargetId = response.TargetId,
                 TransactionAmount = response.TransactionAmount,
                 TransactionSource = response.TransactionSource,
-                TransactionType = response.TransactionType
+                TransactionType = response.TransactionType,
+                CreatedAt = response.CreatedAt,
+                CreatedBy = response.CreatedBy,
+                LastUpdatedBy = response.LastUpdatedBy,
+                LastUpdatedAt = response.LastUpdatedAt
             };
         }
 
@@ -76,6 +81,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             var body = JsonSerializer.Serialize(requestObject);
 
             using var stringContent = new StringContent(body);
+            stringContent.Headers.Add("Authorization", _token);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             _lastResponse = await _httpClient.PostAsync(route, stringContent).ConfigureAwait(false);
@@ -89,7 +95,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
             using var stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
+            stringContent.Headers.Add("Authorization", _token);
             _lastResponse = await _httpClient.PutAsync(route, stringContent).ConfigureAwait(false);
         }
 

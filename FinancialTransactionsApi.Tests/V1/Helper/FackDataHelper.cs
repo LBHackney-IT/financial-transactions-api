@@ -86,7 +86,17 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
                                     }
                                 }
                             }
-                        }
+                        },
+                        {"created_by", new AttributeValue {S = _fixture.Create<string>()}},
+                        {"last_updated_by", new AttributeValue {S = _fixture.Create<string>()}},
+                        { 
+                            "last_updated_at",
+                            new AttributeValue {S = _fixture.Create<DateTime>().ToString("F")}
+                        },
+                        { 
+                            "created_at",
+                            new AttributeValue {S = _fixture.Create<DateTime>().ToString("F")}
+                        },
                     });
             }
             return response;

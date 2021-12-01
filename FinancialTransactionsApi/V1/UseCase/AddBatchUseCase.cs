@@ -35,10 +35,10 @@ namespace FinancialTransactionsApi.V1.UseCase
             transaction.FinancialYear = (short) transaction.TransactionDate.Year;
 
             transaction.Id = Guid.NewGuid();
-            DateTime curDate = DateTime.UtcNow;
+            DateTime currentDate = DateTime.UtcNow;
 
-            transaction.CreatedAt = curDate;
-            transaction.LastUpdatedAt = curDate;
+            transaction.CreatedAt = currentDate;
+            transaction.LastUpdatedAt = currentDate;
             transaction.LastUpdatedBy = transaction.CreatedBy;
 
             await _gateway.AddAsync(transaction).ConfigureAwait(false);

@@ -37,7 +37,11 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
                 PaidAmount = entity.PaidAmount,
                 ChargedAmount = entity.ChargedAmount,
                 BalanceAmount = entity.BalanceAmount,
-                HousingBenefitAmount = entity.HousingBenefitAmount
+                HousingBenefitAmount = entity.HousingBenefitAmount,
+                CreatedBy = entity.CreatedBy,
+                CreatedAt = entity.CreatedAt,
+                LastUpdatedAt = entity.LastUpdatedAt,
+                LastUpdatedBy = entity.LastUpdatedBy
 
             };
         }

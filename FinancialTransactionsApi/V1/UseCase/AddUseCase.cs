@@ -25,7 +25,7 @@ namespace FinancialTransactionsApi.V1.UseCase
 
         public async Task<TransactionResponse> ExecuteAsync(Transaction transaction)
         {
-            DateTime curDate = DateTime.UtcNow;
+            DateTime currentDate = DateTime.UtcNow;
 
             transaction.FinancialMonth = (short) transaction.TransactionDate.Month;
 
@@ -33,8 +33,8 @@ namespace FinancialTransactionsApi.V1.UseCase
 
             transaction.Id = Guid.NewGuid();
 
-            transaction.CreatedAt = curDate;
-            transaction.LastUpdatedAt = curDate;
+            transaction.CreatedAt = currentDate;
+            transaction.LastUpdatedAt = currentDate;
             transaction.LastUpdatedBy = transaction.CreatedBy;
 
             await _gateway.AddAsync(transaction).ConfigureAwait(false);
