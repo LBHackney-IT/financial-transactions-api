@@ -122,6 +122,13 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
+        public static List<Transaction> ToDomain(this IEnumerable<TransactionDbEntity> databaseEntity)
+        {
+            return databaseEntity.Select(p => p.ToDomain())
+                                 .OrderBy(x => x.TransactionDate)
+                                 .ToList();
+        }
+
         public static IEnumerable<Transaction> ToDomain(this IEnumerable<AddTransactionRequest> transactionRequests)
         {
             return transactionRequests == null ?

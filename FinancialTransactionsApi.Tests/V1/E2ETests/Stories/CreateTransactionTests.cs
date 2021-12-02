@@ -2,12 +2,11 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using FinancialTransactionsApi.Tests.V1.E2ETests.Fixture;
 using FinancialTransactionsApi.Tests.V1.E2ETests.Steps;
-using FinancialTransactionsApi.V1.Infrastructure;
 using FluentAssertions;
+using Hackney.Core.DynamoDb;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
-using Hackney.Core.DynamoDb;
 using TestStack.BDDfy;
 using Xunit;
 

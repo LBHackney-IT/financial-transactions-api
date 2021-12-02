@@ -8,6 +8,7 @@ using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase;
 using Xunit;
+using FinancialTransactionsApi.V1.Boundary.Request;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
@@ -27,13 +28,13 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task GetById_GatewayReturnTransaction_ReturnTransaction()
         {
-            var query = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            var targetId = Guid.NewGuid();
 
             var transaction = _fixture.Create<Transaction>();
 
-            _mockGateway.Setup(x => x.GetTransactionByIdAsync(query)).ReturnsAsync(transaction);
-
-            var response = await _getByIdUseCase.ExecuteAsync(query).ConfigureAwait(false);
+            _mockGateway.Setup(x => x.GetTransactionByIdAsync(targetId, id)).ReturnsAsync(transaction);
+            var response = await _getByIdUseCase.ExecuteAsync(id, targetId).ConfigureAwait(false);
 
             response.Should().BeEquivalentTo(transaction.ToResponse());
         }
@@ -41,11 +42,12 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task GetById_GatewayReturnNull_ReturnNull()
         {
-            var query = Guid.NewGuid();
+            var id = Guid.NewGuid();
+            var targetId = Guid.NewGuid();
+            var queryParam = new TransactionByIdQueryParameter { Id = id, TargetId = targetId };
+            _mockGateway.Setup(x => x.GetTransactionByIdAsync(targetId, id)).ReturnsAsync((Transaction) null);
 
-            _mockGateway.Setup(x => x.GetTransactionByIdAsync(query)).ReturnsAsync((Transaction) null);
-
-            var response = await _getByIdUseCase.ExecuteAsync(query).ConfigureAwait(false);
+            var response = await _getByIdUseCase.ExecuteAsync(id, targetId).ConfigureAwait(false);
 
             response.Should().BeNull();
         }

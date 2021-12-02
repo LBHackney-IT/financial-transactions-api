@@ -31,7 +31,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
         {
             return new TransactionDbEntity
             {
-
                 TransactionDate = response.TransactionDate,
                 Address = response.Address,
                 BalanceAmount = response.BalanceAmount,

@@ -68,64 +68,22 @@ namespace FinancialTransactionsApi.Tests
             {
                 try
                 {
-                    // Hanna Holosova
+
                     // This command helps to prevent the next exception:
                     // Amazon.XRay.Recorder.Core.Exceptions.EntityNotAvailableException : Entity doesn't exist in AsyncLocal
                     AWSXRayRecorder.Instance.ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR;
-
-                    List<AttributeDefinition> attributeDefinitions = new List<AttributeDefinition>();
-                    List<GlobalSecondaryIndex> globalSecondaryIndexes = new List<GlobalSecondaryIndex>();
-
-                    attributeDefinitions.Add(new AttributeDefinition(table.PartitionKey.KeyName,
-                        table.PartitionKey.KeyScalarType));
-
-                    if (table.Indices != null)
-                    {
-                        foreach (var index in table.Indices)
-                        {
-                            globalSecondaryIndexes.Add(
-                                new GlobalSecondaryIndex()
-                                {
-                                    IndexName = index.IndexName,
-                                    ProvisionedThroughput =
-                                        new ProvisionedThroughput { ReadCapacityUnits = 1L, WriteCapacityUnits = 1L },
-                                    KeySchema =
-                                    {
-                                    new KeySchemaElement
-                                    {
-                                        AttributeName = index.KeyName, KeyType = index.KeyType
-                                    }
-                                    },
-                                    Projection = new Projection { ProjectionType = index.ProjectionType }
-                                });
-                            attributeDefinitions.Add(new AttributeDefinition(index.KeyName, index.KeyScalarType));
-                        }
-                    }
-
-                    CreateTableRequest request = new CreateTableRequest
-                    {
-                        TableName = table.TableName,
-                        ProvisionedThroughput =
-                            new ProvisionedThroughput { ReadCapacityUnits = (long) 3, WriteCapacityUnits = (long) 3 },
-                        AttributeDefinitions = attributeDefinitions,
-                        KeySchema = new List<KeySchemaElement>
-                        {
-                            new KeySchemaElement(table.PartitionKey.KeyName, table.PartitionKey.KeyType)
-                        },
-                        GlobalSecondaryIndexes = globalSecondaryIndexes
-                    };
-
+                    var request = new CreateTableRequest(table.Name,
+                        new List<KeySchemaElement> { new KeySchemaElement(table.KeyName, table.KeyType), new KeySchemaElement(table.RangeName, table.RangeType) },
+                        new List<AttributeDefinition> { new AttributeDefinition(table.KeyName, table.KeyScalarType), new AttributeDefinition(table.RangeName, table.KeyScalarType) },
+                        new ProvisionedThroughput(3, 3));
                     _ = dynamoDb.CreateTableAsync(request).GetAwaiter().GetResult();
                 }
                 catch (ResourceInUseException)
                 {
                     // It already exists :-)
                 }
-                catch (Exception exception)
-                {
-                    throw new Exception("Exception in checking table existence", exception);
-                }
             }
+
         }
     }
 }

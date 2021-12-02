@@ -14,4 +14,11 @@ namespace FinancialTransactionsApi.V1.Domain
         Rent,
         Charge
     }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum StatementType
+    {
+        Quaterly,
+        Yearly
+    }
 }

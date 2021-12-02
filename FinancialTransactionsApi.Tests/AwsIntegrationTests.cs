@@ -22,35 +22,8 @@ namespace FinancialTransactionsApi.Tests
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-            new TableDef()
-            {
-                TableName = "Transactions",
-                PartitionKey = new AttributeDef()
-                {
-                    KeyName = "id",
-                    KeyType = KeyType.HASH,
-                    KeyScalarType = ScalarAttributeType.S
-                },
-                Indices = new List<GlobalIndexDef>()
-                {
-                    new GlobalIndexDef()
-                    {
-                        IndexName = "is_suspense_dx",
-                        KeyName = "is_suspense",
-                        KeyScalarType = ScalarAttributeType.S,
-                        KeyType = KeyType.HASH,
-                        ProjectionType = "ALL"
-                    },
-                    new GlobalIndexDef()
-                    {
-                        IndexName = "target_id_dx",
-                        KeyName = "target_id",
-                        KeyScalarType = ScalarAttributeType.S,
-                        KeyType = KeyType.HASH,
-                        ProjectionType = "ALL"
-                    }
-                }
-            }
+
+            new TableDef { Name = "Transactions", KeyName = "target_id", RangeName="id", KeyType = KeyType.HASH,RangeType = KeyType.RANGE,  KeyScalarType= ScalarAttributeType.S}
         };
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
@@ -120,22 +93,12 @@ namespace FinancialTransactionsApi.Tests
 
     public class TableDef
     {
-        public string TableName { get; set; }
-        public AttributeDef PartitionKey { get; set; }
-        public List<GlobalIndexDef> Indices { get; set; }
-    }
-
-    public class AttributeDef
-    {
+        public string Name { get; set; }
         public string KeyName { get; set; }
-        public ScalarAttributeType KeyScalarType { get; set; }
+        public string RangeName { get; set; }
         public KeyType KeyType { get; set; }
-    }
-
-    public class GlobalIndexDef : AttributeDef
-    {
-        public string IndexName { get; set; }
-        public string ProjectionType { get; set; }
+        public KeyType RangeType { get; set; }
+        public ScalarAttributeType KeyScalarType { get; set; }
     }
     [CollectionDefinition("Aws collection", DisableParallelization = true)]
     public class AwsCollection : ICollectionFixture<AwsIntegrationTests<Startup>>
