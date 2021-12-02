@@ -22,8 +22,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
     public class CreateTransactionSteps : BaseSteps
     {
-        private const string _token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdGluZyJ9.jw6U8mE-CxkLQbsCaJMaWXVArXHw0pT_Puo9hCPbN-g";
-
         public CreateTransactionSteps(HttpClient httpClient) : base(httpClient)
         { }
 
