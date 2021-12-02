@@ -22,6 +22,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
     public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
+        private const string _token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdGluZyJ9.jw6U8mE-CxkLQbsCaJMaWXVArXHw0pT_Puo9hCPbN-g";
+
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
         /// <summary>
         /// Method to construct a test entity that can be used in a test
