@@ -1,13 +1,8 @@
+using Amazon.DynamoDBv2.Model;
+using AutoFixture;
 using FinancialTransactionsApi.V1.Domain;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using FinancialTransactionsApi.V1.Boundary.Request;
-using FinancialTransactionsApi.V1.Boundary.Response;
-using FinancialTransactionsApi.V1.Infrastructure;
-using Amazon.DynamoDBv2.Model;
-using AutoFixture;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace FinancialTransactionsApi.Tests.V1.Helper
 {
@@ -89,11 +84,11 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
                         },
                         {"created_by", new AttributeValue {S = _fixture.Create<string>()}},
                         {"last_updated_by", new AttributeValue {S = _fixture.Create<string>()}},
-                        { 
+                        {
                             "last_updated_at",
                             new AttributeValue {S = _fixture.Create<DateTime>().ToString("F")}
                         },
-                        { 
+                        {
                             "created_at",
                             new AttributeValue {S = _fixture.Create<DateTime>().ToString("F")}
                         },
