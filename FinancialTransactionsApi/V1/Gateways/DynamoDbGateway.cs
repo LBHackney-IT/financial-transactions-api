@@ -4,6 +4,7 @@ using Amazon.Util;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using Hackney.Core.DynamoDb;
 using System;
@@ -142,6 +143,41 @@ namespace FinancialTransactionsApi.V1.Gateways
             while (!string.Equals(paginationToken, "{}", StringComparison.Ordinal));
 
             return dbTransactions.ToDomain();
+        }
+
+
+
+        public async Task<List<Transaction>> GetAllSegregratedByPersonAsync()
+        {
+            var accountDbEntities = new List<TransactionDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<TransactionDbEntity>();
+            var filter = new ScanFilter();
+            filter.AddCondition("transaction_date", ScanOperator.Between, DateTime.Now.StartOfWeek(DayOfWeek.Monday), DateTime.Now.StartOfWeek(DayOfWeek.Sunday));
+
+            var paginationToken = string.Empty;
+
+            var scanOps = new ScanOperationConfig
+            {
+                Filter = filter,
+                PaginationToken = paginationToken
+            };
+
+            do
+            {
+                var search = table.Scan(scanOps);
+                paginationToken = search.PaginationToken;
+                var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+                if (resultsSet.Any())
+                {
+                    accountDbEntities.AddRange(_dynamoDbContext.FromDocuments<TransactionDbEntity>(resultsSet));
+
+                }
+            }
+            while (!string.Equals(paginationToken, "{}", StringComparison.Ordinal));
+
+
+
+            return accountDbEntities.ToDomain();
         }
     }
 }
