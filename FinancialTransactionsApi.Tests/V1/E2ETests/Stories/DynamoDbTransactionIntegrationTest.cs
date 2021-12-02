@@ -22,6 +22,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
     public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
+        private const string _token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdGluZyJ9.jw6U8mE-CxkLQbsCaJMaWXVArXHw0pT_Puo9hCPbN-g";
+
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
         /// <summary>
         /// Method to construct a test entity that can be used in a test
@@ -129,6 +131,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                stringContent.Headers.Add("Authorization", _token);
 
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -167,6 +170,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                stringContent.Headers.Add("Authorization", _token);
 
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -313,6 +317,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             HttpResponseMessage updateResponse;
             using var updateStringContent = new StringContent(updateTransaction);
             updateStringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            updateStringContent.Headers.Add("Authorization", _token);
+
             updateResponse = await Client.PutAsync(updateUri, updateStringContent).ConfigureAwait(false);
 
             updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -346,6 +352,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                stringContent.Headers.Add("Authorization", _token);
 
                 response = await Client.PutAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -413,6 +420,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             using StringContent stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            stringContent.Headers.Add("Authorization", _token);
 
             using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 
