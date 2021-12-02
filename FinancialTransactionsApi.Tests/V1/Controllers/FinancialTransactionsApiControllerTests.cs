@@ -324,7 +324,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
 
-            response.Message.Should().BeEquivalentTo("Transaction model dont have all information in fields!");
+            response.Message.Should().BeEquivalentTo("Transaction model don't have all information in fields!");
 
             response.Details.Should().BeEquivalentTo(string.Empty);
         }
@@ -397,14 +397,14 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                     FullName = "Kain Hyawrd"
                 }
             };
-            
+
             try
             {
                 var result = await _controller.Add("", null, request)
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _addUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<Transaction>()), Times.Never);
                 ex.GetType().Should().Be(typeof(ArgumentNullException));
@@ -497,7 +497,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             response?.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
 
-            response?.Message.Should().BeEquivalentTo("Transaction model dont have all information in fields!");
+            response?.Message.Should().BeEquivalentTo("Transaction model don't have all information in fields!");
 
             response?.Details.Should().BeEquivalentTo(string.Empty);
         }

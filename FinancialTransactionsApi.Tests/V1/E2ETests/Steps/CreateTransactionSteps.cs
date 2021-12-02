@@ -222,8 +222,12 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
         private async Task<TransactionResponse> ExtractResultFromHttpResponse(HttpResponseMessage response)
         {
-            response.StatusCode.Should().Be(HttpStatusCode.Created);
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            if (response.StatusCode != HttpStatusCode.Created)
+            {
+                throw new Exception($"Expected 200 status code, but got {response.StatusCode} with the message {responseContent}");
+            }
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
             var apiResult = JsonSerializer.Deserialize<TransactionResponse>(responseContent, _jsonOptions);
 
             return apiResult;
