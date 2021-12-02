@@ -28,7 +28,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         private readonly Mock<IAddBatchUseCase> _addBatchUseCase;
         private readonly Mock<IGetTransactionListUseCase> _getTransactionListUseCase;
         private readonly Fixture _fixture = new Fixture();
-        private const string _token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdGluZyJ9.jw6U8mE-CxkLQbsCaJMaWXVArXHw0pT_Puo9hCPbN-g";
+        private const string _token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
 
         public FinancialTransactionsApiControllerTests()
         {
