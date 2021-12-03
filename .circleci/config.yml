@@ -77,11 +77,6 @@ commands:
           name: Install serverless CLI
           command: npm i -g serverless
       - run:
-          name: Install dependencies
-          command: |
-            sudo yum install -y yum-utils rpmdevtools
-            sudo yum install libjpeg62
-      - run:
           name: Build lambda
           command: |
             cd ./FinancialTransactionsApi/
