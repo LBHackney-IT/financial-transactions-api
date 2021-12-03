@@ -277,6 +277,9 @@ namespace FinancialTransactionsApi.V1.Controllers
             {
                 throw new ArgumentNullException(nameof(token));
             }
+
+            token = token.Replace("Bearer", string.Empty).Trim();
+
             var claimTypeName = "name";
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(token);
