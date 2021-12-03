@@ -30,25 +30,6 @@ namespace FinancialTransactionsApi.Tests
                     KeyName = "id",
                     KeyType = KeyType.HASH,
                     KeyScalarType = ScalarAttributeType.S
-                },
-                Indices = new List<GlobalIndexDef>()
-                {
-                    new GlobalIndexDef()
-                    {
-                        IndexName = "is_suspense_dx",
-                        KeyName = "is_suspense",
-                        KeyScalarType = ScalarAttributeType.S,
-                        KeyType = KeyType.HASH,
-                        ProjectionType = "ALL"
-                    },
-                    new GlobalIndexDef()
-                    {
-                        IndexName = "target_id_dx",
-                        KeyName = "target_id",
-                        KeyScalarType = ScalarAttributeType.S,
-                        KeyType = KeyType.HASH,
-                        ProjectionType = "ALL"
-                    }
                 }
             }
         };
@@ -122,7 +103,6 @@ namespace FinancialTransactionsApi.Tests
     {
         public string TableName { get; set; }
         public AttributeDef PartitionKey { get; set; }
-        public List<GlobalIndexDef> Indices { get; set; }
     }
 
     public class AttributeDef
@@ -132,11 +112,6 @@ namespace FinancialTransactionsApi.Tests
         public KeyType KeyType { get; set; }
     }
 
-    public class GlobalIndexDef : AttributeDef
-    {
-        public string IndexName { get; set; }
-        public string ProjectionType { get; set; }
-    }
     [CollectionDefinition("Aws collection", DisableParallelization = true)]
     public class AwsCollection : ICollectionFixture<AwsIntegrationTests<Startup>>
     {

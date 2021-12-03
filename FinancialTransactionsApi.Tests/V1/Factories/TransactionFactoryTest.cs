@@ -63,6 +63,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 ChargedAmount = 134.12M,
                 FinancialMonth = 2,
                 FinancialYear = 2022,
+                SortCode = "123456",
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",

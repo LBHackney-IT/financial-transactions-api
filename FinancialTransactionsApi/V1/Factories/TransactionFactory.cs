@@ -30,7 +30,8 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionSource = transaction.TransactionSource,
                 Address = transaction.Address,
                 Person = transaction.Person,
-                Fund = transaction.Fund
+                Fund = transaction.Fund,
+                SortCode = transaction.SortCode
             };
         }
 
@@ -58,7 +59,8 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionSource = transactionDbEntity.TransactionSource,
                 Address = transactionDbEntity.Address,
                 Person = transactionDbEntity.Person,
-                Fund = transactionDbEntity.Fund
+                Fund = transactionDbEntity.Fund,
+                SortCode = transactionDbEntity.SortCode
             };
         }
 
@@ -83,7 +85,8 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
                 Person = transactionRequest.Person,
-                Fund = transactionRequest.Fund
+                Fund = transactionRequest.Fund,
+                SortCode = transactionRequest.SortCode
             };
         }
 
@@ -108,7 +111,8 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
                 Person = transactionRequest.Person,
-                Fund = transactionRequest.Fund
+                Fund = transactionRequest.Fund,
+                SortCode = transactionRequest.SortCode
             };
         }
     }

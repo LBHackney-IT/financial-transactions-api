@@ -25,7 +25,7 @@ namespace FinancialTransactionsApi.V1.Domain
         public TransactionType TransactionType { get; set; }
         [RequiredDateTime]
         public DateTime TransactionDate { get; set; }
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [GreatAndEqualThan("0.0")]
         public decimal TransactionAmount { get; set; }
         [Required]
         public string PaymentReference { get; set; }
@@ -37,13 +37,13 @@ namespace FinancialTransactionsApi.V1.Domain
         public bool IsSuspense { get; set; }
         [AllowNull]
         public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [GreatAndEqualThan("0.0")]
         public decimal PaidAmount { get; set; }
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [GreatAndEqualThan("0.0")]
         public decimal ChargedAmount { get; set; }
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [GreatAndEqualThan("0.0")]
         public decimal BalanceAmount { get; set; }
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [GreatAndEqualThan("0.0")]
         public decimal HousingBenefitAmount { get; set; }
 
         public string Address { get; set; }
