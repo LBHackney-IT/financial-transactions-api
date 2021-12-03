@@ -89,7 +89,6 @@ commands:
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
 jobs:
   check-code-formatting:
-    context: api-nuget-token-context
     executor: docker-dotnet
     steps:
       - checkout
@@ -100,7 +99,6 @@ jobs:
           name: Run formatter check
           command: ./dotnet-format-local/dotnet-format --check
   build-and-test:
-    context: api-nuget-token-context
     executor: docker-python
     steps:
       - checkout
@@ -164,8 +162,10 @@ jobs:
 workflows:
   check-and-deploy-development:
     jobs:
-      - check-code-formatting
-      - build-and-test
+      - check-code-formatting:
+          context: api-nuget-token-context
+      - build-and-test:
+          context: api-nuget-token-context
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
@@ -190,6 +190,7 @@ workflows:
   check-and-deploy-staging-and-production:
       jobs:
       - build-and-test:
+          context: api-nuget-token-context
           filters:
             branches:
               only: master
