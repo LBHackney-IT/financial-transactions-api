@@ -25,13 +25,15 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IUpdateUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
         private readonly IGetTransactionListUseCase _getTransactionListUseCase;
+
+        private readonly IGetAllSegregratedByPersonUseCase _getAllSegregratedByPersonUseCase;
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase,
             IAddBatchUseCase addBatchUseCase,
-            IGetTransactionListUseCase getTransactionListUseCase)
+            IGetTransactionListUseCase getTransactionListUseCase, IGetAllSegregratedByPersonUseCase getAllSegregratedByPersonUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
@@ -39,6 +41,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             _updateUseCase = updateUseCase;
             _addBatchUseCase = addBatchUseCase;
             _getTransactionListUseCase = getTransactionListUseCase;
+            _getAllSegregratedByPersonUseCase = getAllSegregratedByPersonUseCase;
         }
 
         /// <summary>
@@ -113,7 +116,7 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return new BadRequestObjectResult(e.Message);
             }
         }
-
+        
         /// <summary>
         /// Create a new transaction model
         /// </summary>
@@ -218,6 +221,17 @@ namespace FinancialTransactionsApi.V1.Controllers
             var transactionResponse = await _updateUseCase.ExecuteAsync(transaction, id).ConfigureAwait(false);
 
             return Ok(transactionResponse);
+        }
+
+
+
+        [Route("weekly/person")]
+        [HttpGet]
+        public async Task<IActionResult> WeeklySummaryByPersonAsync()
+        {
+            var result = await _getAllSegregratedByPersonUseCase.ExecuteAsync().ConfigureAwait(false);
+
+            return Ok(result);
         }
 
     }

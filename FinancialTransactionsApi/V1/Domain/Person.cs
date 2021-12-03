@@ -11,6 +11,5 @@ namespace FinancialTransactionsApi.V1.Domain
 
         [Required]
         public string FullName { get; set; }
-        public Person Person { get; internal set; }
     }
 }

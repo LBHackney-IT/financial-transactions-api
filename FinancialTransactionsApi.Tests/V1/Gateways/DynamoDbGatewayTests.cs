@@ -1,13 +1,11 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
-using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Moq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;

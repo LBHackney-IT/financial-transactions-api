@@ -2,6 +2,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.Util;
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Infrastructure;
@@ -147,14 +148,16 @@ namespace FinancialTransactionsApi.V1.Gateways
 
 
 
-        public async Task<List<Transaction>> GetAllSegregratedByPersonAsync()
+        public async Task<List<WeeklyReportResponse>> GetAllSegregratedByPersonAsync()
         {
             var accountDbEntities = new List<TransactionDbEntity>();
             var table = _dynamoDbContext.GetTargetTable<TransactionDbEntity>();
             var filter = new ScanFilter();
-            filter.AddCondition("transaction_date", ScanOperator.Between, DateTime.Now.StartOfWeek(DayOfWeek.Monday), DateTime.Now.StartOfWeek(DayOfWeek.Sunday));
+            var startDate = DateTime.Now.AddDays(-7).FirstDayOfWeek();
+            var endDate = DateTime.Now.AddDays(-7).LastDayOfWeek();
+            filter.AddCondition("transaction_date", ScanOperator.Between,startDate,endDate);
 
-            var paginationToken = string.Empty;
+            var paginationToken = "{}";
 
             var scanOps = new ScanOperationConfig
             {
@@ -177,7 +180,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
 
 
-            return accountDbEntities.ToDomain();
+            return accountDbEntities.ToRecord();
         }
     }
 }

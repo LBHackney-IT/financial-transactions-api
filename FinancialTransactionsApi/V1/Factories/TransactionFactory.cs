@@ -3,6 +3,7 @@ using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -120,19 +121,21 @@ namespace FinancialTransactionsApi.V1.Factories
 
         public static List<Transaction> ToDomain(this IEnumerable<TransactionDbEntity> databaseEntity)
         {
-            //Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar
-            //.GetDayOfWeek(d,CalendarWeekRule.FirstFourDayWeek,DayOfWeek.Sunday);
-
-            var report = databaseEntity.Select(p => p.ToDomain()).ToList();
-            var record = report.GroupBy(x => x.Person, (i, t) => new WeeklyReportResponse
-            {
-                Person = i.Person,
-                Records = t.ToList()
-
-            })
             return databaseEntity.Select(p => p.ToDomain())
                                  .OrderBy(x => x.TransactionDate)
                                  .ToList();
+        }
+
+        public static List<WeeklyReportResponse> ToRecord(this IEnumerable<TransactionDbEntity> databaseEntity)
+        {
+            var report = databaseEntity.Select(p => p.ToDomain()).ToList();
+            var record = report.GroupBy(x => x.Person.Id, (i, t) => new WeeklyReportResponse
+            {
+                PersonId = i,
+                Records = t.ToList()
+
+            }).ToList();
+            return record;
         }
     }
 }

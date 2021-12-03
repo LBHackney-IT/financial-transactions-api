@@ -190,6 +190,8 @@ namespace FinancialTransactionsApi
             services.AddScoped<IPagingHelper, PagingHelper>();
             services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
             services.AddScoped<IExportStatementUseCase, ExportStatementUseCase>();
+            services.AddScoped<IGetAllSegregratedByPersonUseCase, GetAllSegregratedByPersonUseCase>();
+            
 
         }
         private static void RegisterFactories(IServiceCollection services)
