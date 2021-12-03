@@ -132,7 +132,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
-                
+
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
 
@@ -171,7 +171,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
-                
+
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
 

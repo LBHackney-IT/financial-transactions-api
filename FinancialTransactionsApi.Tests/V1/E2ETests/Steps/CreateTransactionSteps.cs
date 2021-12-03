@@ -134,18 +134,23 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             fixture.Transactions.Add(resultAsDb);
             apiEntity.Should().NotBeNull();
 
-            expected.Should().BeEquivalentTo(apiEntity, options => options.Excluding(a => a.Id)
-                                                                             .Excluding(a => a.SuspenseResolutionInfo)
-                                                                             .Excluding(a => a.FinancialYear)
-                                                                             .Excluding(a => a.FinancialMonth));
+            expected.Should().BeEquivalentTo(apiEntity, options => options
+                .Excluding(a => a.Id)
+                .Excluding(a => a.SuspenseResolutionInfo)
+                .Excluding(a => a.FinancialYear)
+                .Excluding(a => a.FinancialMonth)
+                .Excluding(a => a.CreatedAt)
+                .Excluding(a => a.CreatedBy)
+                .Excluding(a => a.LastUpdatedAt)
+                .Excluding(a => a.LastUpdatedBy));
 
             apiEntity.SuspenseResolutionInfo.Should().BeNull();
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);
         }
+
         public async Task ThenTheTransactionDetailsAreUpdatedAndReturned(TransactionDetailsFixture fixture)
         {
-
             var expected = fixture.Transaction;
             var responseContent = await _lastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
             var updateApiEntity = JsonSerializer.Deserialize<TransactionResponse>(responseContent, _jsonOptions);
@@ -154,10 +159,15 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
             updateApiEntity.Should().NotBeNull();
 
-            updateApiEntity.Should().BeEquivalentTo(expected);
-
+            updateApiEntity.Should().BeEquivalentTo(expected, options => options
+                .Excluding(t => t.CreatedAt)
+                .Excluding(t => t.CreatedBy)
+                .Excluding(t => t.LastUpdatedBy)
+                .Excluding(t => t.LastUpdatedAt));
+            
             updateApiEntity.FinancialMonth.Should().Be(expected.FinancialMonth);
             updateApiEntity.FinancialYear.Should().Be(expected.FinancialYear);
+            updateApiEntity.LastUpdatedBy = "testing";
         }
 
         public async Task ThenTheResponseIncludesValidationErrors()

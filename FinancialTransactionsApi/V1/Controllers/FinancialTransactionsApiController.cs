@@ -146,7 +146,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             if (!CheckAddTransactionRequest(transaction))
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model dont have all information in fields!"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
             }
 
             var createdBy = GetUserName(token);
@@ -188,7 +188,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             if (!CheckAddTransactionRequestCollection(transactions))
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model dont have all information in fields!"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
             }
 
             var createdBy = GetUserName(token);
@@ -240,7 +240,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             if (!CheckUpdateTransactionRequest(transaction))
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model dont have all information in fields!"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
             }
             var existTransaction = await _getByIdUseCase.ExecuteAsync(id, transaction.TargetId).ConfigureAwait(false);
 
