@@ -328,10 +328,16 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             updateApiEntity.Should().NotBeNull();
 
-            updateApiEntity.Should().BeEquivalentTo(transaction);
+            updateApiEntity.Should().BeEquivalentTo(transaction, options => options
+                .Excluding(a => a.CreatedAt)
+                .Excluding(a => a.CreatedBy)
+                .Excluding(a => a.LastUpdatedAt)
+                .Excluding(a => a.LastUpdatedBy));
 
             updateApiEntity.FinancialMonth.Should().Be(8);
             updateApiEntity.FinancialYear.Should().Be(2021);
+            updateApiEntity.CreatedBy.Should().Be("testing");
+            updateApiEntity.LastUpdatedBy.Should().Be("testing");
         }
 
         [Fact]
@@ -463,9 +469,14 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
             apiEntity.Should().NotBeNull();
 
-            apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.FinancialYear)
-                                                                             .Excluding(a => a.FinancialMonth)
-                                                                             .Excluding(a => a.TransactionDate));
+            apiEntity.Should().BeEquivalentTo(transaction, options => options
+                .Excluding(a => a.FinancialYear)
+                .Excluding(a => a.FinancialMonth)
+                .Excluding(a => a.TransactionDate)
+                .Excluding(a => a.CreatedAt)
+                .Excluding(a => a.CreatedBy)
+                .Excluding(a => a.LastUpdatedAt)
+                .Excluding(a => a.LastUpdatedBy));
 
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);
