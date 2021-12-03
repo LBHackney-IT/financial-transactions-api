@@ -113,7 +113,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
             _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
               .Returns(Task.CompletedTask);
 
-            await _gateway.AddRangeAsync(entities).ConfigureAwait(false);
+            await _gateway.AddBatchAsync(entities).ConfigureAwait(false);
 
             _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Exactly(3));
         }

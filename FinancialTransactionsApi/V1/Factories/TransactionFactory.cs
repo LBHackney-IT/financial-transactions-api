@@ -120,5 +120,11 @@ namespace FinancialTransactionsApi.V1.Factories
                                  .OrderBy(x => x.TransactionDate)
                                  .ToList();
         }
+
+        public static List<TransactionDbEntity> ToDatabaseList(this List<Transaction> transactions)
+        {
+            return transactions.Select(item => item.ToDatabase()).ToList();
+        }
+
     }
 }

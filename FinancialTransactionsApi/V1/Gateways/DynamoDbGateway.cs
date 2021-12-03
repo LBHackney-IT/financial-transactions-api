@@ -30,12 +30,29 @@ namespace FinancialTransactionsApi.V1.Gateways
             await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
         }
 
-        public async Task AddRangeAsync(List<Transaction> transactions)
+        public async Task<bool> AddBatchAsync(List<Transaction> transactions)
         {
-            foreach (Transaction transaction in transactions)
+            var estimateBatch = _dynamoDbContext.CreateBatchWrite<TransactionDbEntity>();
+
+            var items = transactions.ToDatabaseList();
+            int maxBatchCount = 1000;
+            if (items.Count > maxBatchCount)
             {
-                await AddAsync(transaction).ConfigureAwait(false);
+                var loopCount = (items.Count / maxBatchCount) + 1;
+                for (int start = 0; start < loopCount; start++)
+                {
+                    var itemsToWrite = items.Skip(start * maxBatchCount).Take(maxBatchCount);
+                    estimateBatch.AddPutItems(itemsToWrite);
+                    await estimateBatch.ExecuteAsync().ConfigureAwait(false);
+                }
             }
+            else
+            {
+                estimateBatch.AddPutItems(items);
+                await estimateBatch.ExecuteAsync().ConfigureAwait(false);
+            }
+
+            return true;
         }
 
         public async Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
