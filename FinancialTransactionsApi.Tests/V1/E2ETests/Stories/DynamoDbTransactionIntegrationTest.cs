@@ -22,6 +22,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
     public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
+        private const string _token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
+
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
         /// <summary>
         /// Method to construct a test entity that can be used in a test
@@ -129,6 +131,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
 
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -167,6 +170,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
 
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -217,14 +221,22 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             var firstTransaction = apiEntity.Results.Find(r => r.Id.Equals(transactions[0].Id));
 
+            firstTransaction.Should().NotBeNull();
             firstTransaction.Should().BeEquivalentTo(transactions[0], opt =>
                 opt.Excluding(a => a.FinancialYear)
                     .Excluding(a => a.FinancialMonth)
                     .Excluding(a => a.TransactionDate)
-                    .Excluding(a => a.TransactionDate));
+                    .Excluding(a => a.TransactionDate)
+                    .Excluding(a => a.CreatedAt)
+                    .Excluding(a => a.CreatedBy)
+                    .Excluding(a => a.LastUpdatedAt)
+                    .Excluding(a => a.LastUpdatedBy));
 
-            firstTransaction?.FinancialMonth.Should().Be(8);
-            firstTransaction?.FinancialYear.Should().Be(2021);
+            firstTransaction.FinancialMonth.Should().Be(8);
+            firstTransaction.FinancialYear.Should().Be(2021);
+            firstTransaction.CreatedBy.Should().Be("testing");
+            firstTransaction.LastUpdatedBy.Should().Be("testing");
+
         }
 
         [Fact]
@@ -313,6 +325,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             HttpResponseMessage updateResponse;
             using var updateStringContent = new StringContent(updateTransaction);
             updateStringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+
             updateResponse = await Client.PutAsync(updateUri, updateStringContent).ConfigureAwait(false);
 
             updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -322,10 +336,16 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             updateApiEntity.Should().NotBeNull();
 
-            updateApiEntity.Should().BeEquivalentTo(transaction);
+            updateApiEntity.Should().BeEquivalentTo(transaction, options => options
+                .Excluding(a => a.CreatedAt)
+                .Excluding(a => a.CreatedBy)
+                .Excluding(a => a.LastUpdatedAt)
+                .Excluding(a => a.LastUpdatedBy));
 
             updateApiEntity.FinancialMonth.Should().Be(8);
             updateApiEntity.FinancialYear.Should().Be(2021);
+            updateApiEntity.CreatedBy.Should().Be("testing");
+            updateApiEntity.LastUpdatedBy.Should().Be("testing");
         }
 
         [Fact]
@@ -346,6 +366,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
 
                 response = await Client.PutAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -413,6 +434,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             using StringContent stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
 
             using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 
@@ -425,14 +447,21 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             apiEntity.Should().NotBeNull();
 
-            apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.Id)
-                                                                             .Excluding(a => a.SuspenseResolutionInfo)
-                                                                             .Excluding(a => a.FinancialYear)
-                                                                             .Excluding(a => a.FinancialMonth));
+            apiEntity.Should().BeEquivalentTo(transaction, options => options
+                .Excluding(a => a.Id)
+                .Excluding(a => a.SuspenseResolutionInfo)
+                .Excluding(a => a.FinancialYear)
+                .Excluding(a => a.FinancialMonth)
+                .Excluding(a => a.CreatedAt)
+                .Excluding(a => a.CreatedBy)
+                .Excluding(a => a.LastUpdatedAt)
+                .Excluding(a => a.LastUpdatedBy));
 
             apiEntity.SuspenseResolutionInfo.Should().BeNull();
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);
+            apiEntity.CreatedBy.Should().Be("testing");
+            apiEntity.LastUpdatedBy.Should().Be("testing");
 
             return apiEntity.Id;
         }
@@ -448,9 +477,14 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
             apiEntity.Should().NotBeNull();
 
-            apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.FinancialYear)
-                                                                             .Excluding(a => a.FinancialMonth)
-                                                                             .Excluding(a => a.TransactionDate));
+            apiEntity.Should().BeEquivalentTo(transaction, options => options
+                .Excluding(a => a.FinancialYear)
+                .Excluding(a => a.FinancialMonth)
+                .Excluding(a => a.TransactionDate)
+                .Excluding(a => a.CreatedAt)
+                .Excluding(a => a.CreatedBy)
+                .Excluding(a => a.LastUpdatedAt)
+                .Excluding(a => a.LastUpdatedBy));
 
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);

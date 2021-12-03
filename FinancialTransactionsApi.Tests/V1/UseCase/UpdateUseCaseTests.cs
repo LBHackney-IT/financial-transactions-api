@@ -26,8 +26,9 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task Update_WithSuspenseModel_WorkedOnce()
         {
-            var entity = new UpdateTransactionRequest()
+            var entity = new Transaction()
             {
+                Id = Guid.NewGuid(),
                 TargetId = Guid.NewGuid(),
                 TransactionDate = new DateTime(2021, 8, 1),
                 Address = "Address",
@@ -44,7 +45,10 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
-                }
+                },
+                CreatedAt = new DateTime(2021, 8, 1),
+                CreatedBy = "admin",
+                LastUpdatedBy = "new admin"
             };
 
             _mockGateway.Setup(x => x.UpdateAsync(It.IsAny<Transaction>()))
@@ -53,23 +57,26 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var response = await _updateUseCase.ExecuteAsync(entity, Guid.NewGuid())
                 .ConfigureAwait(false);
 
-            var expectedResponse = entity.ToDomain().ToResponse();
+            var expectedResponse = entity.ToResponse();
 
             _mockGateway.Verify(_ => _.UpdateAsync(It.IsAny<Transaction>()), Times.Once);
 
             response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id)
                                                                          .Excluding(x => x.FinancialYear)
-                                                                         .Excluding(x => x.FinancialMonth));
+                                                                         .Excluding(x => x.FinancialMonth)
+                                                                         .Excluding(x => x.LastUpdatedAt));
 
             response.FinancialMonth.Should().Be(8);
             response.FinancialYear.Should().Be(2021);
+            response.LastUpdatedAt.Should().BeCloseTo(DateTime.UtcNow, 1000);
         }
 
         [Fact]
         public async Task Update_WithNotSuspenseModel_WorkedOnce()
         {
-            var entity = new UpdateTransactionRequest()
+            var entity = new Transaction()
             {
+                Id = Guid.NewGuid(),
                 TargetId = Guid.NewGuid(),
                 TransactionDate = new DateTime(2021, 8, 1),
                 Address = "Address",
@@ -96,7 +103,10 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                     IsConfirmed = true,
                     IsApproved = true,
                     Note = "Note"
-                }
+                },
+                CreatedAt = new DateTime(2021, 8, 1),
+                CreatedBy = "admin",
+                LastUpdatedBy = "new admin"
             };
 
             _mockGateway.Setup(x => x.UpdateAsync(It.IsAny<Transaction>()))
@@ -105,52 +115,18 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var response = await _updateUseCase.ExecuteAsync(entity, Guid.NewGuid())
                 .ConfigureAwait(false);
 
-            var expectedResponse = entity.ToDomain().ToResponse();
+            var expectedResponse = entity.ToResponse();
 
             _mockGateway.Verify(_ => _.UpdateAsync(It.IsAny<Transaction>()), Times.Once);
 
             response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id)
                                                                          .Excluding(x => x.FinancialYear)
-                                                                         .Excluding(x => x.FinancialMonth));
+                                                                         .Excluding(x => x.FinancialMonth)
+                                                                         .Excluding(x => x.LastUpdatedAt));
 
             response.FinancialMonth.Should().Be(8);
             response.FinancialYear.Should().Be(2021);
-        }
-
-        [Fact]
-        public async Task Update_WithInvalidSuspenseInformation_ThrowException()
-        {
-            var entity = new UpdateTransactionRequest()
-            {
-                TargetId = Guid.NewGuid(),
-                TransactionDate = DateTime.UtcNow,
-                Address = "Address",
-                BalanceAmount = 145.23M,
-                ChargedAmount = 134.12M,
-                HousingBenefitAmount = 123.12M,
-                BankAccountNumber = "12345678",
-                IsSuspense = false,
-                PeriodNo = 2,
-                TransactionAmount = 126.83M,
-                TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
-                Person = new Person()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                }
-            };
-
-            try
-            {
-                await _updateUseCase.ExecuteAsync(entity, Guid.NewGuid()).ConfigureAwait(false);
-                AssertExtensions.Fail();
-            }
-            catch (Exception ex)
-            {
-                ex.Should().BeOfType(typeof(ArgumentException));
-                ex.Message.Should().BeEquivalentTo("Transaction model dont have all information in fields!");
-            }
+            response.LastUpdatedAt.Should().BeCloseTo(DateTime.UtcNow, 1000);
         }
     }
 }

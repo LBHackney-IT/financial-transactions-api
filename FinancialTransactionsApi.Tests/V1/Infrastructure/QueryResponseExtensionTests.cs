@@ -54,6 +54,10 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
                 queryResponse.Items[index]["target_id"].S.Should().BeEquivalentTo(transaction.TargetId.ToString());
                 queryResponse.Items[index]["transaction_amount"].N.Should().BeEquivalentTo(transaction.TransactionAmount.ToString("F"));
                 queryResponse.Items[index]["transaction_date"].S.Should().BeEquivalentTo(transaction.TransactionDate.ToString("F"));
+                queryResponse.Items[index]["created_at"].S.Should().BeEquivalentTo(transaction.CreatedAt.ToString("F"));
+                queryResponse.Items[index]["last_updated_at"].S.Should().BeEquivalentTo(transaction.LastUpdatedAt.ToString("F"));
+                queryResponse.Items[index]["created_by"].S.Should().BeEquivalentTo(transaction.CreatedBy);
+                queryResponse.Items[index]["last_updated_by"].S.Should().BeEquivalentTo(transaction.LastUpdatedBy);
                 queryResponse.Items[index++]["transaction_type"].S.Should().BeEquivalentTo(transaction.TransactionType.ToString());
             }
         }

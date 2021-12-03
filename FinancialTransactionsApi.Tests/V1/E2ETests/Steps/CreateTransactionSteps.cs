@@ -22,6 +22,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
     public class CreateTransactionSteps : BaseSteps
     {
+        private const string _token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
 
         public CreateTransactionSteps(HttpClient httpClient) : base(httpClient)
         { }
@@ -45,7 +46,11 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
                 TargetId = response.TargetId,
                 TransactionAmount = response.TransactionAmount,
                 TransactionSource = response.TransactionSource,
-                TransactionType = response.TransactionType
+                TransactionType = response.TransactionType,
+                CreatedAt = response.CreatedAt,
+                CreatedBy = response.CreatedBy,
+                LastUpdatedBy = response.LastUpdatedBy,
+                LastUpdatedAt = response.LastUpdatedAt
             };
         }
 
@@ -75,6 +80,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             var body = JsonSerializer.Serialize(requestObject);
 
             using var stringContent = new StringContent(body);
+            _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             _lastResponse = await _httpClient.PostAsync(route, stringContent).ConfigureAwait(false);
@@ -83,12 +89,13 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
         public async Task WhenTheUpdateTransactionEndpointIsCalled(Transaction requestObject)
         {
+
             var route = new Uri($"api/v1/transactions/{requestObject.Id}", UriKind.Relative);
             var body = JsonSerializer.Serialize(requestObject);
 
             using var stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
+            _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
             _lastResponse = await _httpClient.PutAsync(route, stringContent).ConfigureAwait(false);
         }
 
@@ -127,18 +134,23 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             fixture.Transactions.Add(resultAsDb);
             apiEntity.Should().NotBeNull();
 
-            expected.Should().BeEquivalentTo(apiEntity, options => options.Excluding(a => a.Id)
-                                                                             .Excluding(a => a.SuspenseResolutionInfo)
-                                                                             .Excluding(a => a.FinancialYear)
-                                                                             .Excluding(a => a.FinancialMonth));
+            expected.Should().BeEquivalentTo(apiEntity, options => options
+                .Excluding(a => a.Id)
+                .Excluding(a => a.SuspenseResolutionInfo)
+                .Excluding(a => a.FinancialYear)
+                .Excluding(a => a.FinancialMonth)
+                .Excluding(a => a.CreatedAt)
+                .Excluding(a => a.CreatedBy)
+                .Excluding(a => a.LastUpdatedAt)
+                .Excluding(a => a.LastUpdatedBy));
 
             apiEntity.SuspenseResolutionInfo.Should().BeNull();
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);
         }
+
         public async Task ThenTheTransactionDetailsAreUpdatedAndReturned(TransactionDetailsFixture fixture)
         {
-
             var expected = fixture.Transaction;
             var responseContent = await _lastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
             var updateApiEntity = JsonSerializer.Deserialize<TransactionResponse>(responseContent, _jsonOptions);
@@ -147,10 +159,15 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
             updateApiEntity.Should().NotBeNull();
 
-            updateApiEntity.Should().BeEquivalentTo(expected);
+            updateApiEntity.Should().BeEquivalentTo(expected, options => options
+                .Excluding(t => t.CreatedAt)
+                .Excluding(t => t.CreatedBy)
+                .Excluding(t => t.LastUpdatedBy)
+                .Excluding(t => t.LastUpdatedAt));
 
             updateApiEntity.FinancialMonth.Should().Be(expected.FinancialMonth);
             updateApiEntity.FinancialYear.Should().Be(expected.FinancialYear);
+            updateApiEntity.LastUpdatedBy.Should().Be("testing");
         }
 
         public async Task ThenTheResponseIncludesValidationErrors()
@@ -220,8 +237,12 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
         private async Task<TransactionResponse> ExtractResultFromHttpResponse(HttpResponseMessage response)
         {
-            response.StatusCode.Should().Be(HttpStatusCode.Created);
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            if (response.StatusCode != HttpStatusCode.Created)
+            {
+                throw new Exception($"Expected 200 status code, but got {response.StatusCode} with the message {responseContent}");
+            }
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
             var apiResult = JsonSerializer.Deserialize<TransactionResponse>(responseContent, _jsonOptions);
 
             return apiResult;

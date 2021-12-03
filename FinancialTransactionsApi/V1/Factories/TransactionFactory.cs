@@ -32,7 +32,11 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionSource = transaction.TransactionSource,
                 Address = transaction.Address,
                 Person = transaction.Person,
-                Fund = transaction.Fund
+                Fund = transaction.Fund,
+                CreatedAt = transaction.CreatedAt,
+                CreatedBy = transaction.CreatedBy,
+                LastUpdatedBy = transaction.LastUpdatedBy,
+                LastUpdatedAt = transaction.LastUpdatedAt
             };
         }
 
@@ -60,7 +64,11 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionSource = transactionDbEntity.TransactionSource,
                 Address = transactionDbEntity.Address,
                 Person = transactionDbEntity.Person,
-                Fund = transactionDbEntity.Fund
+                Fund = transactionDbEntity.Fund,
+                CreatedAt = transactionDbEntity.CreatedAt,
+                CreatedBy = transactionDbEntity.CreatedBy,
+                LastUpdatedAt = transactionDbEntity.LastUpdatedAt,
+                LastUpdatedBy = transactionDbEntity.LastUpdatedBy
             };
         }
 
@@ -119,6 +127,12 @@ namespace FinancialTransactionsApi.V1.Factories
             return databaseEntity.Select(p => p.ToDomain())
                                  .OrderBy(x => x.TransactionDate)
                                  .ToList();
+        }
+
+        public static IEnumerable<Transaction> ToDomain(this IEnumerable<AddTransactionRequest> transactionRequests)
+        {
+            return transactionRequests == null ?
+                new List<Transaction>() : transactionRequests.Select(t => t.ToDomain());
         }
     }
 }
