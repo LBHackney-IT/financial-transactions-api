@@ -131,8 +131,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                stringContent.Headers.Add("Authorization", _token);
-
+                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+                
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
 
@@ -170,8 +170,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                stringContent.Headers.Add("Authorization", _token);
-
+                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+                
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
 
@@ -317,7 +317,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             HttpResponseMessage updateResponse;
             using var updateStringContent = new StringContent(updateTransaction);
             updateStringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            updateStringContent.Headers.Add("Authorization", _token);
+            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
 
             updateResponse = await Client.PutAsync(updateUri, updateStringContent).ConfigureAwait(false);
 
@@ -352,7 +352,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                stringContent.Headers.Add("Authorization", _token);
+                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
 
                 response = await Client.PutAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -420,7 +420,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             using StringContent stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            stringContent.Headers.Add("Authorization", _token);
+            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
 
             using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 

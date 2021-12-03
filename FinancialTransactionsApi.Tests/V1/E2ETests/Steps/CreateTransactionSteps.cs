@@ -80,7 +80,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             var body = JsonSerializer.Serialize(requestObject);
 
             using var stringContent = new StringContent(body);
-            stringContent.Headers.Add("Authorization", _token);
+            _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             _lastResponse = await _httpClient.PostAsync(route, stringContent).ConfigureAwait(false);
@@ -89,12 +89,13 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
         public async Task WhenTheUpdateTransactionEndpointIsCalled(Transaction requestObject)
         {
+
             var route = new Uri($"api/v1/transactions/{requestObject.Id}", UriKind.Relative);
             var body = JsonSerializer.Serialize(requestObject);
 
             using var stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            stringContent.Headers.Add("Authorization", _token);
+            _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
             _lastResponse = await _httpClient.PutAsync(route, stringContent).ConfigureAwait(false);
         }
 
