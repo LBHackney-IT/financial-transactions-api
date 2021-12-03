@@ -221,14 +221,22 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             var firstTransaction = apiEntity.Results.Find(r => r.Id.Equals(transactions[0].Id));
 
+            firstTransaction.Should().NotBeNull();
             firstTransaction.Should().BeEquivalentTo(transactions[0], opt =>
                 opt.Excluding(a => a.FinancialYear)
                     .Excluding(a => a.FinancialMonth)
                     .Excluding(a => a.TransactionDate)
-                    .Excluding(a => a.TransactionDate));
+                    .Excluding(a => a.TransactionDate)
+                    .Excluding(a => a.CreatedAt)
+                    .Excluding(a => a.CreatedBy)
+                    .Excluding(a => a.LastUpdatedAt)
+                    .Excluding(a => a.LastUpdatedBy));
 
-            firstTransaction?.FinancialMonth.Should().Be(8);
-            firstTransaction?.FinancialYear.Should().Be(2021);
+            firstTransaction.FinancialMonth.Should().Be(8);
+            firstTransaction.FinancialYear.Should().Be(2021);
+            firstTransaction.CreatedBy.Should().Be("testing");
+            firstTransaction.LastUpdatedBy.Should().Be("testing");
+
         }
 
         [Fact]
