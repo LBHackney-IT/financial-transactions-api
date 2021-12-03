@@ -433,14 +433,21 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             apiEntity.Should().NotBeNull();
 
-            apiEntity.Should().BeEquivalentTo(transaction, options => options.Excluding(a => a.Id)
-                                                                             .Excluding(a => a.SuspenseResolutionInfo)
-                                                                             .Excluding(a => a.FinancialYear)
-                                                                             .Excluding(a => a.FinancialMonth));
+            apiEntity.Should().BeEquivalentTo(transaction, options => options
+                .Excluding(a => a.Id)
+                .Excluding(a => a.SuspenseResolutionInfo)
+                .Excluding(a => a.FinancialYear)
+                .Excluding(a => a.FinancialMonth)
+                .Excluding(a => a.CreatedAt)
+                .Excluding(a => a.CreatedBy)
+                .Excluding(a => a.LastUpdatedAt)
+                .Excluding(a => a.LastUpdatedBy));
 
             apiEntity.SuspenseResolutionInfo.Should().BeNull();
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);
+            apiEntity.CreatedBy.Should().Be("testing");
+            apiEntity.LastUpdatedBy.Should().Be("testing");
 
             return apiEntity.Id;
         }

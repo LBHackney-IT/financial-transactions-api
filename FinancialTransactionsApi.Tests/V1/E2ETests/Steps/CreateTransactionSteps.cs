@@ -164,10 +164,10 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
                 .Excluding(t => t.CreatedBy)
                 .Excluding(t => t.LastUpdatedBy)
                 .Excluding(t => t.LastUpdatedAt));
-            
+
             updateApiEntity.FinancialMonth.Should().Be(expected.FinancialMonth);
             updateApiEntity.FinancialYear.Should().Be(expected.FinancialYear);
-            updateApiEntity.LastUpdatedBy = "testing";
+            updateApiEntity.LastUpdatedBy.Should().Be("testing");
         }
 
         public async Task ThenTheResponseIncludesValidationErrors()
