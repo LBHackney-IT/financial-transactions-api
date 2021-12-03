@@ -1,12 +1,11 @@
-using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System;
 using System.Threading.Tasks;
 using Hackney.Core.Sns;
+using FinancialTransactionsApi.V1.Domain;
 
 namespace FinancialTransactionsApi.V1.UseCase
 {
@@ -24,30 +23,25 @@ namespace FinancialTransactionsApi.V1.UseCase
             _snsFactory = snsFactory;
         }
 
-        public async Task<TransactionResponse> ExecuteAsync(AddTransactionRequest transaction)
+        public async Task<TransactionResponse> ExecuteAsync(Transaction transaction)
         {
-            if (!transaction.IsSuspense)
-            {
-                var result = transaction.HaveAllFieldsInAddTransactionModel();
-                if (!result)
-                {
-                    throw new ArgumentException("Transaction model dont have all information in fields!");
-                }
-            }
+            DateTime currentDate = DateTime.UtcNow;
 
-            var transactionDomain = transaction.ToDomain();
+            transaction.FinancialMonth = (short) transaction.TransactionDate.Month;
 
-            transactionDomain.FinancialMonth = (short) transaction.TransactionDate.Month;
+            transaction.FinancialYear = (short) transaction.TransactionDate.Year;
 
-            transactionDomain.FinancialYear = (short) transaction.TransactionDate.Year;
+            transaction.Id = Guid.NewGuid();
 
-            transactionDomain.Id = Guid.NewGuid();
+            transaction.CreatedAt = currentDate;
+            transaction.LastUpdatedAt = currentDate;
+            transaction.LastUpdatedBy = transaction.CreatedBy;
 
-            await _gateway.AddAsync(transactionDomain).ConfigureAwait(false);
-            var transactionSnsMessage = _snsFactory.Create(transactionDomain);
+            await _gateway.AddAsync(transaction).ConfigureAwait(false);
+            var transactionSnsMessage = _snsFactory.Create(transaction);
             var transactionTopicArn = Environment.GetEnvironmentVariable("TRANSACTION_SNS_ARN");
             await _snsGateway.Publish(transactionSnsMessage, transactionTopicArn).ConfigureAwait(false);
-            return transactionDomain.ToResponse();
+            return transaction.ToResponse();
         }
     }
 }

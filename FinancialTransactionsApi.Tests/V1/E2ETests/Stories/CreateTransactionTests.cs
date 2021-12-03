@@ -89,7 +89,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 .When(w => _steps.WhenTheUpdateTransactionEndpointIsCalled(_transactionFixture.Transaction))
                 .Then(t => _steps.ThenTheTransactionDetailsAreUpdatedAndReturned(_transactionFixture))
                 .BDDfy();
-
         }
 
         [Theory]

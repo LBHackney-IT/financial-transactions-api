@@ -30,7 +30,11 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
                 PaymentReference = "213456",
                 PeriodNo = 35,
                 TransactionAmount = 1238.12M,
-                TransactionType = TransactionType.Rent
+                TransactionType = TransactionType.Rent,
+                CreatedAt = new DateTime(2021, 8, 1),
+                LastUpdatedAt = new DateTime(2021, 8, 1),
+                CreatedBy = "Admin",
+                LastUpdatedBy = "Admin"
             };
 
             transaction.Id.Should().Be(new Guid("9b014c26-88be-466e-a589-0f402c6b94c1"));
@@ -52,6 +56,10 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
             transaction.PeriodNo.Should().Be(35);
             transaction.TransactionAmount.Should().Be(1238.12M);
             transaction.TransactionType.Should().Be(TransactionType.Rent);
+            transaction.CreatedBy.Should().Be("Admin");
+            transaction.CreatedAt.Should().Be(new DateTime(2021, 8, 1));
+            transaction.LastUpdatedBy.Should().Be("Admin");
+            transaction.LastUpdatedAt.Should().Be(new DateTime(2021, 8, 1));
         }
     }
 }

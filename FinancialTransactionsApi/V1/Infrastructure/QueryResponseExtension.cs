@@ -60,7 +60,11 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                     TransactionAmount = decimal.Parse(item["transaction_amount"].N),
                     TransactionDate = DateTime.Parse(item["transaction_date"].S),
                     TransactionSource = item["transaction_source"].S,
-                    TransactionType = Enum.Parse<TransactionType>(item["transaction_type"].S)
+                    TransactionType = Enum.Parse<TransactionType>(item["transaction_type"].S),
+                    LastUpdatedBy = item.ContainsKey("last_updated_by") ? item["last_updated_by"].S : null,
+                    LastUpdatedAt = DateTime.Parse(item["last_updated_at"].S),
+                    CreatedBy = item.ContainsKey("created_by") ? item["created_by"].S : null,
+                    CreatedAt = DateTime.Parse(item["created_at"].S),
                 });
             }
 

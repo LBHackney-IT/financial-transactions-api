@@ -34,7 +34,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task Add_WithSuspenseModel_ReturnTransaction()
         {
-            var entity = new AddTransactionRequest()
+            var entity = new Transaction()
             {
                 TargetId = Guid.NewGuid(),
                 TransactionDate = new DateTime(2021, 8, 1),
@@ -52,8 +52,10 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
-                }
+                },
+                CreatedBy = "admin"
             };
+
 
             _mockGateway.Setup(x => x.AddAsync(It.IsAny<Transaction>()))
                 .Returns(Task.CompletedTask);
@@ -61,14 +63,22 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var response = await _addUseCase.ExecuteAsync(entity)
                 .ConfigureAwait(false);
 
-            var expectedResponse = entity.ToDomain().ToResponse();
+            var expectedResponse = entity.ToResponse();
 
             response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id)
                                                                          .Excluding(x => x.FinancialYear)
-                                                                         .Excluding(x => x.FinancialMonth));
+                                                                         .Excluding(x => x.FinancialMonth)
+                                                                         .Excluding(x => x.CreatedAt)
+                                                                         .Excluding(x => x.LastUpdatedAt)
+                                                                         .Excluding(x => x.LastUpdatedBy));
 
             response.FinancialMonth.Should().Be(8);
             response.FinancialYear.Should().Be(2021);
+
+            var curDate = DateTime.UtcNow;
+            response.LastUpdatedBy.Should().Be(expectedResponse.CreatedBy);
+            response.CreatedAt.Should().BeCloseTo(curDate, 1000);
+            response.LastUpdatedAt.Should().BeCloseTo(curDate, 1000);
 
             _mockGateway.Verify(x => x.AddAsync(It.IsAny<Transaction>()), Times.Once);
         }
@@ -76,7 +86,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task Add_WithNotSuspenseModel_ReturnTransaction()
         {
-            var entity = new AddTransactionRequest()
+            var entity = new Transaction()
             {
                 TargetId = Guid.NewGuid(),
                 TransactionDate = new DateTime(2021, 8, 1),
@@ -97,7 +107,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
-                }
+                },
+                CreatedBy = "admin"
             };
 
             _mockGateway.Setup(x => x.AddAsync(It.IsAny<Transaction>()))
@@ -106,14 +117,22 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var response = await _addUseCase.ExecuteAsync(entity)
                 .ConfigureAwait(false);
 
-            var expectedResponse = entity.ToDomain().ToResponse();
+            var expectedResponse = entity.ToResponse();
 
             response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id)
                                                                          .Excluding(x => x.FinancialYear)
-                                                                         .Excluding(x => x.FinancialMonth));
+                                                                         .Excluding(x => x.FinancialMonth)
+                                                                         .Excluding(x => x.CreatedAt)
+                                                                         .Excluding(x => x.LastUpdatedAt)
+                                                                         .Excluding(x => x.LastUpdatedBy));
 
             response.FinancialMonth.Should().Be(8);
             response.FinancialYear.Should().Be(2021);
+
+            var curDate = DateTime.UtcNow;
+            response.LastUpdatedBy.Should().Be(expectedResponse.CreatedBy);
+            response.CreatedAt.Should().BeCloseTo(curDate);
+            response.LastUpdatedAt.Should().BeCloseTo(curDate);
 
             _mockGateway.Verify(x => x.AddAsync(It.IsAny<Transaction>()), Times.Once);
         }
@@ -124,7 +143,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         {
             // Arrange
             var transaction = _fixture.Create<TransactionResponse>();
-            var request = new AddTransactionRequest
+            var request = new Transaction
             {
                 TransactionDate = new DateTime(2021, 8, 1),
                 Address = "Address",
@@ -142,7 +161,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 {
                     Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
                     FullName = "Hyan Widro"
-                }
+                },
+                CreatedBy = "Admin"
             };
 
             _mockGateway.Setup(x => x.AddAsync(It.IsAny<Transaction>()))
@@ -154,41 +174,6 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             // Assert
             _mockSnsFactory.Verify(x => x.Create(It.IsAny<Transaction>()));
             _mockSnsGateway.Verify(x => x.Publish(It.IsAny<TransactionSns>(), It.IsAny<string>(), It.IsAny<string>()));
-        }
-        [Fact]
-        public async Task Add_WithInvalidSuspenseInformation_ThrowException()
-        {
-            var entity = new AddTransactionRequest()
-            {
-                TargetId = Guid.NewGuid(),
-                TransactionDate = DateTime.UtcNow,
-                Address = "Address",
-                BalanceAmount = 145.23M,
-                ChargedAmount = 134.12M,
-                HousingBenefitAmount = 123.12M,
-                BankAccountNumber = "12345678",
-                IsSuspense = false,
-                PeriodNo = 2,
-                TransactionAmount = 126.83M,
-                TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
-                Person = new Person()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                }
-            };
-
-            try
-            {
-                var response = await _addUseCase.ExecuteAsync(entity).ConfigureAwait(false);
-                AssertExtensions.Fail();
-            }
-            catch (Exception ex)
-            {
-                ex.Should().BeOfType(typeof(ArgumentException));
-                ex.Message.Should().BeEquivalentTo("Transaction model dont have all information in fields!");
-            }
         }
     }
 }

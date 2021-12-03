@@ -4,6 +4,7 @@ using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Factories
@@ -42,7 +43,11 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 {
                     ResolutionDate = new DateTime(2021, 8, 1),
                     Note = "Some note"
-                }
+                },
+                CreatedBy = "Admin",
+                CreatedAt = DateTime.UtcNow,
+                LastUpdatedAt = DateTime.UtcNow,
+                LastUpdatedBy = "Admin"
             };
 
             var domain = dbEntity.ToDomain();
@@ -84,7 +89,11 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                     IsConfirmed = true,
                     IsApproved = true,
                     Note = "Some note"
-                }
+                },
+                CreatedBy = "Admin",
+                CreatedAt = DateTime.UtcNow,
+                LastUpdatedAt = DateTime.UtcNow,
+                LastUpdatedBy = "Admin"
             };
 
             var dbEntity = domain.ToDatabase();
@@ -161,6 +170,64 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
             var domain = request.ToDomain();
 
             domain.Should().BeEquivalentTo(request);
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityCollectionToADomainObjectCollection()
+        {
+            var requestCollection = new List<AddTransactionRequest>
+            {
+                new AddTransactionRequest()
+                {
+                    TargetId = Guid.NewGuid(),
+                    TransactionDate = DateTime.UtcNow,
+                    Address = "Address",
+                    BalanceAmount = 145.23M,
+                    ChargedAmount = 134.12M,
+                    Fund = "HSGSUN",
+                    HousingBenefitAmount = 123.12M,
+                    BankAccountNumber = "12345678",
+                    IsSuspense = true,
+                    PaidAmount = 123.22M,
+                    PaymentReference = "123451",
+                    PeriodNo = 2,
+                    TransactionAmount = 126.83M,
+                    TransactionSource = "DD",
+                    TransactionType = TransactionType.Charge,
+                    Person = new Person()
+                    {
+                        Id = Guid.NewGuid(),
+                        FullName = "Kain Hyawrd"
+                    }
+                },
+                new AddTransactionRequest()
+                {
+                    TargetId = Guid.NewGuid(),
+                    TransactionDate = DateTime.UtcNow,
+                    Address = "Address2",
+                    BalanceAmount = 145.23M,
+                    ChargedAmount = 134.12M,
+                    Fund = "HSGSUN2",
+                    HousingBenefitAmount = 123.12M,
+                    BankAccountNumber = "12345658",
+                    IsSuspense = true,
+                    PaidAmount = 123.22M,
+                    PaymentReference = "123451",
+                    PeriodNo = 2,
+                    TransactionAmount = 126.83M,
+                    TransactionSource = "DD",
+                    TransactionType = TransactionType.Charge,
+                    Person = new Person()
+                    {
+                        Id = Guid.NewGuid(),
+                        FullName = "Andrew Hyawrd"
+                    }
+                },
+            };
+
+            var domainCollection = requestCollection.ToDomain();
+
+            domainCollection.Should().BeEquivalentTo(requestCollection);
         }
     }
 }
