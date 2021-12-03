@@ -79,8 +79,8 @@ commands:
       - run:
           name: Install dependencies
           command: |
-            apt-get yum install -y yum-utils rpmdevtools
-            apt-get yum install libjpeg62
+            sudo yum install -y yum-utils rpmdevtools
+            sudo yum install libjpeg62
       - run:
           name: Build lambda
           command: |
