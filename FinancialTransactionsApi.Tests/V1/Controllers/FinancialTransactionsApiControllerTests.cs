@@ -247,13 +247,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             createResult.Should().NotBeNull();
 
             createResult?.StatusCode.Should().Be((int) HttpStatusCode.Created);
-                        
+
             createResult?.RouteValues.Should().NotBeNull();
-                        
+
             createResult?.RouteValues.Should().HaveCount(1);
-                        
+
             createResult?.RouteValues["id"].Should().NotBeNull();
-                        
+
             createResult?.RouteValues["id"].Should().Be(guid);
 
             var responseObject = createResult.Value as TransactionResponse;
@@ -436,7 +436,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             };
 
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                .ReturnsAsync(new TransactionResponse() { Id = guid, TargetId = Guid.Empty});
+                .ReturnsAsync(new TransactionResponse() { Id = guid, TargetId = Guid.Empty });
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>(), It.IsAny<Guid>()))
                 .ReturnsAsync(request.ToDomain().ToResponse());
@@ -568,7 +568,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         public async Task Update_UseCaseThrownException_ShouldRethrow()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty});
+                .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>(), It.IsAny<Guid>()))
                 .ThrowsAsync(new Exception("Test exception"));
@@ -634,7 +634,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 }
             };
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-               .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty});
+               .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
 
             try
             {
