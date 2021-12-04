@@ -47,9 +47,9 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 
         [DynamoDBProperty(AttributeName = "sort_code")]
         public string SortCode { get; set; }
-        
+
         [DynamoDBProperty(AttributeName = "is_suspense", Converter = typeof(DynamoDbBooleanConverter))]
-        public bool IsSuspense { get; set; }
+        public bool IsSuspense => TargetId == Guid.Empty;
 
         [DynamoDBProperty(AttributeName = "suspense_resolution_info", Converter = typeof(DynamoDbObjectConverter<SuspenseResolutionInfo>))]
         public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }

@@ -92,13 +92,14 @@ namespace FinancialTransactionsApi.V1.Boundary
         /// </example>
         [AllowNull]
         public string SortCode { get; set; }
+
         /// <summary>
         /// Is this account need to be in suspense
         /// </summary>
         /// <example>
         /// true
         /// </example>
-        public bool IsSuspense { get; set; }
+        public bool IsSuspense => TargetId == Guid.Empty;
 
         /// <summary>
         /// Total paid amount

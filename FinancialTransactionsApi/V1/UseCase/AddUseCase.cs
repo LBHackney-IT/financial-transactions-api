@@ -31,7 +31,7 @@ namespace FinancialTransactionsApi.V1.UseCase
                 var result = transaction.HaveAllFieldsInAddTransactionModel();
                 if (!result)
                 {
-                    throw new ArgumentException("Transaction model dont have all information in fields!");
+                    throw new ArgumentException("Transaction model don't have all information in fields!");
                 }
             }
 
