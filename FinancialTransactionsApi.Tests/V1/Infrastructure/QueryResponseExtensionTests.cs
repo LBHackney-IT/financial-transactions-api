@@ -49,9 +49,9 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
                 queryResponse.Items[index]["financial_year"].N.Should().BeEquivalentTo(transaction.FinancialYear.ToString());
                 queryResponse.Items[index]["housing_benefit_amount"].N.Should().BeEquivalentTo(transaction.HousingBenefitAmount.ToString("F"));
                 queryResponse.Items[index]["id"].S.Should().BeEquivalentTo(transaction.Id.ToString());
-                queryResponse.Items[index]["is_suspense"].S.Should().BeEquivalentTo(transaction.IsSuspense.ToString());
                 queryResponse.Items[index]["paid_amount"].N.Should().BeEquivalentTo(transaction.PaidAmount.ToString("F"));
                 queryResponse.Items[index]["target_id"].S.Should().BeEquivalentTo(transaction.TargetId.ToString());
+                queryResponse.Items[index]["is_suspense"].S.Should().BeEquivalentTo(transaction.IsSuspense.ToString());
                 queryResponse.Items[index]["transaction_amount"].N.Should().BeEquivalentTo(transaction.TransactionAmount.ToString("F"));
                 queryResponse.Items[index]["transaction_date"].S.Should().BeEquivalentTo(transaction.TransactionDate.ToString("F"));
                 queryResponse.Items[index]["created_at"].S.Should().BeEquivalentTo(transaction.CreatedAt.ToString("F"));
