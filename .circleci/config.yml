@@ -90,8 +90,9 @@ commands:
       - run:
           name: Install dependencies
           command: |
-            sudo yum install -y yum-utils rpmdevtools
-            sudo yum install libjpeg62
+            cd /var/task
+            sudo apt update && sudo apt install -y libjpeg-turbo8-dev libjpeg62-turbo
+            
 jobs:
   check-code-formatting:
     executor: docker-dotnet
