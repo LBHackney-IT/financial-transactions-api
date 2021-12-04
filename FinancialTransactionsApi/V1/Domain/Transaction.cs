@@ -11,7 +11,6 @@ namespace FinancialTransactionsApi.V1.Domain
         public Guid Id { get; set; }
         [NotNull]
         public Guid TargetId { get; set; }
-
         public TargetType TargetType { get; set; }
         [Required]
         public short PeriodNo { get; set; }
@@ -33,8 +32,7 @@ namespace FinancialTransactionsApi.V1.Domain
         public string BankAccountNumber { get; set; }
         [AllowNull]
         public string SortCode { get; set; }
-        [Required]
-        public bool IsSuspense { get; set; }
+        public bool IsSuspense => TargetId == Guid.Empty;
         [AllowNull]
         public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
         [GreatAndEqualThan("0.0")]
@@ -45,7 +43,6 @@ namespace FinancialTransactionsApi.V1.Domain
         public decimal BalanceAmount { get; set; }
         [GreatAndEqualThan("0.0")]
         public decimal HousingBenefitAmount { get; set; }
-
         public string Address { get; set; }
         [Required]
         public Person Person { get; set; }
