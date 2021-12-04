@@ -14,7 +14,8 @@ namespace FinancialTransactionsApi.V1.Infrastructure
         {
             if (decimal.TryParse(minValue, out var digit))
                 _minValue = digit;
-            throw new Exception("Invalid input number");
+            else
+                throw new Exception("Invalid input number");
         }
         public override bool IsValid(object value)
         {

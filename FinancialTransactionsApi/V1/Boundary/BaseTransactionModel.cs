@@ -10,11 +10,11 @@ namespace FinancialTransactionsApi.V1.Boundary
     {
         /// <summary>
         /// The guid of a tenancy/property
+        /// If targetId be empty the transaction is suspense
         /// </summary>
         /// <example>
         /// 94b02545-0233-4640-98dd-b2900423c0a5
         /// </example>
-        [NonEmptyGuid]
         public Guid TargetId { get; set; }
         /// <summary>
         ///     The target of provided id by the target_id

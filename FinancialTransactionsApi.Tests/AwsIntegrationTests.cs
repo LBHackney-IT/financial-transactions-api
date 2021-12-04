@@ -7,6 +7,7 @@ using Nest;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Amazon.Runtime.Internal.Util;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests
@@ -37,8 +38,8 @@ namespace FinancialTransactionsApi.Tests
         {
             EnsureEnvVarConfigured("DynamoDb_LocalMode", "true");
             EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
-            EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "8kmm3g");
-            EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "fco1i2");
+            EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "o4fejrd");
+            EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "ez1lwb");
             EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
             EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:9911");
             Factory = new AwsMockWebApplicationFactory<TStartup>(_tables);
@@ -71,13 +72,13 @@ namespace FinancialTransactionsApi.Tests
                 _disposed = true;
             }
         }
-        private void CreateSnsTopic()
+        private static void CreateSnsTopic()
         {
             var snsAttrs = new Dictionary<string, string>();
             snsAttrs.Add("fifo_topic", "true");
             snsAttrs.Add("content_based_deduplication", "true");
 
-            var response = SimpleNotificationService.CreateTopicAsync(new CreateTopicRequest
+            /*var response = SimpleNotificationService.CreateTopicAsync(new CreateTopicRequest
             {
                 Name = "transactioncreated",
                 Attributes = snsAttrs
@@ -85,7 +86,7 @@ namespace FinancialTransactionsApi.Tests
 
             Environment.SetEnvironmentVariable("TRANSACTION_SNS_ARN", response.TopicArn);
 
-            SnsVerifer = new SnsEventVerifier<TransactionSns>(Factory.AmazonSqs, SimpleNotificationService, response.TopicArn);
+            SnsVerifer = new SnsEventVerifier<TransactionSns>(Factory.AmazonSqs, SimpleNotificationService, response.TopicArn);*/
         }
 
     }

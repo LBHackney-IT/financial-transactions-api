@@ -195,12 +195,11 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             apiEntity?.Details.Should().Be(string.Empty);
 
             apiEntity?.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
-            apiEntity?.Message.Should().Contain("The field TargetId cannot be empty or default.");
             apiEntity?.Message.Should().Contain("The field TransactionDate cannot be default value.");
-            apiEntity?.Message.Should().Contain($"The field PaidAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity?.Message.Should().Contain($"The field ChargedAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity?.Message.Should().Contain($"The field TransactionAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity?.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity?.Message.Should().Contain($"The field PaidAmount is invalid.");
+            apiEntity?.Message.Should().Contain($"The field ChargedAmount is invalid.");
+            apiEntity?.Message.Should().Contain($"The field TransactionAmount is invalid.");
+            apiEntity?.Message.Should().Contain($"The field HousingBenefitAmount is invalid.");
         }
 
         public async Task ThenBadRequestIsReturned(string message)
