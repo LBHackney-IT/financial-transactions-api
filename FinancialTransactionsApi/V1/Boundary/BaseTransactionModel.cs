@@ -177,5 +177,24 @@ namespace FinancialTransactionsApi.V1.Boundary
         ///     10
         /// </example>
         public short FinancialMonth { get; set; }
+        /// <example>
+        ///     Admin
+        /// </example>
+        public string LastUpdatedBy { get; set; }
+
+        /// <example>
+        ///     2021-03-29T15:10:37.471Z
+        /// </example>
+        public DateTime LastUpdatedAt { get; set; }
+
+        /// <example>
+        ///     2021-03-29T15:10:37.471Z
+        /// </example>
+        public DateTime CreatedAt { get; set; }
+
+        /// <example>
+        ///     Admin
+        /// </example>
+        public string CreatedBy { get; set; }
     }
 }

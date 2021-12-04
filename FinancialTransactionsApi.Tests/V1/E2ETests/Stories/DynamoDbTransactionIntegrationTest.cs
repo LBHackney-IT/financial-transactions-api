@@ -22,13 +22,13 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
     public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
-        private const string _token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
+        private const string Token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
 
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
+
         /// <summary>
         /// Method to construct a test entity that can be used in a test
         /// </summary>
-        /// <param name="entity"></param>
         /// <returns></returns>
         private Transaction ConstructTransaction()
         {
@@ -36,7 +36,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             entity.TransactionDate = new DateTime(2021, 8, 1);
             entity.PeriodNo = 35;
-            entity.IsSuspense = true;
             entity.SuspenseResolutionInfo = null;
             entity.BankAccountNumber = "12345678";
 
@@ -131,7 +130,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
 
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -170,7 +169,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
 
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -232,10 +231,10 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                     .Excluding(a => a.LastUpdatedAt)
                     .Excluding(a => a.LastUpdatedBy));
 
-            firstTransaction.FinancialMonth.Should().Be(8);
-            firstTransaction.FinancialYear.Should().Be(2021);
-            firstTransaction.CreatedBy.Should().Be("testing");
-            firstTransaction.LastUpdatedBy.Should().Be("testing");
+            firstTransaction?.FinancialMonth.Should().Be(8);
+            firstTransaction?.FinancialYear.Should().Be(2021);
+            firstTransaction?.CreatedBy.Should().Be("testing");
+            firstTransaction?.LastUpdatedBy.Should().Be("testing");
 
         }
 
@@ -290,7 +289,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 FinancialMonth = 8,
                 FinancialYear = 2021,
                 BankAccountNumber = "12345678",
-                IsSuspense = true,
                 PaidAmount = 125.62M,
                 PeriodNo = 31,
                 TargetId = new Guid("9e067bac-56ed-4802-a83f-b1e32f09177e"),
@@ -317,7 +315,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 ResolutionDate = new DateTime(2021, 9, 1),
                 Note = "Note"
             };
-            transaction.IsSuspense = false;
 
             var updateUri = new Uri($"api/v1/transactions/{transaction.Id}?targetId={transaction.TargetId}", UriKind.Relative);
             string updateTransaction = JsonConvert.SerializeObject(transaction);
@@ -325,7 +322,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             HttpResponseMessage updateResponse;
             using var updateStringContent = new StringContent(updateTransaction);
             updateStringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
 
             updateResponse = await Client.PutAsync(updateUri, updateStringContent).ConfigureAwait(false);
 
@@ -366,7 +363,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
 
                 response = await Client.PutAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -416,7 +413,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 ChargedAmount = transaction.ChargedAmount,
                 Fund = transaction.Fund,
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
-                IsSuspense = transaction.IsSuspense,
                 BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
                 PaymentReference = transaction.PaymentReference,
@@ -434,7 +430,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             using StringContent stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
 
             using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 

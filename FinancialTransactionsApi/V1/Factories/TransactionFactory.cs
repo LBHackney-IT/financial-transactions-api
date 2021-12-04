@@ -32,7 +32,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 Address = transaction.Address,
                 Person = transaction.Person,
                 Fund = transaction.Fund,
-                SortCode = transaction.SortCode
+                SortCode = transaction.SortCode,
                 CreatedAt = transaction.CreatedAt,
                 CreatedBy = transaction.CreatedBy,
                 LastUpdatedBy = transaction.LastUpdatedBy,
@@ -64,7 +64,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 Address = transactionDbEntity.Address,
                 Person = transactionDbEntity.Person,
                 Fund = transactionDbEntity.Fund,
-                SortCode = transactionDbEntity.SortCode
+                SortCode = transactionDbEntity.SortCode,
                 CreatedAt = transactionDbEntity.CreatedAt,
                 CreatedBy = transactionDbEntity.CreatedBy,
                 LastUpdatedAt = transactionDbEntity.LastUpdatedAt,
