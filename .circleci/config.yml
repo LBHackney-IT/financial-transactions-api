@@ -92,7 +92,7 @@ commands:
           name: Install dependencies
           command: |
             mkdir -p /var/task
-            chown ec2-user:ec2-user /var/task
+            chown +x /var/task
             cd /var/task
             apt-get update && apt-get install -y libjpeg62-turbo
             
