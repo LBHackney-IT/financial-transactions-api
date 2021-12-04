@@ -80,13 +80,13 @@ commands:
           name: Build lambda
           command: |
             cd ./FinancialTransactionsApi/
-            apt-get update && apt-get install -y libjpeg62-turbo
             chmod +x ./build.sh
             ./build.sh
       - run:
           name: Deploy lambda
           command: |
             cd ./FinancialTransactionsApi/
+            apt-get update && apt-get install -y libjpeg62-turbo
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
       - run:
           name: Install dependencies
