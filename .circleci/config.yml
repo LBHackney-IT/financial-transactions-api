@@ -74,8 +74,8 @@ commands:
             curl -sL https://deb.nodesource.com/setup_13.x | bash -
             apt-get update && apt-get install -y nodejs
             apt-get update && apt install -y yum-utils
-            yum install -y yum-utils rpmdevtools
-            yum install libxrender 
+            yum install -y rpmdevtools
+            yum install -y libxrender 
       - run:
           name: Install serverless CLI
           command: npm i -g serverless
