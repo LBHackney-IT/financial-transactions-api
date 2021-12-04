@@ -3,7 +3,7 @@ using FinancialTransactionsApi.V1.Domain;
 
 namespace FinancialTransactionsApi.V1.Boundary.Request
 {
-    public class UpdateTransactionRequest:BaseTransactionModel,ISuspenseResolution
+    public class UpdateTransactionRequest : BaseTransactionModel, ISuspenseResolution
     {
         /// <summary>
         /// 
