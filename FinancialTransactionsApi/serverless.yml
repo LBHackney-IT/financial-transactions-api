@@ -22,6 +22,10 @@ functions:
     environment:
      TRANSACTION_SNS_ARN: ${ssm:/sns-topic/${self:provider.stage}/financial-transactions_created/arn}
      ELASTICSEARCH_DOMAIN_URL: ${ssm:/housing-search-api/${self:provider.stage}/elasticsearch-domain}
+     Header: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_header}
+     SubHeader: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_header}
+     Footer: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_footer}
+     SubFooter: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_footer}
     events:
       - http:
           path: /{proxy+}
@@ -132,6 +136,23 @@ resources:
                           - Ref: 'AWS::Region'
                           - Ref: 'AWS::AccountId'
                           - 'table/Transactions'
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:dynamodb'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'table/Transactions/index/*'
+                - Effect: Allow
+                  Action:
+                    - "dynamodb:Query"
+                    - "dynamodb:Scan"
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:dynamodb'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'table/Transactions/index/*'
 custom:
   vpc:
     development:

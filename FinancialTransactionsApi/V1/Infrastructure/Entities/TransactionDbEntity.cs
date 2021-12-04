@@ -8,10 +8,13 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
     [DynamoDBTable("Transactions", LowerCamelCaseProperties = true)]
     public class TransactionDbEntity
     {
-        [DynamoDBHashKey]
+
+
+        [DynamoDBRangeKey]
         [DynamoDBProperty(AttributeName = "id")]
         public Guid Id { get; set; }
 
+        [DynamoDBHashKey]
         [DynamoDBProperty(AttributeName = "target_id")]
         public Guid TargetId { get; set; }
 
@@ -74,5 +77,17 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 
         [DynamoDBProperty(AttributeName = "fund")]
         public string Fund { get; set; }
+
+        [DynamoDBProperty(AttributeName = "last_updated_by")]
+        public string LastUpdatedBy { get; set; }
+
+        [DynamoDBProperty(AttributeName = "last_updated_at")]
+        public DateTime LastUpdatedAt { get; set; }
+
+        [DynamoDBProperty(AttributeName = "created_at")]
+        public DateTime CreatedAt { get; set; }
+
+        [DynamoDBProperty(AttributeName = "created_by")]
+        public string CreatedBy { get; set; }
     }
 }

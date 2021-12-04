@@ -1,8 +1,7 @@
-using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -18,28 +17,17 @@ namespace FinancialTransactionsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task<TransactionResponse> ExecuteAsync(UpdateTransactionRequest transaction, Guid id)
+        public async Task<TransactionResponse> ExecuteAsync(Transaction transaction, Guid id)
         {
-            if (!transaction.IsSuspense)
-            {
-                var result = transaction.HaveAllFieldsInUpdateTransactionModel();
-                if (!result)
-                {
-                    throw new ArgumentException("Transaction model dont have all information in fields!");
-                }
-            }
+            transaction.FinancialMonth = (short) transaction.TransactionDate.Month;
 
-            var transactionDomain = transaction.ToDomain();
+            transaction.FinancialYear = (short) transaction.TransactionDate.Year;
+            transaction.Id = id;
+            transaction.LastUpdatedAt = DateTime.UtcNow;
 
-            transactionDomain.FinancialMonth = (short) transaction.TransactionDate.Month;
+            await _gateway.UpdateAsync(transaction).ConfigureAwait(false);
 
-            transactionDomain.FinancialYear = (short) transaction.TransactionDate.Year;
-
-            transactionDomain.Id = id;
-
-            await _gateway.UpdateAsync(transactionDomain).ConfigureAwait(false);
-
-            return transactionDomain.ToResponse();
+            return transaction.ToResponse();
         }
     }
 }

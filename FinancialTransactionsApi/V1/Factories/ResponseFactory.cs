@@ -31,7 +31,11 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionSource = domain.TransactionSource,
                 Address = domain.Address,
                 Person = domain.Person,
-                Fund = domain.Fund
+                Fund = domain.Fund,
+                CreatedAt = domain.CreatedAt,
+                CreatedBy = domain.CreatedBy,
+                LastUpdatedAt = domain.LastUpdatedAt,
+                LastUpdatedBy = domain.LastUpdatedBy
             };
         }
 

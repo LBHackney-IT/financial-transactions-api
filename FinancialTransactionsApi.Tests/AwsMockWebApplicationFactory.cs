@@ -68,39 +68,22 @@ namespace FinancialTransactionsApi.Tests
             {
                 try
                 {
-                    // Hanna Holosova
+
                     // This command helps to prevent the next exception:
                     // Amazon.XRay.Recorder.Core.Exceptions.EntityNotAvailableException : Entity doesn't exist in AsyncLocal
                     AWSXRayRecorder.Instance.ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR;
-
-                    List<AttributeDefinition> attributeDefinitions = new List<AttributeDefinition>();
-
-                    attributeDefinitions.Add(new AttributeDefinition(table.PartitionKey.KeyName,
-                        table.PartitionKey.KeyScalarType));
-
-                    CreateTableRequest request = new CreateTableRequest
-                    {
-                        TableName = table.TableName,
-                        ProvisionedThroughput =
-                            new ProvisionedThroughput { ReadCapacityUnits = (long) 3, WriteCapacityUnits = (long) 3 },
-                        AttributeDefinitions = attributeDefinitions,
-                        KeySchema = new List<KeySchemaElement>
-                        {
-                            new KeySchemaElement(table.PartitionKey.KeyName, table.PartitionKey.KeyType)
-                        }
-                    };
-
+                    var request = new CreateTableRequest(table.Name,
+                        new List<KeySchemaElement> { new KeySchemaElement(table.KeyName, table.KeyType), new KeySchemaElement(table.RangeName, table.RangeType) },
+                        new List<AttributeDefinition> { new AttributeDefinition(table.KeyName, table.KeyScalarType), new AttributeDefinition(table.RangeName, table.KeyScalarType) },
+                        new ProvisionedThroughput(3, 3));
                     _ = dynamoDb.CreateTableAsync(request).GetAwaiter().GetResult();
                 }
                 catch (ResourceInUseException)
                 {
                     // It already exists :-)
                 }
-                catch (Exception exception)
-                {
-                    throw new Exception("Exception in checking table existence", exception);
-                }
             }
+
         }
     }
 }

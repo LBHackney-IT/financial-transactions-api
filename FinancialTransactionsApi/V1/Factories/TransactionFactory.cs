@@ -1,6 +1,8 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FinancialTransactionsApi.V1.Factories
 {
@@ -31,6 +33,10 @@ namespace FinancialTransactionsApi.V1.Factories
                 Person = transaction.Person,
                 Fund = transaction.Fund,
                 SortCode = transaction.SortCode
+                CreatedAt = transaction.CreatedAt,
+                CreatedBy = transaction.CreatedBy,
+                LastUpdatedBy = transaction.LastUpdatedBy,
+                LastUpdatedAt = transaction.LastUpdatedAt
             };
         }
 
@@ -59,6 +65,10 @@ namespace FinancialTransactionsApi.V1.Factories
                 Person = transactionDbEntity.Person,
                 Fund = transactionDbEntity.Fund,
                 SortCode = transactionDbEntity.SortCode
+                CreatedAt = transactionDbEntity.CreatedAt,
+                CreatedBy = transactionDbEntity.CreatedBy,
+                LastUpdatedAt = transactionDbEntity.LastUpdatedAt,
+                LastUpdatedBy = transactionDbEntity.LastUpdatedBy
             };
         }
 
@@ -110,6 +120,19 @@ namespace FinancialTransactionsApi.V1.Factories
                 Fund = transactionRequest.Fund,
                 SortCode = transactionRequest.SortCode
             };
+        }
+
+        public static List<Transaction> ToDomain(this IEnumerable<TransactionDbEntity> databaseEntity)
+        {
+            return databaseEntity.Select(p => p.ToDomain())
+                                 .OrderBy(x => x.TransactionDate)
+                                 .ToList();
+        }
+
+        public static IEnumerable<Transaction> ToDomain(this IEnumerable<AddTransactionRequest> transactionRequests)
+        {
+            return transactionRequests == null ?
+                new List<Transaction>() : transactionRequests.Select(t => t.ToDomain());
         }
     }
 }

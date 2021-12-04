@@ -1,7 +1,5 @@
-using FinancialTransactionsApi.V1.Boundary.Request;
-using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -18,7 +16,7 @@ namespace FinancialTransactionsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task<int> ExecuteAsync(IEnumerable<AddTransactionRequest> transactions)
+        public async Task<int> ExecuteAsync(IEnumerable<Transaction> transactions)
         {
             int processingCount = 0;
             foreach (var transaction in transactions)
@@ -30,26 +28,20 @@ namespace FinancialTransactionsApi.V1.UseCase
             return processingCount;
         }
 
-        private async Task<bool> AddWeeklyCharge(AddTransactionRequest transaction)
+        private async Task<bool> AddWeeklyCharge(Transaction transaction)
         {
-            if (!transaction.IsSuspense)
-            {
-                var result = transaction.HaveAllFieldsInAddWeeklyChargeModel();
-                if (!result)
-                {
-                    throw new ArgumentException("Transaction model dont have all information in fields!");
-                }
-            }
+            transaction.FinancialMonth = (short) transaction.TransactionDate.Month;
 
-            var transactionDomain = transaction.ToDomain();
+            transaction.FinancialYear = (short) transaction.TransactionDate.Year;
 
-            transactionDomain.FinancialMonth = (short) transaction.TransactionDate.Month;
+            transaction.Id = Guid.NewGuid();
+            DateTime currentDate = DateTime.UtcNow;
 
-            transactionDomain.FinancialYear = (short) transaction.TransactionDate.Year;
+            transaction.CreatedAt = currentDate;
+            transaction.LastUpdatedAt = currentDate;
+            transaction.LastUpdatedBy = transaction.CreatedBy;
 
-            transactionDomain.Id = Guid.NewGuid();
-
-            await _gateway.AddAsync(transactionDomain).ConfigureAwait(false);
+            await _gateway.AddAsync(transaction).ConfigureAwait(false);
 
             return true;
         }

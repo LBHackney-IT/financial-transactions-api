@@ -16,6 +16,18 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         public Guid TargetId { get; set; }
 
         /// <summary>
+        /// The Page Size per page
+        /// </summary>
+        /// <example>
+        /// 1
+        /// </example>
+        [FromQuery(Name = "pageSize")]
+        [Range(1, int.MaxValue, ErrorMessage = "The page size must be great and equal than 1")]
+        public int? PageSize { get; set; } = DefaultPageSize;
+
+        [FromQuery]
+        public string PaginationToken { get; set; }
+        /// <summary>
         /// Type of transactioin tenancy/property
         /// </summary>
         /// <example>

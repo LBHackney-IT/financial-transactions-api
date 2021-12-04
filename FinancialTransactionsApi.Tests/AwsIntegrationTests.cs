@@ -22,16 +22,7 @@ namespace FinancialTransactionsApi.Tests
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-            new TableDef()
-            {
-                TableName = "Transactions",
-                PartitionKey = new AttributeDef()
-                {
-                    KeyName = "id",
-                    KeyType = KeyType.HASH,
-                    KeyScalarType = ScalarAttributeType.S
-                }
-            }
+            new TableDef { Name = "Transactions", KeyName = "target_id", RangeName="id", KeyType = KeyType.HASH,RangeType = KeyType.RANGE,  KeyScalarType= ScalarAttributeType.S}
         };
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
@@ -101,17 +92,14 @@ namespace FinancialTransactionsApi.Tests
 
     public class TableDef
     {
-        public string TableName { get; set; }
-        public AttributeDef PartitionKey { get; set; }
-    }
-
-    public class AttributeDef
-    {
+        public string Name { get; set; }
         public string KeyName { get; set; }
-        public ScalarAttributeType KeyScalarType { get; set; }
+        public string RangeName { get; set; }
         public KeyType KeyType { get; set; }
+        public KeyType RangeType { get; set; }
+        public ScalarAttributeType KeyScalarType { get; set; }
     }
-
+  
     [CollectionDefinition("Aws collection", DisableParallelization = true)]
     public class AwsCollection : ICollectionFixture<AwsIntegrationTests<Startup>>
     {
