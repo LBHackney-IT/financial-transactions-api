@@ -73,10 +73,6 @@ commands:
           command: |
             curl -sL https://deb.nodesource.com/setup_13.x | bash -
             apt-get update && apt-get install -y nodejs
-            apt-get update && apt-get install -y yum-utils
-            yum-config-manager --enable rpmdevtools
-            yum install -y rpmdevtools
-            yum install -y libxrender 
       - run:
           name: Install serverless CLI
           command: npm i -g serverless
@@ -92,13 +88,7 @@ commands:
             cd ./FinancialTransactionsApi/
             apt-get update && apt-get install -y libjpeg62-turbo
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
-      - run:
-          name: Install dependencies
-          command: |
-            mkdir -p /var/task
-            chmod +x /var/task
-            cd /var/task
-            apt-get update && apt-get install -y libjpeg62-turbo
+     
             
 jobs:
   check-code-formatting:
