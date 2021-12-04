@@ -80,6 +80,7 @@ commands:
           name: Build lambda
           command: |
             cd ./FinancialTransactionsApi/
+            apt-get update && apt-get install -y libjpeg-turbo8-dev libjpeg62-turbo
             chmod +x ./build.sh
             ./build.sh
       - run:
@@ -90,6 +91,8 @@ commands:
       - run:
           name: Install dependencies
           command: |
+            sudo mkdir -p /var/task
+            sudo chown ec2-user:ec2-user /var/task
             cd /var/task
             sudo apt update && sudo apt install -y libjpeg-turbo8-dev libjpeg62-turbo
             
