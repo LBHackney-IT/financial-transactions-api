@@ -109,6 +109,7 @@ jobs:
       - run:
           name: Run tests
           command: docker-compose run financial-transactions-api-test
+          no_output_timeout: 60m
   assume-role-development:
     executor: docker-python
     steps:
@@ -161,8 +162,10 @@ jobs:
 workflows:
   check-and-deploy-development:
     jobs:
-      - check-code-formatting
-      - build-and-test
+      - check-code-formatting:
+          context: api-nuget-token-context
+      - build-and-test:
+          context: api-nuget-token-context
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
@@ -178,7 +181,7 @@ workflows:
             branches:
               only: development
       - deploy-to-development:
-          # context: api-assume-role-housing-development-context
+          context: api-nuget-token-context
           requires:
             - terraform-init-and-apply-to-development
           filters:
@@ -187,6 +190,7 @@ workflows:
   check-and-deploy-staging-and-production:
       jobs:
       - build-and-test:
+          context: api-nuget-token-context
           filters:
             branches:
               only: master
