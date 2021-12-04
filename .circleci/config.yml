@@ -73,8 +73,7 @@ commands:
           command: |
             curl -sL https://deb.nodesource.com/setup_13.x | bash -
             apt-get update && apt-get install -y nodejs
-            apt-get update && apt install -y yum-utils
-            yum-config-manager --disable repository
+            apt-get update && apt-get install -y yum-utils
             yum install -y rpmdevtools
             yum install -y libxrender 
       - run:
