@@ -99,7 +99,7 @@ namespace FinancialTransactionsApi.Tests
         public KeyType RangeType { get; set; }
         public ScalarAttributeType KeyScalarType { get; set; }
     }
-  
+
     [CollectionDefinition("Aws collection", DisableParallelization = true)]
     public class AwsCollection : ICollectionFixture<AwsIntegrationTests<Startup>>
     {
