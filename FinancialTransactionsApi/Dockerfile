@@ -12,6 +12,9 @@ WORKDIR /app
 
 # Install dependencies
 RUN apt-get update -qq && apt-get -y install libgdiplus libc6-dev
+RUN yum update -y
+RUN  yum install -y yum-utils rpmdevtools
+RUN yum install libxrender
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
