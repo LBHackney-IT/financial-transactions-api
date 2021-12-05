@@ -151,7 +151,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 BankAccountNumber = "12345678",
                 PaidAmount = 125.62M,
                 PeriodNo = 31,
-                TargetId = new Guid("9e067bac-56ed-4802-a83f-b1e32f09177e"),
                 TransactionAmount = 186.90M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.Rent,
@@ -220,7 +219,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
 
             entity.TransactionDate = new DateTime(2021, 8, 1);
             entity.PeriodNo = 35;
-            entity.Fund = null;
+            entity.Fund = "HUSFG";
             entity.SuspenseResolutionInfo = null;
             entity.BankAccountNumber = "12345678";
 
