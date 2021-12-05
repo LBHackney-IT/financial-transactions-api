@@ -78,7 +78,7 @@ namespace FinancialTransactionsApi.Tests
             snsAttrs.Add("fifo_topic", "true");
             snsAttrs.Add("content_based_deduplication", "true");
 
-            /*var response = SimpleNotificationService.CreateTopicAsync(new CreateTopicRequest
+            var response = SimpleNotificationService.CreateTopicAsync(new CreateTopicRequest
             {
                 Name = "transactioncreated",
                 Attributes = snsAttrs
@@ -86,7 +86,7 @@ namespace FinancialTransactionsApi.Tests
 
             Environment.SetEnvironmentVariable("TRANSACTION_SNS_ARN", response.TopicArn);
 
-            SnsVerifer = new SnsEventVerifier<TransactionSns>(Factory.AmazonSqs, SimpleNotificationService, response.TopicArn);*/
+            SnsVerifer = new SnsEventVerifier<TransactionSns>(Factory.AmazonSqs, SimpleNotificationService, response.TopicArn);
         }
 
     }
