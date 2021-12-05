@@ -72,7 +72,7 @@ namespace FinancialTransactionsApi.Tests
                 _disposed = true;
             }
         }
-        private static void CreateSnsTopic()
+        private void CreateSnsTopic()
         {
             var snsAttrs = new Dictionary<string, string>();
             snsAttrs.Add("fifo_topic", "true");
