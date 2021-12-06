@@ -57,11 +57,11 @@ namespace FinancialTransactionsApi.V1.UseCase
                 await PublishSnsMessage(item).ConfigureAwait(false);
                 processingCount++;
             }
-           
+
             if (response && (processingCount == transactionList.Count))
-                    return transactionList.Count;
+                return transactionList.Count;
             else
-                    return 0;
+                return 0;
         }
 
         private async Task PublishSnsMessage(Transaction item)
