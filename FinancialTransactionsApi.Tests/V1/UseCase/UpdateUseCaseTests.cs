@@ -1,5 +1,3 @@
-using FinancialTransactionsApi.Tests.V1.Helper;
-using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
