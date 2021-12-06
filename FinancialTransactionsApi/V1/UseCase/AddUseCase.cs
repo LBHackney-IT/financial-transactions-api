@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Hackney.Core.Sns;
 using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Infrastructure;
 
 namespace FinancialTransactionsApi.V1.UseCase
 {
@@ -40,7 +41,7 @@ namespace FinancialTransactionsApi.V1.UseCase
             await _gateway.AddAsync(transaction).ConfigureAwait(false);
             var transactionSnsMessage = _snsFactory.Create(transaction);
             var transactionTopicArn = Environment.GetEnvironmentVariable("TRANSACTION_SNS_ARN");
-            await _snsGateway.Publish(transactionSnsMessage, transactionTopicArn).ConfigureAwait(false);
+            await _snsGateway.Publish(transactionSnsMessage, transactionTopicArn, EventConstants.MESSAGEGROUPID).ConfigureAwait(false);
             return transaction.ToResponse();
         }
     }

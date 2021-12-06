@@ -171,7 +171,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        [Route("process-weekly-charge")]
+        [Route("process-batch")]
         public async Task<IActionResult> AddBatch([FromHeader(Name = "x-correlation-id")] string correlationId,
                                                   [FromHeader(Name = "Authorization")] string token,
                                                   [FromBody] IEnumerable<AddTransactionRequest> transactions)
@@ -305,7 +305,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// </summary>
         private static bool CheckAddTransactionRequestCollection(IEnumerable<AddTransactionRequest> transactions)
         {
-            return transactions.All(t => t.IsSuspense || (!t.IsSuspense && t.HaveAllFieldsInAddWeeklyChargeModel()));
+            return transactions.All(t => t.IsSuspense || (!t.IsSuspense && t.ToDomain().HaveAllFieldsInBatchProcessingModel()));
         }
 
         /// <summary>

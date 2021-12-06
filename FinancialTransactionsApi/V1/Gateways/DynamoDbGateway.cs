@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -18,10 +19,12 @@ namespace FinancialTransactionsApi.V1.Gateways
         private const int MAX_RESULTS = 10;
         private const string TARGETID = "target_id";
         private readonly IDynamoDBContext _dynamoDbContext;
+        private readonly IConfiguration _configuration;
 
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext)
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IConfiguration configuration)
         {
             _dynamoDbContext = dynamoDbContext;
+            _configuration = configuration;
         }
 
 
@@ -32,24 +35,24 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task<bool> AddBatchAsync(List<Transaction> transactions)
         {
-            var estimateBatch = _dynamoDbContext.CreateBatchWrite<TransactionDbEntity>();
+            var transactionBatch = _dynamoDbContext.CreateBatchWrite<TransactionDbEntity>();
 
             var items = transactions.ToDatabaseList();
-            int maxBatchCount = 1000;
+            var maxBatchCount = _configuration.GetValue<int>("BatchProcessing:PerBatchCount");
             if (items.Count > maxBatchCount)
             {
                 var loopCount = (items.Count / maxBatchCount) + 1;
-                for (int start = 0; start < loopCount; start++)
+                for (var start = 0; start < loopCount; start++)
                 {
                     var itemsToWrite = items.Skip(start * maxBatchCount).Take(maxBatchCount);
-                    estimateBatch.AddPutItems(itemsToWrite);
-                    await estimateBatch.ExecuteAsync().ConfigureAwait(false);
+                    transactionBatch.AddPutItems(itemsToWrite);
+                    await transactionBatch.ExecuteAsync().ConfigureAwait(false);
                 }
             }
             else
             {
-                estimateBatch.AddPutItems(items);
-                await estimateBatch.ExecuteAsync().ConfigureAwait(false);
+                transactionBatch.AddPutItems(items);
+                await transactionBatch.ExecuteAsync().ConfigureAwait(false);
             }
 
             return true;

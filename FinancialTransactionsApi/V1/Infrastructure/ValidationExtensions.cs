@@ -99,11 +99,11 @@ namespace FinancialTransactionsApi.V1.Infrastructure
             return true;
         }
 
-        public static bool HaveAllFieldsInAddWeeklyChargeModel(this AddTransactionRequest transaction)
+        public static bool HaveAllFieldsInBatchProcessingModel(this Transaction transaction)
         {
             if (transaction == null)
             {
-                throw new ArgumentNullException("AddTransactionRequest model cannot be null!");
+                throw new ArgumentNullException("Transaction Request model cannot be null!");
             }
 
             if (transaction.TargetId == Guid.Empty)

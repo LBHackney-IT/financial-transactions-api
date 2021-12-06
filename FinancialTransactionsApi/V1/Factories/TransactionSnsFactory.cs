@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure;
 using Hackney.Core.Sns;
+using EventData = Hackney.Core.Sns.EventData;
 
 namespace FinancialTransactionsApi.V1.Factories
 {
