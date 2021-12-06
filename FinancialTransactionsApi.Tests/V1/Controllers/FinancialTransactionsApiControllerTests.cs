@@ -11,6 +11,8 @@ using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -145,6 +147,30 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             responses?.Results.Should().HaveCount(5);
 
         }
+
+        //[Fact]
+        //public async Task Process_Batch_UseCaseReturnList_Returns200()
+        //{
+        //    //var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
+        //    //var request = new List<AddTransactionRequest>();
+
+        //    //_addBatchUseCase.Setup(x => x.ExecuteAsync(It.IsAny<IEnumerable<Transaction>>()))
+        //    //    .ReturnsAsync(3);
+
+        //    //var query = new TransactionQuery()
+        //    //{
+        //    //    TargetId = Guid.NewGuid()
+        //    //};
+
+        //    //var result = await _controller.AddBatch("","", request).ConfigureAwait(false);
+
+        //    //result.Should().NotBeNull();
+
+        //    //var okResult = result as OkObjectResult;
+
+        //    //okResult.Should().NotBeNull();
+
+        //}
 
         [Fact]
         public async Task GetAll_UseCaseThrownException_ShouldRethrow()

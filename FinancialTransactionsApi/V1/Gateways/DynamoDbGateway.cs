@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -17,10 +18,12 @@ namespace FinancialTransactionsApi.V1.Gateways
     {
         private const string TARGETID = "target_id";
         private readonly IDynamoDBContext _dynamoDbContext;
+        private readonly IConfiguration _configuration;
 
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext)
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IConfiguration configuration)
         {
             _dynamoDbContext = dynamoDbContext;
+            _configuration = configuration;
         }
 
 
@@ -29,12 +32,29 @@ namespace FinancialTransactionsApi.V1.Gateways
             await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
         }
 
-        public async Task AddRangeAsync(List<Transaction> transactions)
+        public async Task<bool> AddBatchAsync(List<Transaction> transactions)
         {
-            foreach (Transaction transaction in transactions)
+            var transactionBatch = _dynamoDbContext.CreateBatchWrite<TransactionDbEntity>();
+
+            var items = transactions.ToDatabaseList();
+            var maxBatchCount = _configuration.GetValue<int>("BatchProcessing:PerBatchCount");
+            if (items.Count > maxBatchCount)
             {
-                await AddAsync(transaction).ConfigureAwait(false);
+                var loopCount = (items.Count / maxBatchCount) + 1;
+                for (var start = 0; start < loopCount; start++)
+                {
+                    var itemsToWrite = items.Skip(start * maxBatchCount).Take(maxBatchCount);
+                    transactionBatch.AddPutItems(itemsToWrite);
+                    await transactionBatch.ExecuteAsync().ConfigureAwait(false);
+                }
             }
+            else
+            {
+                transactionBatch.AddPutItems(items);
+                await transactionBatch.ExecuteAsync().ConfigureAwait(false);
+            }
+
+            return true;
         }
 
         public async Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
