@@ -13,15 +13,19 @@ namespace FinancialTransactionsApi.V1.Controllers
     [ApiVersion("1.0")]
     public class StatementController : BaseController
     {
-
+        private readonly IExportPdfStatementUseCase _exportPdfStatementUseCase;
         private readonly IExportSelectedItemUseCase _exportSelectedItemUseCase;
         private readonly IExportStatementUseCase _exportStatementUseCase;
 
-        public StatementController(IExportStatementUseCase exportStatementUseCase,
+        public StatementController(
+                                   IExportPdfStatementUseCase exportPdfStatementUseCase,
+                                   IExportStatementUseCase exportStatementUseCase,
                                    IExportSelectedItemUseCase exportSelectedItemUseCase)
         {
+            _exportPdfStatementUseCase = exportPdfStatementUseCase;
             _exportStatementUseCase = exportStatementUseCase;
             _exportSelectedItemUseCase = exportSelectedItemUseCase;
+
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -32,14 +36,19 @@ namespace FinancialTransactionsApi.V1.Controllers
         [Route("export")]
         public async Task<IActionResult> ExportStatementReportAsync([FromBody] ExportTransactionQuery query)
         {
-            var result = await _exportStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
-            if (result == null)
-                return NotFound($"No records found for the following ID: {query.TargetId}");
+
             if (query?.FileType == "pdf")
             {
-                return File(result, "application/pdf", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
+                var pdfResonse = await _exportPdfStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
+                if (pdfResonse == null)
+                    return NotFound($"No records found for the following ID: {query.TargetId}");
+                return Ok(pdfResonse);
             }
-            return File(result, "text/csv", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
+            return null;
+            //var result = await _exportStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
+            //if (result == null)
+            //    return NotFound($"No records found for the following ID: {query.TargetId}");
+            //return File(result, "text/csv", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]

@@ -65,6 +65,33 @@ namespace FinancialTransactionsApi.V1.Helpers
             var result = converter.Convert(pdf);
             return result;
         }
+
+        public static string WriteHtmlFile(List<Transaction> transactions, string period)
+        {
+
+            var report = new ExportResponse();
+            var data = new List<ExportTransactionResponse>();
+
+            report.FullName = transactions.FirstOrDefault()?.Person?.FullName;
+            report.Balance = Money.PoundSterling(transactions.LastOrDefault().BalanceAmount).ToString();
+            report.BalanceBroughtForward = Money.PoundSterling(transactions.FirstOrDefault().BalanceAmount).ToString();
+            report.StatementPeriod = period;
+            foreach (var item in transactions)
+            {
+
+                data.Add(
+                   new ExportTransactionResponse
+                   {
+                       Date = item.TransactionDate.ToString("dd MMM yyyy"),
+                       TransactionDetail = item.TransactionSource,
+                       Debit = Money.PoundSterling(item.PaidAmount).ToString(),
+                       Credit = Money.PoundSterling(item.HousingBenefitAmount).ToString(),
+                       Balance = Money.PoundSterling(item.BalanceAmount).ToString()
+                   });
+            }
+            report.Data = data;
+            return TemplateGenerator.GetHTMLReportString(report);
+        }
         public static byte[] WriteCSVFile(List<Transaction> transactions, List<string> lines)
         {
             var data = new List<ExportTransactionResponse>();
