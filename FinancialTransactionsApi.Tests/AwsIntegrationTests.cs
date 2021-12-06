@@ -7,6 +7,7 @@ using Nest;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Amazon.Runtime.Internal.Util;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests
@@ -22,7 +23,6 @@ namespace FinancialTransactionsApi.Tests
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-
             new TableDef { Name = "Transactions", KeyName = "target_id", RangeName="id", KeyType = KeyType.HASH,RangeType = KeyType.RANGE,  KeyScalarType= ScalarAttributeType.S}
         };
 
@@ -38,10 +38,10 @@ namespace FinancialTransactionsApi.Tests
         {
             EnsureEnvVarConfigured("DynamoDb_LocalMode", "true");
             EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
-            EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "8kmm3g");
-            EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "fco1i2");
+            EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "o4fejrd");
+            EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "ez1lwb");
             EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
-            EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:4566");
+            EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:9911");
             Factory = new AwsMockWebApplicationFactory<TStartup>(_tables);
 
             Client = Factory.CreateClient();
@@ -100,6 +100,7 @@ namespace FinancialTransactionsApi.Tests
         public KeyType RangeType { get; set; }
         public ScalarAttributeType KeyScalarType { get; set; }
     }
+
     [CollectionDefinition("Aws collection", DisableParallelization = true)]
     public class AwsCollection : ICollectionFixture<AwsIntegrationTests<Startup>>
     {

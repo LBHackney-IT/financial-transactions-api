@@ -102,7 +102,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 ChargedAmount = transaction.ChargedAmount,
                 Fund = transaction.Fund,
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
-                IsSuspense = transaction.IsSuspense,
                 BankAccountNumber = bankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
                 PaymentReference = transaction.PaymentReference,
@@ -126,7 +125,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 ChargedAmount = transaction.ChargedAmount,
                 Fund = transaction.Fund,
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
-                IsSuspense = transaction.IsSuspense,
                 BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
                 PaymentReference = transaction.PaymentReference,
@@ -151,10 +149,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 FinancialMonth = 8,
                 FinancialYear = 2021,
                 BankAccountNumber = "12345678",
-                IsSuspense = true,
                 PaidAmount = 125.62M,
                 PeriodNo = 31,
-                TargetId = new Guid("9e067bac-56ed-4802-a83f-b1e32f09177e"),
                 TransactionAmount = 186.90M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.Rent,
@@ -175,7 +171,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 ResolutionDate = new DateTime(2021, 9, 1),
                 Note = "Note"
             };
-            transaction.IsSuspense = false;
+
             Transaction = new Transaction
             {
                 Id = transaction.Id,
@@ -202,7 +198,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                     ResolutionDate = new DateTime(2021, 9, 1),
                     Note = "Note"
                 },
-                IsSuspense = false,
                 TransactionDate = new DateTime(2021, 8, 1),
             };
 
@@ -224,8 +219,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
 
             entity.TransactionDate = new DateTime(2021, 8, 1);
             entity.PeriodNo = 35;
-            entity.Fund = null;
-            entity.IsSuspense = true;
+            entity.Fund = "HUSFG";
             entity.SuspenseResolutionInfo = null;
             entity.BankAccountNumber = "12345678";
 

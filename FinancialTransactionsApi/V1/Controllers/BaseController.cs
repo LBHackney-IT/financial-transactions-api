@@ -40,10 +40,5 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return settings;
             };
         }
-
-        public static string GetErrorMessage(ModelStateDictionary modelState)
-        {
-            return string.Join(" ", modelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
-        }
     }
 }

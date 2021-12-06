@@ -22,7 +22,6 @@ namespace FinancialTransactionsApi.V1.Gateways.Models
                 FinancialYear = FinancialYear,
                 HousingBenefitAmount = HousingBenefitAmount,
                 Id = Id,
-                IsSuspense = IsSuspense,
                 PaidAmount = PaidAmount,
                 TransactionAmount = TransactionAmount,
                 TransactionType = TransactionType,

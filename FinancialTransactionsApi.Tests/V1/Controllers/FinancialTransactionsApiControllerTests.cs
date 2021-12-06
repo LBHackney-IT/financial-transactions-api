@@ -28,7 +28,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         private readonly Mock<IAddBatchUseCase> _addBatchUseCase;
         private readonly Mock<IGetTransactionListUseCase> _getTransactionListUseCase;
         private readonly Fixture _fixture = new Fixture();
-        private const string _token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
+        private const string Token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
 
         public FinancialTransactionsApiControllerTests()
         {
@@ -64,7 +64,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            var transaction = okResult.Value as TransactionResponse;
+            var transaction = okResult?.Value as TransactionResponse;
 
             transaction.Should().NotBeNull();
 
@@ -84,11 +84,11 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             notFoundResult.Should().NotBeNull();
 
-            var response = notFoundResult.Value as BaseErrorResponse;
+            var response = notFoundResult?.Value as BaseErrorResponse;
 
             response.Should().NotBeNull();
 
-            response.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
+            response?.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
 
             response.Message.Should().BeEquivalentTo("No transaction by provided Id cannot be found!");
 
@@ -192,7 +192,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
-                IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
                 PeriodNo = 2,
@@ -218,7 +217,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 FinancialYear = 2022,
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
-                IsSuspense = true,
                 BankAccountNumber = "12345678",
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
@@ -240,7 +238,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>()))
                 .ReturnsAsync(expectedResponse);
 
-            var result = await _controller.Add("", _token, request).ConfigureAwait(false);
+            var result = await _controller.Add("", Token, request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -248,15 +246,15 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             createResult.Should().NotBeNull();
 
-            createResult.StatusCode.Should().Be((int) HttpStatusCode.Created);
+            createResult?.StatusCode.Should().Be((int) HttpStatusCode.Created);
 
-            createResult.RouteValues.Should().NotBeNull();
+            createResult?.RouteValues.Should().NotBeNull();
 
-            createResult.RouteValues.Should().HaveCount(1);
+            createResult?.RouteValues.Should().HaveCount(1);
 
-            createResult.RouteValues["id"].Should().NotBeNull();
+            createResult?.RouteValues["id"].Should().NotBeNull();
 
-            createResult.RouteValues["id"].Should().Be(guid);
+            createResult?.RouteValues["id"].Should().Be(guid);
 
             var responseObject = createResult.Value as TransactionResponse;
 
@@ -268,7 +266,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Add_WithNullModel_Returns400()
         {
-            var result = await _controller.Add("", _token, null).ConfigureAwait(false);
+            var result = await _controller.Add("", Token, null).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -276,11 +274,11 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             badRequestResult.Should().NotBeNull();
 
-            var response = badRequestResult.Value as BaseErrorResponse;
+            var response = badRequestResult?.Value as BaseErrorResponse;
 
             response.Should().NotBeNull();
 
-            response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+            response?.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
 
             response.Message.Should().BeEquivalentTo("Transaction model cannot be null!");
 
@@ -299,7 +297,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 ChargedAmount = 134.12M,
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
-                IsSuspense = false,
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
@@ -310,7 +307,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                     FullName = "Kain Hyawrd"
                 }
             };
-            var result = await _controller.Add("", _token, request).ConfigureAwait(false);
+            var result = await _controller.Add("", Token, request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -318,11 +315,11 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             badRequestResult.Should().NotBeNull();
 
-            var response = badRequestResult.Value as BaseErrorResponse;
+            var response = badRequestResult?.Value as BaseErrorResponse;
 
             response.Should().NotBeNull();
 
-            response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+            response?.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
 
             response.Message.Should().BeEquivalentTo("Transaction model don't have all information in fields!");
 
@@ -342,7 +339,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
-                IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
                 PeriodNo = 2,
@@ -360,7 +356,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _controller.Add("", _token, request)
+                var result = await _controller.Add("", Token, request)
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }
@@ -384,7 +380,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
-                IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
                 PeriodNo = 2,
@@ -419,7 +414,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             var request = new UpdateTransactionRequest()
             {
-                TargetId = Guid.NewGuid(),
+                TargetId = Guid.Empty,
                 TransactionDate = DateTime.UtcNow,
                 Address = "Address",
                 BalanceAmount = 145.23M,
@@ -427,7 +422,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
-                IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
                 PeriodNo = 2,
@@ -442,12 +436,12 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             };
 
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                .ReturnsAsync(new TransactionResponse() { Id = guid, IsSuspense = true });
+                .ReturnsAsync(new TransactionResponse() { Id = guid, TargetId = Guid.Empty });
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>(), It.IsAny<Guid>()))
                 .ReturnsAsync(request.ToDomain().ToResponse());
 
-            var result = await _controller.Update("", _token, guid, request).ConfigureAwait(false);
+            var result = await _controller.Update("", Token, guid, request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -472,7 +466,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 ChargedAmount = 134.12M,
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
-                IsSuspense = false,
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
@@ -483,7 +476,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                     FullName = "Kain Hyawrd"
                 }
             };
-            var result = await _controller.Update("", _token, Guid.NewGuid(), request).ConfigureAwait(false);
+            var result = await _controller.Update("", Token, Guid.NewGuid(), request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -505,7 +498,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Update_WithNullModel_Returns400()
         {
-            var result = await _controller.Update("", _token, Guid.NewGuid(), null).ConfigureAwait(false);
+            var result = await _controller.Update("", Token, Guid.NewGuid(), null).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -529,7 +522,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var request = new UpdateTransactionRequest()
             {
-                TargetId = Guid.NewGuid(),
+                TargetId = Guid.Empty,
                 TransactionDate = DateTime.UtcNow,
                 Address = "Address",
                 BalanceAmount = 145.23M,
@@ -537,7 +530,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
-                IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
                 PeriodNo = 2,
@@ -553,7 +545,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync((TransactionResponse) null);
 
-            var result = await _controller.Update("", _token, Guid.NewGuid(), request).ConfigureAwait(false);
+            var result = await _controller.Update("", Token, Guid.NewGuid(), request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -561,22 +553,22 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             notFoundResult.Should().NotBeNull();
 
-            var response = notFoundResult.Value as BaseErrorResponse;
+            var response = notFoundResult?.Value as BaseErrorResponse;
 
             response.Should().NotBeNull();
 
-            response.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
+            response?.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
 
-            response.Message.Should().BeEquivalentTo("No transaction by provided Id cannot be found!");
+            response?.Message.Should().BeEquivalentTo("No transaction by provided Id cannot be found!");
 
-            response.Details.Should().BeEquivalentTo(string.Empty);
+            response?.Details.Should().BeEquivalentTo(string.Empty);
         }
 
         [Fact]
         public async Task Update_UseCaseThrownException_ShouldRethrow()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                .ReturnsAsync(new TransactionResponse { IsSuspense = true });
+                .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>(), It.IsAny<Guid>()))
                 .ThrowsAsync(new Exception("Test exception"));
@@ -585,7 +577,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             {
                 var request = new UpdateTransactionRequest()
                 {
-                    TargetId = Guid.NewGuid(),
+                    TargetId = Guid.Empty,
                     TransactionDate = DateTime.UtcNow,
                     Address = "Address",
                     BalanceAmount = 145.23M,
@@ -593,7 +585,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                     Fund = "HSGSUN",
                     HousingBenefitAmount = 123.12M,
                     BankAccountNumber = "12345678",
-                    IsSuspense = true,
                     PaidAmount = 123.22M,
                     PaymentReference = "123451",
                     PeriodNo = 2,
@@ -606,7 +597,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                         FullName = "Kain Hyawrd"
                     }
                 };
-                var result = await _controller.Update("", _token, Guid.NewGuid(), request)
+                var result = await _controller.Update("", Token, Guid.NewGuid(), request)
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }
@@ -622,7 +613,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var request = new UpdateTransactionRequest()
             {
-                TargetId = Guid.NewGuid(),
+                TargetId = Guid.Empty,
                 TransactionDate = DateTime.UtcNow,
                 Address = "Address",
                 BalanceAmount = 145.23M,
@@ -630,7 +621,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
-                IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
                 PeriodNo = 2,
@@ -644,7 +634,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 }
             };
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-               .ReturnsAsync(new TransactionResponse { IsSuspense = true });
+               .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
 
             try
             {
@@ -664,12 +654,12 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         public async Task Update_NonSuspenseTransaction_ThrowBadRequest()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                .ReturnsAsync(new TransactionResponse { IsSuspense = false });
+                .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
 
             var request = _fixture.Build<UpdateTransactionRequest>()
-                .With(s => s.IsSuspense, false).Create();
+                .With(s => s.TargetId, Guid.NewGuid()).Create();
 
-            var result = await _controller.Update("", _token, Guid.NewGuid(), request)
+            var result = await _controller.Update("", Token, Guid.NewGuid(), request)
                 .ConfigureAwait(false);
 
             _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<Transaction>(), It.IsAny<Guid>()), Times.Never);

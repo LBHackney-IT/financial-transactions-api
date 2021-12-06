@@ -50,7 +50,6 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                     FinancialYear = short.Parse(item["financial_year"].N),
                     Fund = item["fund"].S,
                     HousingBenefitAmount = decimal.Parse(item["housing_benefit_amount"].N),
-                    IsSuspense = bool.Parse(item["is_suspense"].S),
                     PaidAmount = decimal.Parse(item["paid_amount"].N),
                     PaymentReference = item["payment_reference"].S,
                     PeriodNo = short.Parse(item["period_no"].N),
