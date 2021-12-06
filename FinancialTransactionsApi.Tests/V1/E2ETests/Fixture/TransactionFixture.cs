@@ -62,7 +62,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 ChargedAmount = transaction.ChargedAmount,
                 Fund = transaction.Fund,
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
-                IsSuspense = transaction.IsSuspense,
                 BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
                 PaymentReference = transaction.PaymentReference,
@@ -115,7 +114,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
             entity.TransactionDate = new DateTime(2021, 8, 1);
             entity.PeriodNo = 35;
             entity.Fund = null;
-            entity.IsSuspense = true;
             entity.SuspenseResolutionInfo = null;
             entity.BankAccountNumber = "12345678";
 

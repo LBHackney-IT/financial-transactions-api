@@ -13,11 +13,6 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 throw new ArgumentNullException("AddTransactionRequest model cannot be null!");
             }
 
-            if (transaction.TargetId == Guid.Empty)
-            {
-                return false;
-            }
-
             if (transaction.TransactionSource == null)
             {
                 return false;

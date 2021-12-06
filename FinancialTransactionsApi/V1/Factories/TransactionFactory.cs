@@ -23,7 +23,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 PaidAmount = transaction.PaidAmount,
                 PaymentReference = transaction.PaymentReference,
                 BankAccountNumber = transaction.BankAccountNumber,
-                IsSuspense = transaction.IsSuspense,
                 SuspenseResolutionInfo = transaction.SuspenseResolutionInfo,
                 PeriodNo = transaction.PeriodNo,
                 TransactionAmount = transaction.TransactionAmount,
@@ -33,6 +32,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 Address = transaction.Address,
                 Person = transaction.Person,
                 Fund = transaction.Fund,
+                SortCode = transaction.SortCode,
                 CreatedAt = transaction.CreatedAt,
                 CreatedBy = transaction.CreatedBy,
                 LastUpdatedBy = transaction.LastUpdatedBy,
@@ -55,7 +55,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 PaidAmount = transactionDbEntity.PaidAmount,
                 PaymentReference = transactionDbEntity.PaymentReference,
                 BankAccountNumber = transactionDbEntity.BankAccountNumber,
-                IsSuspense = transactionDbEntity.IsSuspense,
                 SuspenseResolutionInfo = transactionDbEntity.SuspenseResolutionInfo,
                 PeriodNo = transactionDbEntity.PeriodNo,
                 TransactionAmount = transactionDbEntity.TransactionAmount,
@@ -65,6 +64,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 Address = transactionDbEntity.Address,
                 Person = transactionDbEntity.Person,
                 Fund = transactionDbEntity.Fund,
+                SortCode = transactionDbEntity.SortCode,
                 CreatedAt = transactionDbEntity.CreatedAt,
                 CreatedBy = transactionDbEntity.CreatedBy,
                 LastUpdatedAt = transactionDbEntity.LastUpdatedAt,
@@ -84,7 +84,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
                 BankAccountNumber = transactionRequest.BankAccountNumber,
-                IsSuspense = transactionRequest.IsSuspense,
                 SuspenseResolutionInfo = null,
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
@@ -93,7 +92,8 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
                 Person = transactionRequest.Person,
-                Fund = transactionRequest.Fund
+                Fund = transactionRequest.Fund,
+                SortCode = transactionRequest.SortCode
             };
         }
 
@@ -109,7 +109,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
                 BankAccountNumber = transactionRequest.BankAccountNumber,
-                IsSuspense = transactionRequest.IsSuspense,
                 SuspenseResolutionInfo = transactionRequest.SuspenseResolutionInfo,
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
@@ -118,7 +117,8 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
                 Person = transactionRequest.Person,
-                Fund = transactionRequest.Fund
+                Fund = transactionRequest.Fund,
+                SortCode = transactionRequest.SortCode
             };
         }
 

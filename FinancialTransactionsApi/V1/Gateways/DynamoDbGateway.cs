@@ -15,7 +15,6 @@ namespace FinancialTransactionsApi.V1.Gateways
 {
     public class DynamoDbGateway : ITransactionGateway
     {
-        private const int MAX_RESULTS = 10;
         private const string TARGETID = "target_id";
         private readonly IDynamoDBContext _dynamoDbContext;
 
@@ -40,8 +39,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
         {
-
-            int pageSize = query.PageSize ?? MAX_RESULTS;
+            int pageSize = query.PageSize;
             var dbTransactions = new List<TransactionDbEntity>();
             var table = _dynamoDbContext.GetTargetTable<TransactionDbEntity>();
 

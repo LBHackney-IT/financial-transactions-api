@@ -88,7 +88,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
             var transactions = await _getAllUseCase.ExecuteAsync(query).ConfigureAwait(false);
@@ -141,7 +141,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
             if (!CheckAddTransactionRequest(transaction))
@@ -183,7 +183,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
             if (!CheckAddTransactionRequestCollection(transactions))
@@ -235,7 +235,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
             if (!CheckUpdateTransactionRequest(transaction))

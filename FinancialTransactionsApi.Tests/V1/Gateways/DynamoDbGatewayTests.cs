@@ -54,7 +54,6 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 FinancialYear = 2022,
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
-                IsSuspense = true,
                 PaidAmount = 123.22M,
                 PaymentReference = "123451",
                 PeriodNo = 2,

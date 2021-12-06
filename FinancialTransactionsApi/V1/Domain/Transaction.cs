@@ -11,7 +11,6 @@ namespace FinancialTransactionsApi.V1.Domain
         public Guid Id { get; set; }
         [NotNull]
         public Guid TargetId { get; set; }
-
         public TargetType TargetType { get; set; }
         [Required]
         public short PeriodNo { get; set; }
@@ -25,25 +24,25 @@ namespace FinancialTransactionsApi.V1.Domain
         public TransactionType TransactionType { get; set; }
         [RequiredDateTime]
         public DateTime TransactionDate { get; set; }
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [GreatAndEqualThan("0.0")]
         public decimal TransactionAmount { get; set; }
         [Required]
         public string PaymentReference { get; set; }
         [AllowNull]
         public string BankAccountNumber { get; set; }
-        [Required]
-        public bool IsSuspense { get; set; }
+        [AllowNull]
+        public string SortCode { get; set; }
+        public bool IsSuspense => TargetId == Guid.Empty;
         [AllowNull]
         public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [GreatAndEqualThan("0.0")]
         public decimal PaidAmount { get; set; }
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [GreatAndEqualThan("0.0")]
         public decimal ChargedAmount { get; set; }
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [GreatAndEqualThan("0.0")]
         public decimal BalanceAmount { get; set; }
-        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        [GreatAndEqualThan("0.0")]
         public decimal HousingBenefitAmount { get; set; }
-
         public string Address { get; set; }
         [Required]
         public Person Person { get; set; }

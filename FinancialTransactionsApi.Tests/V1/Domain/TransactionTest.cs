@@ -25,7 +25,6 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
                 Fund = "fund",
                 HousingBenefitAmount = 214.11M,
                 BankAccountNumber = "12345678",
-                IsSuspense = false,
                 PaidAmount = 12356.17M,
                 PaymentReference = "213456",
                 PeriodNo = 35,

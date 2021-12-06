@@ -22,7 +22,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
     public class CreateTransactionSteps : BaseSteps
     {
-        private const string _token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
+        private const string Token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
 
         public CreateTransactionSteps(HttpClient httpClient) : base(httpClient)
         { }
@@ -37,7 +37,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
                 ChargedAmount = response.ChargedAmount,
                 Fund = response.Fund,
                 HousingBenefitAmount = response.HousingBenefitAmount,
-                IsSuspense = response.IsSuspense,
                 BankAccountNumber = response.BankAccountNumber,
                 PaidAmount = response.PaidAmount,
                 PaymentReference = response.PaymentReference,
@@ -61,7 +60,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             Action<TransactionSns> verifyFunc = (actual) =>
             {
                 actual.CorrelationId.Should().NotBeEmpty();
-                //actual.DateTime.Should().BeCloseTo(DateTime.UtcNow.AddHours(1), 7000);
                 actual.EntityId.Should().Be(apiResult.Id);
                 actual.EventType.Should().Be(EventConstants.EVENTTYPE);
                 actual.Id.Should().NotBeEmpty();
@@ -80,7 +78,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             var body = JsonSerializer.Serialize(requestObject);
 
             using var stringContent = new StringContent(body);
-            _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+            _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             _lastResponse = await _httpClient.PostAsync(route, stringContent).ConfigureAwait(false);
@@ -95,7 +93,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
             using var stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+            _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
             _lastResponse = await _httpClient.PutAsync(route, stringContent).ConfigureAwait(false);
         }
 
@@ -105,7 +103,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             var jo = JObject.Parse(responseContent);
 
             // throws error if there are no errors
-            var errorProperties = jo["errors"].Children().Select(x => x.Path.Split('.').Last().Trim('\'', ']')).ToList();
+            var errorProperties = jo["errors"]?.Children().Select(x => x.Path.Split('.').Last().Trim('\'', ']')).ToList();
 
             return errorProperties ?? new List<string>();
 
@@ -165,9 +163,9 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
                 .Excluding(t => t.LastUpdatedBy)
                 .Excluding(t => t.LastUpdatedAt));
 
-            updateApiEntity.FinancialMonth.Should().Be(expected.FinancialMonth);
-            updateApiEntity.FinancialYear.Should().Be(expected.FinancialYear);
-            updateApiEntity.LastUpdatedBy.Should().Be("testing");
+            updateApiEntity?.FinancialMonth.Should().Be(expected.FinancialMonth);
+            updateApiEntity?.FinancialYear.Should().Be(expected.FinancialYear);
+            updateApiEntity?.LastUpdatedBy.Should().Be("testing");
         }
 
         public async Task ThenTheResponseIncludesValidationErrors()
@@ -193,16 +191,15 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             var apiEntity = JsonSerializer.Deserialize<BaseErrorResponse>(responseContent, _jsonOptions);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
-            apiEntity.Details.Should().Be(string.Empty);
+            apiEntity?.StatusCode.Should().Be(400);
+            apiEntity?.Details.Should().Be(string.Empty);
 
-            apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
-            apiEntity.Message.Should().Contain("The field TargetId cannot be empty or default.");
-            apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
-            apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TransactionAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity?.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
+            apiEntity?.Message.Should().Contain("The field TransactionDate cannot be default value.");
+            apiEntity?.Message.Should().Contain($"The field PaidAmount is invalid.");
+            apiEntity?.Message.Should().Contain($"The field ChargedAmount is invalid.");
+            apiEntity?.Message.Should().Contain($"The field TransactionAmount is invalid.");
+            apiEntity?.Message.Should().Contain($"The field HousingBenefitAmount is invalid.");
         }
 
         public async Task ThenBadRequestIsReturned(string message)
@@ -211,10 +208,10 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             var apiEntity = JsonSerializer.Deserialize<BaseErrorResponse>(responseContent, _jsonOptions);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
-            apiEntity.Details.Should().Be(string.Empty);
+            apiEntity?.StatusCode.Should().Be(400);
+            apiEntity?.Details.Should().Be(string.Empty);
 
-            apiEntity.Message.Should().Contain(message);
+            apiEntity?.Message.Should().Contain(message);
             _lastResponse.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
         }
 
@@ -247,13 +244,5 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
             return apiResult;
         }
-
-        //private static Token GetToken(string jwt)
-        //{
-        //    var handler = new JwtSecurityTokenHandler();
-        //    var jwtToken = handler.ReadJwtToken(jwt);
-        //    var decodedPayload = Base64UrlEncoder.Decode(jwtToken.EncodedPayload);
-        //    return JsonConvert.DeserializeObject<Token>(decodedPayload);
-        //}
     }
 }
