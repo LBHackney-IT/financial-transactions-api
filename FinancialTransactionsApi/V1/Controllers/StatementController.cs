@@ -15,11 +15,11 @@ namespace FinancialTransactionsApi.V1.Controllers
     {
         private readonly IExportPdfStatementUseCase _exportPdfStatementUseCase;
         private readonly IExportSelectedItemUseCase _exportSelectedItemUseCase;
-        private readonly IExportStatementUseCase _exportStatementUseCase;
+        private readonly IExportCsvStatementUseCase _exportStatementUseCase;
 
         public StatementController(
                                    IExportPdfStatementUseCase exportPdfStatementUseCase,
-                                   IExportStatementUseCase exportStatementUseCase,
+                                   IExportCsvStatementUseCase exportStatementUseCase,
                                    IExportSelectedItemUseCase exportSelectedItemUseCase)
         {
             _exportPdfStatementUseCase = exportPdfStatementUseCase;
@@ -37,18 +37,29 @@ namespace FinancialTransactionsApi.V1.Controllers
         public async Task<IActionResult> ExportStatementReportAsync([FromBody] ExportTransactionQuery query)
         {
 
-            if (query?.FileType == "pdf")
+            switch (query?.FileType)
             {
-                var pdfResonse = await _exportPdfStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
-                if (pdfResonse == null)
-                    return NotFound($"No records found for the following ID: {query.TargetId}");
-                return Ok(pdfResonse);
+                case "pdf":
+                    {
+                        var pdfResult = await _exportPdfStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
+                        if (pdfResult == null)
+                            return NotFound($"No records found for the following ID: {query.TargetId}");
+                        return Ok(pdfResult);
+                    }
+
+                case "csv":
+                    {
+
+                        var csvResult = await _exportStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
+                        if (csvResult == null)
+                            return NotFound($"No records found for the following ID: {query.TargetId}");
+
+                        return File(csvResult, "text/csv", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
+                    }
+
+                default:
+                    return BadRequest("Format not supported");
             }
-            return NotFound($"No records found for the following ID: {query.TargetId}");
-            //var result = await _exportStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
-            //if (result == null)
-            //    return NotFound($"No records found for the following ID: {query.TargetId}");
-            //return File(result, "text/csv", $"{query.StatementType}_{DateTime.UtcNow.Ticks}.{query.FileType}");
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]

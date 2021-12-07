@@ -26,15 +26,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using RazorLight;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using WkHtmlToPdfDotNet;
-using WkHtmlToPdfDotNet.Contracts;
 
 namespace FinancialTransactionsApi
 {
@@ -136,11 +133,6 @@ namespace FinancialTransactionsApi
             RegisterUseCases(services);
             RegisterFactories(services);
             ConfigureHackneyCoreDi(services);
-            // Add converter to DI
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-#pragma warning restore CA2000 // Dispose objects before losing scope
-
             services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
                 builder
                     .AllowAnyOrigin()
@@ -191,7 +183,7 @@ namespace FinancialTransactionsApi
             services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
             services.AddScoped<IPagingHelper, PagingHelper>();
             services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
-            services.AddScoped<IExportStatementUseCase, ExportStatementUseCase>();
+            services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
             services.AddScoped<IFileGeneratorService, FileGeneratorService>();
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
 
