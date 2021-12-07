@@ -134,5 +134,11 @@ namespace FinancialTransactionsApi.V1.Factories
             return transactionRequests == null ?
                 new List<Transaction>() : transactionRequests.Select(t => t.ToDomain());
         }
+
+        public static List<TransactionDbEntity> ToDatabaseList(this List<Transaction> transactions)
+        {
+            return transactions.Select(item => item.ToDatabase()).ToList();
+        }
+
     }
 }

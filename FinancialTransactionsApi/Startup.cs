@@ -131,6 +131,7 @@ namespace FinancialTransactionsApi
             services.ConfigureSns();
             services.ConfigureElasticSearch(Configuration, "ELASTICSEARCH_DOMAIN_URL");
             services.AddLocalStack(Configuration);
+            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             RegisterGateways(services);
             RegisterUseCases(services);
             RegisterFactories(services);
