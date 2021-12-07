@@ -44,7 +44,7 @@ namespace FinancialTransactionsApi.V1.Controllers
                     return NotFound($"No records found for the following ID: {query.TargetId}");
                 return Ok(pdfResonse);
             }
-            return null;
+            return NotFound($"No records found for the following ID: {query.TargetId}");
             //var result = await _exportStatementUseCase.ExecuteAsync(query).ConfigureAwait(false);
             //if (result == null)
             //    return NotFound($"No records found for the following ID: {query.TargetId}");

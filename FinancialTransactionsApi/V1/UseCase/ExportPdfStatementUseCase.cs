@@ -3,9 +3,11 @@ using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.UseCase
@@ -13,40 +15,42 @@ namespace FinancialTransactionsApi.V1.UseCase
     public class ExportPdfStatementUseCase : IExportPdfStatementUseCase
     {
         private readonly ITransactionGateway _gateway;
+        private readonly IFileGeneratorService _fileGenerator;
 
-        //private readonly string _header;
-        //private readonly string _subHeader;
-        //private readonly string _footer;
-        //private readonly string _subFooter;
+        private readonly string _header;
+        private readonly string _subHeader;
+        private readonly string _footer;
+        private readonly string _subFooter;
 
-        //private const string Header = "Header";
-        //private const string SubHeader = "SubHeader";
-        //private const string Footer = "Footer";
-        //private const string SubFooter = "SubFooter";
+        private const string Header = "Header";
+        private const string SubHeader = "SubHeader";
+        private const string Footer = "Footer";
+        private const string SubFooter = "SubFooter";
 
-        public ExportPdfStatementUseCase(ITransactionGateway gateway)
+        public ExportPdfStatementUseCase(ITransactionGateway gateway, IFileGeneratorService fileGenerator, IConfiguration configuration)
         {
             _gateway = gateway;
-            //_header = configuration.GetValue<string>(Header);
-            //if (string.IsNullOrEmpty(_header))
-            //{
-            //    throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {Header}.");
-            //}
-            //_subHeader = configuration.GetValue<string>(Header);
-            //if (string.IsNullOrEmpty(_subHeader))
-            //{
-            //    throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {SubHeader}.");
-            //}
-            //_footer = configuration.GetValue<string>(Footer);
-            //if (string.IsNullOrEmpty(_footer))
-            //{
-            //    throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {Footer}.");
-            //}
-            //_subFooter = configuration.GetValue<string>(SubFooter);
-            //if (string.IsNullOrEmpty(_subFooter))
-            //{
-            //    throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {SubFooter}.");
-            //}
+            _fileGenerator = fileGenerator;
+            _header = configuration.GetValue<string>(Header);
+            if (string.IsNullOrEmpty(_header))
+            {
+                throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {Header}.");
+            }
+            _subHeader = configuration.GetValue<string>(Header);
+            if (string.IsNullOrEmpty(_subHeader))
+            {
+                throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {SubHeader}.");
+            }
+            _footer = configuration.GetValue<string>(Footer);
+            if (string.IsNullOrEmpty(_footer))
+            {
+                throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {Footer}.");
+            }
+            _subFooter = configuration.GetValue<string>(SubFooter);
+            if (string.IsNullOrEmpty(_subFooter))
+            {
+                throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {SubFooter}.");
+            }
         }
 
         public async Task<string> ExecuteAsync(ExportTransactionQuery query)
@@ -83,8 +87,7 @@ namespace FinancialTransactionsApi.V1.UseCase
                 var date = $"{DateTime.Today:D}";
                 //lines.Add(_subFooter.Replace("{itemId}", date).Replace("{itemId_1}", accountBalance));
                 //lines.Add(_footer);
-                var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(FileGenerator.WriteHtmlFile(response, period));
-                var result = Convert.ToBase64String(plainTextBytes);
+                var result = await _fileGenerator.CreatePdfTemplate(response, period).ConfigureAwait(false);
                 return result;
             }
 

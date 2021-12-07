@@ -26,6 +26,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using RazorLight;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -63,7 +64,7 @@ namespace FinancialTransactionsApi
                 o.AssumeDefaultVersionWhenUnspecified = true; // assume that the caller wants the default version if they don't specify
                 o.ApiVersionReader = new UrlSegmentApiVersionReader(); // read the version number from the url segment header)
             });
-
+            services.AddRazorTemplating();
             services.AddSingleton<IApiVersionDescriptionProvider, DefaultApiVersionDescriptionProvider>();
 
             services.AddSwaggerGen(c =>
@@ -190,8 +191,8 @@ namespace FinancialTransactionsApi
             services.AddScoped<IPagingHelper, PagingHelper>();
             services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
             services.AddScoped<IExportStatementUseCase, ExportStatementUseCase>();
+            services.AddScoped<IFileGeneratorService, FileGeneratorService>();
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
-
 
         }
         private static void RegisterFactories(IServiceCollection services)
