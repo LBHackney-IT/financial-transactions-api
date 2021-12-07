@@ -4,6 +4,7 @@ using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.UseCase
@@ -35,9 +36,12 @@ namespace FinancialTransactionsApi.V1.UseCase
                 response = await _gateway.GetTransactionsAsync(request.TargetId, request.TransactionType.ToString(), request.StartDate, request.StartDate).ConfigureAwait(false);
             }
 
-
-            var result = FileGenerator.WriteManualCSVFile(response);
-            return result;
+            if (response.Any())
+            {
+                var result = FileGenerator.WriteManualCSVFile(response);
+                return result;
+            };
+            return null;
         }
     }
 }

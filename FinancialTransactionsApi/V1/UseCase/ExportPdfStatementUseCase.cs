@@ -87,7 +87,7 @@ namespace FinancialTransactionsApi.V1.UseCase
                 var date = $"{DateTime.Today:D}";
                 lines.Add(_subFooter.Replace("{itemId}", date).Replace("{itemId_1}", accountBalance));
                 lines.Add(_footer);
-                var result = await _fileGenerator.CreatePdfTemplate(response, period).ConfigureAwait(false);
+                var result = await FileGenerator.CreatePdfTemplate(response, period, lines).ConfigureAwait(false);
                 return result;
             }
 
