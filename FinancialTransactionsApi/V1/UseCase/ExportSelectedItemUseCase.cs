@@ -27,13 +27,14 @@ namespace FinancialTransactionsApi.V1.UseCase
                 foreach (var item in request.SelectedItems)
                 {
                     var rId = await _gateway.GetTransactionByIdAsync(request.TargetId, item).ConfigureAwait(false);
-                    response.Add(rId);
+                    if (rId != null)
+                        response.Add(rId);
                 };
             }
             else
             {
 
-                response = await _gateway.GetTransactionsAsync(request.TargetId, request.TransactionType.ToString(), request.StartDate, request.StartDate).ConfigureAwait(false);
+                response = await _gateway.GetTransactionsAsync(request.TargetId, request.TransactionType.ToString(), request.StartDate, request.EndDate).ConfigureAwait(false);
             }
 
             if (response.Any())
