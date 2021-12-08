@@ -141,7 +141,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             if (startDate.HasValue)
             {
                 endDate ??= startDate;
-                queryConfig.Filter.AddCondition("transaction_date", QueryOperator.Between, endDate, startDate);
+                queryConfig.Filter.AddCondition("transaction_date", QueryOperator.Between, startDate, endDate);
             }
 
 

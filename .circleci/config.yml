@@ -86,7 +86,10 @@ commands:
           name: Deploy lambda
           command: |
             cd ./FinancialTransactionsApi/
+            apt-get update && apt-get install -y libjpeg62-turbo
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
+     
+            
 jobs:
   check-code-formatting:
     executor: docker-dotnet

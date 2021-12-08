@@ -19,6 +19,8 @@ services:
       - AWS_SECRET_ACCESS_KEY=local
     links:
       - dynamodb-database
+    depends_on:
+     - pdf-generator
 
   financial-transactions-api-test:
     image: financial-transactions-api-test
@@ -63,7 +65,12 @@ services:
     volumes:
       - "./.localstack:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-
+  pdf-generator:
+    image: pdf-api-generator
+    container_name: pdf-api-generator
+    build:
+      context: .
+      dockerfile: data/pdf/Dockerfile
 
   financial-transactions-api-elasticsearch:
     image: financial-transactions-api-elasticsearch

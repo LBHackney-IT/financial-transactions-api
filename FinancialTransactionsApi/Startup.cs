@@ -32,8 +32,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using WkHtmlToPdfDotNet;
-using WkHtmlToPdfDotNet.Contracts;
 
 namespace FinancialTransactionsApi
 {
@@ -63,7 +61,7 @@ namespace FinancialTransactionsApi
                 o.AssumeDefaultVersionWhenUnspecified = true; // assume that the caller wants the default version if they don't specify
                 o.ApiVersionReader = new UrlSegmentApiVersionReader(); // read the version number from the url segment header)
             });
-
+            services.AddRazorTemplating();
             services.AddSingleton<IApiVersionDescriptionProvider, DefaultApiVersionDescriptionProvider>();
 
             services.AddSwaggerGen(c =>
@@ -135,11 +133,6 @@ namespace FinancialTransactionsApi
             RegisterUseCases(services);
             RegisterFactories(services);
             ConfigureHackneyCoreDi(services);
-            // Add converter to DI
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-#pragma warning restore CA2000 // Dispose objects before losing scope
-
             services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
                 builder
                     .AllowAnyOrigin()
@@ -190,7 +183,9 @@ namespace FinancialTransactionsApi
             services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
             services.AddScoped<IPagingHelper, PagingHelper>();
             services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
-            services.AddScoped<IExportStatementUseCase, ExportStatementUseCase>();
+            services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
+            services.AddScoped<IFileGeneratorService, FileGeneratorService>();
+            services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
 
         }
         private static void RegisterFactories(IServiceCollection services)

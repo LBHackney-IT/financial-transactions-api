@@ -42,6 +42,11 @@ namespace FinancialTransactionsApi.Tests
             EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "ez1lwb");
             EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
             EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:9911");
+
+            EnsureEnvVarConfigured("Header", "Header");
+            EnsureEnvVarConfigured("SubHeader", "SubHeader");
+            EnsureEnvVarConfigured("Footer", "Footer");
+            EnsureEnvVarConfigured("SubFooter", "SubFooter");
             Factory = new AwsMockWebApplicationFactory<TStartup>(_tables);
 
             Client = Factory.CreateClient();
