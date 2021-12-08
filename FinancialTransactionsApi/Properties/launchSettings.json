@@ -24,11 +24,7 @@
         "Localstack_SnsServiceUrl": "http://localhost:9911",
         "DynamoDb_LocalSecretKey": "o4fejrd",
         "DynamoDb_LocalMode": "true",
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "Header": "Header",
-        "SubHeader": "SubHeader",
-        "Footer": "Footer",
-        "SubFooter": "SubFooter"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sqlDebugging": true
     }
