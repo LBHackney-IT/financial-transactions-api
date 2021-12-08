@@ -19,15 +19,11 @@
       "environmentVariables": {
         "Sns_LocalMode": "true",
         "DynamoDb_LocalServiceUrl": "http://localhost:8000",
-        "SubFooter": "SubFooter",
-        "Header": "Header",
         "DynamoDb_LocalAccessKey": "ez1lwb",
         "TRANSACTION_SNS_ARN": "arn:aws:sns:eu-west-2:123450000001:test-topic",
         "Localstack_SnsServiceUrl": "http://localhost:9911",
         "DynamoDb_LocalSecretKey": "o4fejrd",
-        "SubHeader": "SubHeader",
         "DynamoDb_LocalMode": "true",
-        "Footer": "Footer",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sqlDebugging": true
