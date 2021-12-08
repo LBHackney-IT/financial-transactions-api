@@ -64,27 +64,26 @@ namespace FinancialTransactionsApi.V1.UseCase
             {
 
                 name = StatementType.Quaterly.ToString();
-                startDate = DateTime.UtcNow;
-                endDate = startDate.AddMonths(-3);
-                period = $"{endDate:D} to {startDate:D}";
-                lines.Add(_header.Replace("{itemId}", name));
-                lines.Add(_subHeader.Replace("{itemId}", period));
+                endDate = DateTime.UtcNow;
+                startDate = endDate.AddMonths(-3);
             }
             else
             {
-                startDate = DateTime.UtcNow;
-                endDate = startDate.AddMonths(-12);
+                endDate = DateTime.UtcNow;
+                startDate = endDate.AddMonths(-12);
                 name = StatementType.Yearly.ToString();
-                period = $"{endDate:D} to {startDate:D}";
-                lines.Add(_header.Replace("{itemId}", name));
-                lines.Add(_subHeader.Replace("{itemId}", period));
+
             }
 
             var response = await _gateway.GetTransactionsAsync(query.TargetId, query.TransactionType.ToString(), startDate, endDate).ConfigureAwait(false);
             if (response.Any())
             {
+
                 var accountBalance = $"{ response.LastOrDefault().BalanceAmount}";
                 var date = $"{DateTime.Today:D}";
+                period = $"{startDate:D} to {endDate:D}";
+                lines.Add(_header.Replace("{itemId}", name));
+                lines.Add(_subHeader.Replace("{itemId}", period));
                 lines.Add(_subFooter.Replace("{itemId}", date).Replace("{itemId_1}", accountBalance));
                 lines.Add(_footer);
                 var result = await FileGenerator.CreatePdfTemplate(response, period, lines).ConfigureAwait(false);
