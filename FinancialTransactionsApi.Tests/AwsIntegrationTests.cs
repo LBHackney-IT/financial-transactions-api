@@ -42,7 +42,6 @@ namespace FinancialTransactionsApi.Tests
             EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "ez1lwb");
             EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
             EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:9911");
-            EnsureEnvVarConfigured("TRANSACTION_SNS_ARN", "arn:aws:sns:eu-west-2:123450000001:test-topic");
 
             EnsureEnvVarConfigured("Header", "Header");
             EnsureEnvVarConfigured("SubHeader", "SubHeader");

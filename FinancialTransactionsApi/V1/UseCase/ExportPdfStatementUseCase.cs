@@ -36,7 +36,7 @@ namespace FinancialTransactionsApi.V1.UseCase
             {
                 throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {Header}.");
             }
-            _subHeader = configuration.GetValue<string>(Header);
+            _subHeader = configuration.GetValue<string>(SubHeader);
             if (string.IsNullOrEmpty(_subHeader))
             {
                 throw new ArgumentException($"Configuration does not contain a report setting value for the parameter {SubHeader}.");

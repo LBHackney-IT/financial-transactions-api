@@ -22,7 +22,7 @@ namespace FinancialTransactionsApi.V1.UseCase
         {
 
             List<Transaction> response = new List<Transaction>();
-            if (request.SelectedItems.Count > 0)
+            if (request.SelectedItems?.Count > 0)
             {
                 foreach (var item in request.SelectedItems)
                 {

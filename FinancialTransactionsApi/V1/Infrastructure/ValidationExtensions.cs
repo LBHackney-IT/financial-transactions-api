@@ -128,5 +128,24 @@ namespace FinancialTransactionsApi.V1.Infrastructure
 
             return true;
         }
+        public static bool HaveDateRangeOrSelectedItemsModel(this TransactionExportRequest request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentException("TransactionExportRequest model cannot be null!");
+            }
+
+
+            if (request.TargetId == null || request.TargetId == Guid.Empty)
+            {
+                return false;
+            }
+            if (request.StartDate.HasValue && request.EndDate.HasValue && request.SelectedItems?.Count > 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

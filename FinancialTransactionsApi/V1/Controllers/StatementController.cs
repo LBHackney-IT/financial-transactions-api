@@ -1,4 +1,5 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -70,6 +71,10 @@ namespace FinancialTransactionsApi.V1.Controllers
         [Route("selection/export")]
         public async Task<IActionResult> ExportSelectedItemAsync([FromBody] TransactionExportRequest request)
         {
+            if (!request.HaveDateRangeOrSelectedItemsModel())
+            {
+                return BadRequest(nameof(TransactionExportRequest));
+            }
             var result = await _exportSelectedItemUseCase.ExecuteAsync(request).ConfigureAwait(false);
             if (result == null)
                 return NotFound($"No records found for the following ID: {request.TargetId}");
