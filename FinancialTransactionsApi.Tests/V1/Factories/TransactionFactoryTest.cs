@@ -32,7 +32,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person
                 {
                     Id = Guid.NewGuid(),
@@ -76,7 +76,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -118,7 +118,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -149,7 +149,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -189,7 +189,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                     PeriodNo = 2,
                     TransactionAmount = 126.83M,
                     TransactionSource = "DD",
-                    TransactionType = TransactionType.Charge,
+                    TransactionType = TransactionType.ArrangementInterest,
                     Person = new Person()
                     {
                         Id = Guid.NewGuid(),
@@ -211,7 +211,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                     PeriodNo = 2,
                     TransactionAmount = 126.83M,
                     TransactionSource = "DD",
-                    TransactionType = TransactionType.Charge,
+                    TransactionType = TransactionType.ArrangementInterest,
                     Person = new Person()
                     {
                         Id = Guid.NewGuid(),

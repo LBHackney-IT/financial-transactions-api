@@ -1,5 +1,6 @@
 using System;
 using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Infrastructure;
 
 namespace FinancialTransactionsApi.V1.Boundary.Request
 {
@@ -12,6 +13,15 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         ///     2dcb38af-6558-4df4-9d90-334d0e9bf827
         /// </example>
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Type of transaction [Charge, Rent]
+        /// </summary>
+        /// <example>
+        /// Rent
+        /// </example>
+        [AllowedValues(typeof(TransactionType))]
+        public TransactionType TransactionType { get; set; }
 
         /// <summary>
         /// Information after this recond ceases to be suspense

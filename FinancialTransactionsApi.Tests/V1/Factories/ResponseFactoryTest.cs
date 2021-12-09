@@ -25,7 +25,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
         {
             var domain = _fixture.Create<Transaction>();
             var response = domain.ToResponse();
-            domain.Should().BeEquivalentTo(response);
+            domain.Should().BeEquivalentTo(response, opt => opt.Excluding(x => x.TransactionType));
 
         }
 
@@ -35,7 +35,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
             var list = _fixture.CreateMany<Transaction>(10);
             var responseNotes = list.ToResponse();
 
-            responseNotes.Should().BeEquivalentTo(list);
+            responseNotes.Should().BeEquivalentTo(list, opt => opt.Excluding(x => x.TransactionType));
         }
 
         [Fact]

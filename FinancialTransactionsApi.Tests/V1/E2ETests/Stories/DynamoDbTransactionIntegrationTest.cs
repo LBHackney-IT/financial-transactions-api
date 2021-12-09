@@ -242,7 +242,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         {
             var transactionsObj = _fixture.Build<Transaction>()
                              .With(x => x.TargetId, Guid.NewGuid())
-                             .With(x => x.TransactionType, TransactionType.Charge)
+                             .With(x => x.TransactionType, TransactionType.ArrangementInterest)
                              .CreateMany(5);
 
             var targetId = transactionsObj.FirstOrDefault().TargetId;
@@ -292,7 +292,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 PeriodNo = 31,
                 TransactionAmount = 186.90M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Rent,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),

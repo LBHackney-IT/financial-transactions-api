@@ -2,6 +2,7 @@ using FinancialTransactionsApi.V1.Domain;
 using Nest;
 using System;
 using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Helpers;
 
 namespace FinancialTransactionsApi.V1.Gateways.Models
 {
@@ -24,7 +25,7 @@ namespace FinancialTransactionsApi.V1.Gateways.Models
                 Id = Id,
                 PaidAmount = PaidAmount,
                 TransactionAmount = TransactionAmount,
-                TransactionType = TransactionType,
+                TransactionType = TransactionType.GetDescription(),
                 TransactionDate = TransactionDate,
                 SuspenseResolutionInfo = SuspenseResolutionInfo,
                 PeriodNo = PeriodNo,

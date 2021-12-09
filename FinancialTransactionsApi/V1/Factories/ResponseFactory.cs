@@ -2,6 +2,7 @@ using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using System.Collections.Generic;
 using System.Linq;
+using FinancialTransactionsApi.V1.Helpers;
 
 namespace FinancialTransactionsApi.V1.Factories
 {
@@ -27,7 +28,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 PeriodNo = domain.PeriodNo,
                 TransactionAmount = domain.TransactionAmount,
                 TransactionDate = domain.TransactionDate,
-                TransactionType = domain.TransactionType,
+                TransactionType = domain.TransactionType.GetDescription(),
                 TransactionSource = domain.TransactionSource,
                 Address = domain.Address,
                 Person = domain.Person,

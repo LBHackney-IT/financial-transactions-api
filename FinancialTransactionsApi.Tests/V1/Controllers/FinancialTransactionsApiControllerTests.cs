@@ -15,6 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using FinancialTransactionsApi.V1.Helpers;
 using Xunit;
 using Xunit.Sdk;
 
@@ -223,7 +224,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -249,7 +250,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest.GetDescription(),
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -326,7 +327,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -370,7 +371,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -411,7 +412,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -453,7 +454,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -477,7 +478,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult?.Value.Should().BeOfType(typeof(TransactionResponse));
 
-            okResult?.Value.Should().BeEquivalentTo(request);
+            okResult?.Value.Should().BeEquivalentTo(request, opt => opt.Excluding(x => x.TransactionType));
         }
 
         [Fact]
@@ -495,7 +496,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -561,7 +562,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -616,7 +617,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                     PeriodNo = 2,
                     TransactionAmount = 126.83M,
                     TransactionSource = "DD",
-                    TransactionType = TransactionType.Charge,
+                    TransactionType = TransactionType.ArrangementInterest,
                     Person = new Person()
                     {
                         Id = Guid.NewGuid(),
@@ -652,7 +653,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),

@@ -34,7 +34,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var transactionQuery = new TransactionQuery()
             {
                 TargetId = Guid.NewGuid(),
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 EndDate = DateTime.Now,
                 StartDate = DateTime.UtcNow,
                 PaginationToken = null
