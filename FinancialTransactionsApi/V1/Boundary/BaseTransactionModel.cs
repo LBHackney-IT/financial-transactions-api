@@ -40,7 +40,7 @@ namespace FinancialTransactionsApi.V1.Boundary
         /// </example>
         public string TransactionSource { get; set; }
 
-       
+
 
         /// <summary>
         /// Date of transaction
