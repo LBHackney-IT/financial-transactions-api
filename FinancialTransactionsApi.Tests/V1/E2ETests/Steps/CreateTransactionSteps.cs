@@ -45,7 +45,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
                 TargetId = response.TargetId,
                 TransactionAmount = response.TransactionAmount,
                 TransactionSource = response.TransactionSource,
-                TransactionType = (TransactionType) Enum.Parse(typeof(TransactionType), response.TransactionType),
+                TransactionType = (TransactionType) Enum.Parse(typeof(TransactionType), response.TransactionType.Replace(" ", "")),
                 CreatedAt = response.CreatedAt,
                 CreatedBy = response.CreatedBy,
                 LastUpdatedBy = response.LastUpdatedBy,
