@@ -140,7 +140,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
                 .Excluding(a => a.CreatedAt)
                 .Excluding(a => a.CreatedBy)
                 .Excluding(a => a.LastUpdatedAt)
-                .Excluding(a => a.LastUpdatedBy));
+                .Excluding(a => a.LastUpdatedBy)
+                .Excluding(x => x.TransactionType));
 
             apiEntity.SuspenseResolutionInfo.Should().BeNull();
             apiEntity.FinancialMonth.Should().Be(8);
@@ -161,7 +162,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
                 .Excluding(t => t.CreatedAt)
                 .Excluding(t => t.CreatedBy)
                 .Excluding(t => t.LastUpdatedBy)
-                .Excluding(t => t.LastUpdatedAt));
+                .Excluding(t => t.LastUpdatedAt)
+                .Excluding(x => x.TransactionType));
 
             updateApiEntity?.FinancialMonth.Should().Be(expected.FinancialMonth);
             updateApiEntity?.FinancialYear.Should().Be(expected.FinancialYear);
