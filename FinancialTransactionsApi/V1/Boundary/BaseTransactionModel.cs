@@ -40,14 +40,7 @@ namespace FinancialTransactionsApi.V1.Boundary
         /// </example>
         public string TransactionSource { get; set; }
 
-        /// <summary>
-        /// Type of transaction [Charge, Rent]
-        /// </summary>
-        /// <example>
-        /// Rent
-        /// </example>
-        [AllowedValues(typeof(TransactionType))]
-        public TransactionType TransactionType { get; set; }
+
 
         /// <summary>
         /// Date of transaction

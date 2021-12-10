@@ -46,7 +46,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 PaidAmount = 123.22M,
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -100,7 +100,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Charge,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = Guid.NewGuid(),
@@ -153,7 +153,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 TargetId = new Guid("9e067bac-56ed-4802-a83f-b1e32f09177e"),
                 TransactionAmount = 186.90M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Rent,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),

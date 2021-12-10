@@ -228,7 +228,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                     .Excluding(a => a.CreatedAt)
                     .Excluding(a => a.CreatedBy)
                     .Excluding(a => a.LastUpdatedAt)
-                    .Excluding(a => a.LastUpdatedBy));
+                    .Excluding(a => a.LastUpdatedBy)
+                    .Excluding(x => x.TransactionType));
 
             firstTransaction?.FinancialMonth.Should().Be(8);
             firstTransaction?.FinancialYear.Should().Be(2021);
@@ -242,7 +243,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         {
             var transactionsObj = _fixture.Build<Transaction>()
                              .With(x => x.TargetId, Guid.NewGuid())
-                             .With(x => x.TransactionType, TransactionType.Charge)
+                             .With(x => x.TransactionType, TransactionType.ArrangementInterest)
                              .CreateMany(5);
 
             var targetId = transactionsObj.FirstOrDefault().TargetId;
@@ -292,7 +293,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 PeriodNo = 31,
                 TransactionAmount = 186.90M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Rent,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
@@ -337,7 +338,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 .Excluding(a => a.CreatedAt)
                 .Excluding(a => a.CreatedBy)
                 .Excluding(a => a.LastUpdatedAt)
-                .Excluding(a => a.LastUpdatedBy));
+                .Excluding(a => a.LastUpdatedBy)
+                .Excluding(x => x.TransactionType));
 
             updateApiEntity.FinancialMonth.Should().Be(8);
             updateApiEntity.FinancialYear.Should().Be(2021);
@@ -451,7 +453,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 .Excluding(a => a.CreatedAt)
                 .Excluding(a => a.CreatedBy)
                 .Excluding(a => a.LastUpdatedAt)
-                .Excluding(a => a.LastUpdatedBy));
+                .Excluding(a => a.LastUpdatedBy)
+                .Excluding(x => x.TransactionType));
 
             apiEntity.SuspenseResolutionInfo.Should().BeNull();
             apiEntity.FinancialMonth.Should().Be(8);
@@ -480,7 +483,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 .Excluding(a => a.CreatedAt)
                 .Excluding(a => a.CreatedBy)
                 .Excluding(a => a.LastUpdatedAt)
-                .Excluding(a => a.LastUpdatedBy));
+                .Excluding(a => a.LastUpdatedBy)
+                .Excluding(x => x.TransactionType));
 
             apiEntity.FinancialMonth.Should().Be(8);
             apiEntity.FinancialYear.Should().Be(2021);

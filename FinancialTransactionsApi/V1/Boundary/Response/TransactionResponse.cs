@@ -14,6 +14,14 @@ namespace FinancialTransactionsApi.V1.Boundary.Response
         public Guid Id { get; set; }
 
         /// <summary>
+        /// Type of transaction 
+        /// </summary>
+        /// <example>
+        /// Rent
+        /// </example>
+        public string TransactionType { get; set; }
+
+        /// <summary>
         /// Information after this record ceases to be suspense
         /// </summary>
         /// <example>

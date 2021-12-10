@@ -29,7 +29,7 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
                 PaymentReference = "213456",
                 PeriodNo = 35,
                 TransactionAmount = 1238.12M,
-                TransactionType = TransactionType.Rent,
+                TransactionType = TransactionType.ArrangementInterest,
                 CreatedAt = new DateTime(2021, 8, 1),
                 LastUpdatedAt = new DateTime(2021, 8, 1),
                 CreatedBy = "Admin",
@@ -54,7 +54,7 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
             transaction.PaymentReference.Should().BeEquivalentTo("213456");
             transaction.PeriodNo.Should().Be(35);
             transaction.TransactionAmount.Should().Be(1238.12M);
-            transaction.TransactionType.Should().Be(TransactionType.Rent);
+            transaction.TransactionType.Should().Be(TransactionType.ArrangementInterest);
             transaction.CreatedBy.Should().Be("Admin");
             transaction.CreatedAt.Should().Be(new DateTime(2021, 8, 1));
             transaction.LastUpdatedBy.Should().Be("Admin");

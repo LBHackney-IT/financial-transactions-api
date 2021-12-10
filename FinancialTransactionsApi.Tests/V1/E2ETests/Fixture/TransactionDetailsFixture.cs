@@ -64,7 +64,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
             Transactions.AddRange(_fixture.Build<TransactionDbEntity>()
                 .With(x => x.Id, Id)
                 .With(x => x.TransactionDate, funcDt)
-                .With(x => x.TransactionType, TransactionType.Charge)
+                .With(x => x.TransactionType, TransactionType.ArrangementInterest)
                 .With(x => x.TargetId, Guid.NewGuid)
                 .With(x => x.Address, "Address")
                 .With(x => x.BalanceAmount, 154.12M)
@@ -153,7 +153,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 PeriodNo = 31,
                 TransactionAmount = 186.90M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.Rent,
+                TransactionType = TransactionType.ArrangementInterest,
                 Person = new Person()
                 {
                     Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
