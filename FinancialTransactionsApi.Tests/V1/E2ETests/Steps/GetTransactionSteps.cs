@@ -1,7 +1,6 @@
 using FinancialTransactionsApi.Tests.V1.E2ETests.Fixture;
 using FinancialTransactionsApi.Tests.V1.E2ETests.Steps.Base;
 using FinancialTransactionsApi.V1.Boundary.Response;
-using FinancialTransactionsApi.V1.Domain;
 using FluentAssertions;
 using System;
 using System.Linq;
@@ -40,12 +39,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
             _lastResponse = await _httpClient.GetAsync(route).ConfigureAwait(false);
         }
-
-
-
-
-
-
 
         public void ThenTheLastRequestShouldBe200()
         {

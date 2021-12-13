@@ -47,6 +47,7 @@ namespace FinancialTransactionsApi.Tests
             EnsureEnvVarConfigured("SubHeader", "SubHeader");
             EnsureEnvVarConfigured("Footer", "Footer");
             EnsureEnvVarConfigured("SubFooter", "SubFooter");
+            EnsureEnvVarConfigured("REQUIRED_GOOGL_GROUPS", "some-valid-google-group");
             Factory = new AwsMockWebApplicationFactory<TStartup>(_tables);
 
             Client = Factory.CreateClient();
