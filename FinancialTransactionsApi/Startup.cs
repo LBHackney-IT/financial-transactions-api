@@ -10,6 +10,7 @@ using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
+using Hackney.Core.Authorization;
 using Hackney.Core.DynamoDb;
 using Hackney.Core.ElasticSearch;
 using Hackney.Core.Http;
@@ -234,6 +235,7 @@ namespace FinancialTransactionsApi
             });
             app.UseSwagger();
             app.UseRouting();
+            app.UseGoogleGroupAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
