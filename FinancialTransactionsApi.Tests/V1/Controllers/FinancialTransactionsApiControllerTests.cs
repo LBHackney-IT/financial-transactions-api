@@ -351,7 +351,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
                 response.Details.Should().BeEquivalentTo(string.Empty);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Assert.False(true, ex.Message + " " + ex.StackTrace + ". " + ex.InnerException?.Message);
             }

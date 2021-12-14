@@ -7,13 +7,15 @@ using Nest;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using Amazon.Runtime.Internal.Util;
+using System.Net.Http.Headers;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests
 {
     public class AwsIntegrationTests<TStartup> : IDisposable where TStartup : class
     {
+        private const string TestToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNjM5NDIyNzE4LCJleHAiOjE5ODY1Nzc5MTgsImF1ZCI6InRlc3QiLCJzdWIiOiJ0ZXN0IiwiZ3JvdXBzIjpbInNvbWUtdmFsaWQtZ29vZ2xlLWdyb3VwIiwic29tZS1vdGhlci12YWxpZC1nb29nbGUtZ3JvdXAiXSwibmFtZSI6InRlc3RpbmcifQ.IcpQ00PGVgksXkR_HFqWOakgbQ_PwW9dTVQu4w77tmU";
+
         public HttpClient Client { get; private set; }
         public readonly AwsMockWebApplicationFactory<TStartup> Factory;
         public IDynamoDBContext DynamoDbContext => Factory?.DynamoDbContext;
@@ -51,6 +53,7 @@ namespace FinancialTransactionsApi.Tests
             Factory = new AwsMockWebApplicationFactory<TStartup>(_tables);
 
             Client = Factory.CreateClient();
+            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(TestToken);
             CleanupActions = new List<Action>();
             CreateSnsTopic();
         }
