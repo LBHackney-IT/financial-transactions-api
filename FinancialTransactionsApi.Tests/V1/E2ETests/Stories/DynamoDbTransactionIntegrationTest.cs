@@ -436,9 +436,9 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 
-            response.StatusCode.Should().Be(HttpStatusCode.Created);
-
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            response.StatusCode.Should().Be(HttpStatusCode.Created, responseContent);
+
             var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
 
             CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
