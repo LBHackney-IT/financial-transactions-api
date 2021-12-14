@@ -5,7 +5,6 @@ using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
-
     [Story(
        AsA = "Service",
        IWant = "The Transaction Search Endpoint to return results",
