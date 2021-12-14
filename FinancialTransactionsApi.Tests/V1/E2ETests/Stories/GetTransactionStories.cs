@@ -5,7 +5,6 @@ using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
-
     [Story(
        AsA = "Service",
        IWant = "The Transaction Search Endpoint to return results",
@@ -21,9 +20,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         {
             //_factory = factory;
             _dbFixture = dbFixture;
-            var httpClient = dbFixture.Factory.CreateClient();
             var elasticClient = dbFixture.ElasticSearchClient;
-            _steps = new GetTransactionSteps(httpClient);
+            _steps = new GetTransactionSteps(dbFixture.Client);
             _transactionFixture = new TransactionFixture(elasticClient);
         }
 

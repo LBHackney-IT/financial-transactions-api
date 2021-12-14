@@ -22,8 +22,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
     public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
-        private const string Token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
-
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
 
         /// <summary>
@@ -130,7 +128,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
 
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -168,7 +165,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
 
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -323,7 +319,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             HttpResponseMessage updateResponse;
             using var updateStringContent = new StringContent(updateTransaction);
             updateStringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
 
             updateResponse = await Client.PutAsync(updateUri, updateStringContent).ConfigureAwait(false);
 
@@ -365,7 +360,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             using (StringContent stringContent = new StringContent(body))
             {
                 stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
 
                 response = await Client.PutAsync(uri, stringContent).ConfigureAwait(false);
             }
@@ -432,13 +426,12 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
             using StringContent stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
 
             using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 
-            response.StatusCode.Should().Be(HttpStatusCode.Created);
-
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            response.StatusCode.Should().Be(HttpStatusCode.Created, responseContent);
+
             var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
 
             CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));

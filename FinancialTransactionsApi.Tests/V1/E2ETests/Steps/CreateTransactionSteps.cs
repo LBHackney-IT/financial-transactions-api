@@ -19,11 +19,8 @@ using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 {
-
     public class CreateTransactionSteps : BaseSteps
     {
-        private const string Token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
-
         public CreateTransactionSteps(HttpClient httpClient) : base(httpClient)
         { }
 
@@ -78,7 +75,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             var body = JsonSerializer.Serialize(requestObject);
 
             using var stringContent = new StringContent(body);
-            _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             _lastResponse = await _httpClient.PostAsync(route, stringContent).ConfigureAwait(false);
@@ -93,7 +89,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
             using var stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            _httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Token);
             _lastResponse = await _httpClient.PutAsync(route, stringContent).ConfigureAwait(false);
         }
 

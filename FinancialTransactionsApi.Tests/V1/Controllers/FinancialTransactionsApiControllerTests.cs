@@ -5,19 +5,16 @@ using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using FinancialTransactionsApi.V1.Helpers;
 using Xunit;
-using Xunit.Sdk;
 
 namespace FinancialTransactionsApi.Tests.V1.Controllers
 {
@@ -31,7 +28,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         private readonly Mock<IAddBatchUseCase> _addBatchUseCase;
         private readonly Mock<IGetTransactionListUseCase> _getTransactionListUseCase;
         private readonly Fixture _fixture = new Fixture();
-        private const string Token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJuYW1lIjoidGVzdGluZyIsIm5iZiI6MTYzODQ2NTY3NiwiZXhwIjoyNTM0MDIyOTAwMDAsImlhdCI6MTYzODQ2NTY3Nn0.eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0";
+        private const string Token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNjM5NDIyNzE4LCJleHAiOjE5ODY1Nzc5MTgsImF1ZCI6InRlc3QiLCJzdWIiOiJ0ZXN0IiwiZ3JvdXBzIjpbInNvbWUtdmFsaWQtZ29vZ2xlLWdyb3VwIiwic29tZS1vdGhlci12YWxpZC1nb29nbGUtZ3JvdXAiXSwibmFtZSI6InRlc3RpbmcifQ.IcpQ00PGVgksXkR_HFqWOakgbQ_PwW9dTVQu4w77tmU";
 
         public FinancialTransactionsApiControllerTests()
         {
@@ -47,8 +44,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 _addUseCase.Object,
                 _updateUseCase.Object,
                 _addBatchUseCase.Object,
-                _getTransactionListUseCase.Object
-                );
+                _getTransactionListUseCase.Object);
         }
 
         [Fact]
@@ -315,42 +311,49 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Add_WithInvalidModel_Returns400()
         {
-            var request = new AddTransactionRequest()
+            try
             {
-                TargetId = Guid.NewGuid(),
-                TransactionDate = DateTime.UtcNow,
-                Address = "Address",
-                BalanceAmount = 145.23M,
-                ChargedAmount = 134.12M,
-                HousingBenefitAmount = 123.12M,
-                BankAccountNumber = "12345678",
-                PeriodNo = 2,
-                TransactionAmount = 126.83M,
-                TransactionSource = "DD",
-                TransactionType = TransactionType.ArrangementInterest,
-                Person = new Person()
+                var request = new AddTransactionRequest()
                 {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                }
-            };
-            var result = await _controller.Add("", Token, request).ConfigureAwait(false);
+                    TargetId = Guid.NewGuid(),
+                    TransactionDate = DateTime.UtcNow,
+                    Address = "Address",
+                    BalanceAmount = 145.23M,
+                    ChargedAmount = 134.12M,
+                    HousingBenefitAmount = 123.12M,
+                    BankAccountNumber = "12345678",
+                    PeriodNo = 2,
+                    TransactionAmount = 126.83M,
+                    TransactionSource = "DD",
+                    TransactionType = TransactionType.ArrangementInterest,
+                    Person = new Person()
+                    {
+                        Id = Guid.NewGuid(),
+                        FullName = "Kain Hyawrd"
+                    }
+                };
+                var result = await _controller.Add("", Token, request).ConfigureAwait(false);
 
-            result.Should().NotBeNull();
+                result.Should().NotBeNull();
 
-            var badRequestResult = result as BadRequestObjectResult;
+                var badRequestResult = result as BadRequestObjectResult;
 
-            badRequestResult.Should().NotBeNull();
+                badRequestResult.Should().NotBeNull();
 
-            var response = badRequestResult?.Value as BaseErrorResponse;
+                var response = badRequestResult?.Value as BaseErrorResponse;
 
-            response.Should().NotBeNull();
+                response.Should().NotBeNull();
 
-            response?.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+                response?.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
 
-            response.Message.Should().BeEquivalentTo("Transaction model don't have all information in fields!");
+                response.Message.Should().BeEquivalentTo("Transaction model don't have all information in fields!");
 
-            response.Details.Should().BeEquivalentTo(string.Empty);
+                response.Details.Should().BeEquivalentTo(string.Empty);
+            }
+            catch (Exception ex)
+            {
+                Assert.False(true, ex.Message + " " + ex.StackTrace + ". " + ex.InnerException?.Message);
+            }
         }
 
         [Fact]

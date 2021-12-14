@@ -1,7 +1,6 @@
 using FinancialTransactionsApi.Tests.V1.E2ETests.Fixture;
 using FinancialTransactionsApi.Tests.V1.E2ETests.Steps.Base;
 using FinancialTransactionsApi.V1.Boundary.Response;
-using FinancialTransactionsApi.V1.Domain;
 using FluentAssertions;
 using System;
 using System.Linq;
@@ -41,12 +40,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             _lastResponse = await _httpClient.GetAsync(route).ConfigureAwait(false);
         }
 
-
-
-
-
-
-
         public void ThenTheLastRequestShouldBe200()
         {
             _lastResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -59,7 +52,13 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
         public async Task ThenTheReturningResultsShouldBeOfThatSize(int pageSize)
         {
             var resultBody = await _lastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            _lastResponse.StatusCode.Should().Be(HttpStatusCode.OK, resultBody);
+
             var result = JsonSerializer.Deserialize<APIResponse<GetTransactionListResponse>>(resultBody, _jsonOptions);
+
+            result.Should().NotBeNull();
+            result.Results.Should().NotBeNull();
+            result.Results.Transactions.Should().NotBeNull();
 
             result.Results.Transactions.Count.Should().Be(pageSize);
         }

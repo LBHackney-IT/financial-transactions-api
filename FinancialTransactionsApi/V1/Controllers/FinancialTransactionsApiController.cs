@@ -28,6 +28,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IUpdateUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
         private readonly IGetTransactionListUseCase _getTransactionListUseCase;
+
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
