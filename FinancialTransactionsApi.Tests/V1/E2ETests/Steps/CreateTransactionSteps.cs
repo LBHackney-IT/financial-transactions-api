@@ -22,7 +22,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
 
     public class CreateTransactionSteps : BaseSteps
     {
-        private const string Token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNjM5NDIyNzE4LCJleHAiOjQ4MjY2MzIzMTgsImF1ZCI6InRlc3QiLCJzdWIiOiJ0ZXN0IiwiZ3JvdXBzIjoic29tZS12YWxpZC1nb29nbGUtZ3JvdXAifQ.CCJf80X-N6d2fEqAIDjdtM06S2S7kFx-HLwhElpyRQY";
+        private const string Token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNjM5NDIyNzE4LCJleHAiOjQ4MjY2MzIzMTgsImF1ZCI6InRlc3QiLCJzdWIiOiJ0ZXN0IiwiZ3JvdXBzIjoic29tZS12YWxpZC1nb29nbGUtZ3JvdXAiLCJuYW1lIjoidGVzdGluZyJ9.V0r-QuO8UfE-YsJ_1T5h9ccwpCAZQP_juhAXhBz_82E";
 
         public CreateTransactionSteps(HttpClient httpClient) : base(httpClient)
         { }
