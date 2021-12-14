@@ -44,8 +44,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 _addUseCase.Object,
                 _updateUseCase.Object,
                 _addBatchUseCase.Object,
-                _getTransactionListUseCase.Object
-                );
+                _getTransactionListUseCase.Object);
         }
 
         [Fact]

@@ -52,7 +52,13 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
         public async Task ThenTheReturningResultsShouldBeOfThatSize(int pageSize)
         {
             var resultBody = await _lastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            _lastResponse.StatusCode.Should().Be(HttpStatusCode.OK, resultBody);
+
             var result = JsonSerializer.Deserialize<APIResponse<GetTransactionListResponse>>(resultBody, _jsonOptions);
+
+            result.Should().NotBeNull();
+            result.Results.Should().NotBeNull();
+            result.Results.Transactions.Should().NotBeNull();
 
             result.Results.Transactions.Count.Should().Be(pageSize);
         }
