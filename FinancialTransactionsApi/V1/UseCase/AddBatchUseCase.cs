@@ -49,7 +49,7 @@ namespace FinancialTransactionsApi.V1.UseCase
             });
 
             var response = await _gateway.AddBatchAsync(transactionList).ConfigureAwait(false);
-      
+
             //var processingCount = 0;
 
             //foreach (var item in transactionList)
@@ -62,7 +62,7 @@ namespace FinancialTransactionsApi.V1.UseCase
             //    return transactionList.Count;
             //else
             //    return 0;
-     
+
             return transactionList.Count;
         }
 
