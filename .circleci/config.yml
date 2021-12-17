@@ -88,8 +88,8 @@ commands:
             cd ./FinancialTransactionsApi/
             apt-get update && apt-get install -y libjpeg62-turbo
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
-     
-            
+
+
 jobs:
   check-code-formatting:
     executor: docker-dotnet
@@ -192,11 +192,6 @@ workflows:
               only: development
   check-and-deploy-staging-and-production:
       jobs:
-      - build-and-test:
-          context: api-nuget-token-context
-          filters:
-            branches:
-              only: master
       - assume-role-staging:
           context: api-assume-role-staging-context
           requires:
@@ -217,7 +212,7 @@ workflows:
             - deploy-to-staging
           filters:
             branches:
-              only: master   
+              only: master
       - assume-role-production:
           context: api-assume-role-production-context
           requires:
