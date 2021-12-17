@@ -192,6 +192,10 @@ workflows:
               only: development
   check-and-deploy-staging-and-production:
       jobs:
+      - check-code-formatting:
+          context: api-nuget-token-context
+      - build-and-test:
+          context: api-nuget-token-context
       - assume-role-staging:
           context: api-assume-role-staging-context
           requires:
@@ -212,7 +216,7 @@ workflows:
             - deploy-to-staging
           filters:
             branches:
-              only: master   
+              only: master
       - assume-role-production:
           context: api-assume-role-production-context
           requires:
