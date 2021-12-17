@@ -200,22 +200,22 @@ workflows:
           context: api-assume-role-housing-staging-context
           requires:
               - build-and-test
-          filters:
-             branches:
-               only: master
+#          filters:
+#             branches:
+#               only: master
       - terraform-init-and-apply-to-staging:
           requires:
             - assume-role-staging
-          filters:
-            branches:
-              only: master
+#          filters:
+#            branches:
+#              only: master
       - deploy-to-staging:
           context: api-nuget-token-context
           requires:
             - assume-role-staging
-          filters:
-            branches:
-              only: master
+#          filters:
+#            branches:
+#              only: master
       - permit-production-release:
           type: approval
           requires:
