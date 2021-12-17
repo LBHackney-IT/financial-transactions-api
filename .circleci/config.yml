@@ -203,6 +203,12 @@ workflows:
           filters:
              branches:
                only: master
+      - terraform-init-and-apply-to-staging:
+          requires:
+            - assume-role-staging
+          filters:
+            branches:
+              only: master
       - deploy-to-staging:
           context: api-nuget-token-context
           requires:
@@ -224,6 +230,12 @@ workflows:
           filters:
              branches:
                only: master
+      - terraform-init-and-apply-to-production:
+          requires:
+            - assume-role-production
+          filters:
+            branches:
+              only: production
       - deploy-to-production:
           context: api-nuget-token-context
           requires:
