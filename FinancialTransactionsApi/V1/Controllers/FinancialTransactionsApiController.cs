@@ -27,22 +27,19 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IAddUseCase _addUseCase;
         private readonly IUpdateUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
-        private readonly IGetTransactionListUseCase _getTransactionListUseCase;
 
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase,
-            IAddBatchUseCase addBatchUseCase,
-            IGetTransactionListUseCase getTransactionListUseCase)
+            IAddBatchUseCase addBatchUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
             _addUseCase = addUseCase;
             _updateUseCase = updateUseCase;
             _addBatchUseCase = addBatchUseCase;
-            _getTransactionListUseCase = getTransactionListUseCase;
         }
 
         /// <summary>
@@ -96,27 +93,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             return Ok(transactions);
         }
-        [ProducesResponseType(typeof(GetTransactionListResponse), 200)]
-        [ProducesResponseType(typeof(BaseErrorResponse), 400)]
-        [HttpGet, MapToApiVersion("1")]
-        [Route("search")]
-        [HttpGet]
-        public async Task<IActionResult> GetTransactionList([FromQuery] TransactionSearchRequest request)
-        {
-            try
-            {
-                var transactionSearchResult = await _getTransactionListUseCase.ExecuteAsync(request).ConfigureAwait(false);
-                var apiResponse = new APIResponse<GetTransactionListResponse>(transactionSearchResult)
-                { Total = transactionSearchResult.Total() };
 
-                return new OkObjectResult(apiResponse);
-            }
-            catch (Exception e)
-            {
-                LambdaLogger.Log(e.Message + e.StackTrace);
-                return new BadRequestObjectResult(e.Message);
-            }
-        }
 
         /// <summary>
         /// Create a new transaction model

@@ -35,18 +35,11 @@ services:
       - AWS_REGION=eu-west-2
       - AWS_ACCESS_KEY_ID=local
       - AWS_SECRET_ACCESS_KEY=local
-      - ELASTICSEARCH_DOMAIN_URL=http://financial-transactions-api-elasticsearch:9200 
       - Localstack_SnsServiceUrl=http://localstack:4566
     links:
       - dynamodb-database
-      - financial-transactions-api-elasticsearch
       - localstack
-    #networks:
-    #  - elastic
-    depends_on:
-    #  #- kibana
-      - financial-transactions-api-elasticsearch
-
+ 
   dynamodb-database:
     image: amazon/dynamodb-local
     ports:
@@ -71,39 +64,3 @@ services:
     build:
       context: .
       dockerfile: data/pdf/Dockerfile
-
-  financial-transactions-api-elasticsearch:
-    image: financial-transactions-api-elasticsearch
-    container_name: financial-transactions-api-elasticsearch
-    build:
-      context: .
-      dockerfile: data/elasticsearch/Dockerfile
-    environment:
-      - xpack.security.enabled=false
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ports:
-      - 9200:9200
-      - 9300:9300
-    volumes:
-       -  financial-transaction-api-esdata-test:/usr/share/elasticsearch/data
-    #networks:
-    #  - elastic
-      
-  
-  kibana:
-        image: docker.elastic.co/kibana/kibana:7.9.3
-        ports:
-            - "5601:5601"
-        #networks:
-           # - elastic
-        depends_on:
-            -  financial-transactions-api-elasticsearch
-volumes:
-     financial-transaction-api-esdata-test:
-        driver: local
-
-#networks:
- # elastic:
- #   driver: bridge

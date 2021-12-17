@@ -1,18 +1,14 @@
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using FinancialTransactionsApi.V1;
 using FinancialTransactionsApi.V1.Controllers;
-using FinancialTransactionsApi.V1.ElasticSearch;
-using FinancialTransactionsApi.V1.ElasticSearch.Interfaces;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1.Gateways.ElasticSearch;
 using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
 using Hackney.Core.Authorization;
 using Hackney.Core.DynamoDb;
-using Hackney.Core.ElasticSearch;
 using Hackney.Core.Http;
 using Hackney.Core.JWT;
 using Hackney.Core.Sns;
@@ -127,7 +123,6 @@ namespace FinancialTransactionsApi
 
             services.ConfigureDynamoDB();
             services.ConfigureSns();
-            services.ConfigureElasticSearch(Configuration, "ELASTICSEARCH_DOMAIN_URL");
             services.AddLocalStack(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             RegisterGateways(services);
@@ -168,8 +163,6 @@ namespace FinancialTransactionsApi
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<ITransactionGateway, DynamoDbGateway>();
-            services.AddScoped<ISearchGateway, SearchGateway>();
-            //services.AddSingleton<DynamoDbContextWrapper>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -179,9 +172,6 @@ namespace FinancialTransactionsApi
             services.AddScoped<IAddUseCase, AddUseCase>();
             services.AddScoped<IUpdateUseCase, UpdateUseCase>();
             services.AddScoped<IAddBatchUseCase, AddBatchUseCase>();
-
-            services.AddScoped<IGetTransactionListUseCase, GetTransactionListUseCase>();
-            services.AddScoped<IElasticSearchWrapper, ElasticElasticSearchWrapper>();
             services.AddScoped<IPagingHelper, PagingHelper>();
             services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
             services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();

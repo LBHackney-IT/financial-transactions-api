@@ -1,14 +1,13 @@
 using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
+using Hackney.Core.Sns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FinancialTransactionsApi.V1.Factories;
-using FinancialTransactionsApi.V1.Infrastructure;
-using Hackney.Core.Sns;
-using Nest;
 
 namespace FinancialTransactionsApi.V1.UseCase
 {

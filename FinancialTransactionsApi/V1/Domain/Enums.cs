@@ -1,6 +1,4 @@
 using System.ComponentModel;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace FinancialTransactionsApi.V1.Domain

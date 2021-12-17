@@ -6,13 +6,11 @@ using Amazon.SQS;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Core.Strategies;
 using Hackney.Core.DynamoDb;
-using Hackney.Core.ElasticSearch;
 using Hackney.Core.Sns;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nest;
 using System;
 using System.Collections.Generic;
 
@@ -24,7 +22,6 @@ namespace FinancialTransactionsApi.Tests
         private readonly List<TableDef> _tables;
 
         private IConfiguration _configuration;
-        public IElasticClient ElasticSearchClient { get; private set; }
         public IAmazonDynamoDB DynamoDb { get; set; }
         public IDynamoDBContext DynamoDbContext { get; private set; }
         public IAmazonSimpleNotificationService SimpleNotificationService { get; private set; }
@@ -47,11 +44,9 @@ namespace FinancialTransactionsApi.Tests
             {
                 services.ConfigureDynamoDB();
                 services.ConfigureSns();
-                services.ConfigureElasticSearch(_configuration, "ELASTICSEARCH_DOMAIN_URL");
                 var serviceProvider = services.BuildServiceProvider();
                 DynamoDb = serviceProvider.GetRequiredService<IAmazonDynamoDB>();
                 DynamoDbContext = serviceProvider.GetRequiredService<IDynamoDBContext>();
-                ElasticSearchClient = serviceProvider.GetRequiredService<IElasticClient>();
                 SimpleNotificationService = serviceProvider.GetRequiredService<IAmazonSimpleNotificationService>();
 
                 var localstackUrl = Environment.GetEnvironmentVariable("Localstack_SnsServiceUrl");
