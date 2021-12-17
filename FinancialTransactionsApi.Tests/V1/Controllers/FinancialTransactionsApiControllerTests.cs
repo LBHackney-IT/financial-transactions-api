@@ -26,7 +26,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         private readonly Mock<IAddUseCase> _addUseCase;
         private readonly Mock<IUpdateUseCase> _updateUseCase;
         private readonly Mock<IAddBatchUseCase> _addBatchUseCase;
-        private readonly Mock<IGetTransactionListUseCase> _getTransactionListUseCase;
         private readonly Fixture _fixture = new Fixture();
         private const string Token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNjM5NDIyNzE4LCJleHAiOjE5ODY1Nzc5MTgsImF1ZCI6InRlc3QiLCJzdWIiOiJ0ZXN0IiwiZ3JvdXBzIjpbInNvbWUtdmFsaWQtZ29vZ2xlLWdyb3VwIiwic29tZS1vdGhlci12YWxpZC1nb29nbGUtZ3JvdXAiXSwibmFtZSI6InRlc3RpbmcifQ.IcpQ00PGVgksXkR_HFqWOakgbQ_PwW9dTVQu4w77tmU";
 
@@ -37,14 +36,12 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _addUseCase = new Mock<IAddUseCase>();
             _updateUseCase = new Mock<IUpdateUseCase>();
             _addBatchUseCase = new Mock<IAddBatchUseCase>();
-            _getTransactionListUseCase = new Mock<IGetTransactionListUseCase>();
             _controller = new FinancialTransactionsApiController(
                 _getAllUseCase.Object,
                 _getByIdUseCase.Object,
                 _addUseCase.Object,
                 _updateUseCase.Object,
-                _addBatchUseCase.Object,
-                _getTransactionListUseCase.Object);
+                _addBatchUseCase.Object);
         }
 
         [Fact]
@@ -698,19 +695,5 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
         }
 
-        [Fact]
-        public async Task GetTransactionListShouldCallGetTransactionListUseCase()
-        {
-            // given
-            var request = new TransactionSearchRequest();
-            var response = new GetTransactionListResponse();
-            _getTransactionListUseCase.Setup(x => x.ExecuteAsync(request)).ReturnsAsync(response);
-
-            // when
-            await _controller.GetTransactionList(request).ConfigureAwait(false);
-
-            // then
-            _getTransactionListUseCase.Verify(x => x.ExecuteAsync(request), Times.Once);
-        }
     }
 }

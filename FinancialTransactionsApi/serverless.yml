@@ -22,7 +22,6 @@ functions:
     environment:
      REQUIRED_GOOGL_GROUPS: ${ssm:/housing-finance/${self:provider.stage}/authorization/required-google-groups}
      TRANSACTION_SNS_ARN: ${ssm:/sns-topic/${self:provider.stage}/financial-transactions_created/arn}
-     ELASTICSEARCH_DOMAIN_URL: ${ssm:/housing-search-api/${self:provider.stage}/elasticsearch-domain}
      Header: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_header}
      SubHeader: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_header}
      Footer: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_footer}

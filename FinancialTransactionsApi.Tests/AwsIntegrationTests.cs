@@ -3,7 +3,6 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 using FinancialTransactionsApi.V1.Domain;
-using Nest;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -19,7 +18,6 @@ namespace FinancialTransactionsApi.Tests
         public HttpClient Client { get; private set; }
         public readonly AwsMockWebApplicationFactory<TStartup> Factory;
         public IDynamoDBContext DynamoDbContext => Factory?.DynamoDbContext;
-        public IElasticClient ElasticSearchClient => Factory.ElasticSearchClient;
         public IAmazonSimpleNotificationService SimpleNotificationService => Factory?.SimpleNotificationService;
         public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
         protected List<Action> CleanupActions { get; set; }

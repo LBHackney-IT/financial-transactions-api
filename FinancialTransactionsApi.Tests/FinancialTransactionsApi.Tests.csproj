@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
@@ -12,6 +12,7 @@
     <NoWarn>1701;1702;CA1707;CA1303</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="V1\E2ETests\Steps\GetTransactionSteps.cs" />
     <Compile Remove="V1\Gateways\ExampleGatewayTests.cs" />
   </ItemGroup>
 

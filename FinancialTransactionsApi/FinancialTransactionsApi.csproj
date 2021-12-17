@@ -22,7 +22,6 @@
         <PackageReference Include="GenFu" Version="1.6.0" />
         <PackageReference Include="Hackney.Core.Authorization" Version="1.64.0" />
         <PackageReference Include="Hackney.Core.DynamoDb" Version="1.51.0" />
-        <PackageReference Include="Hackney.Core.ElasticSearch" Version="1.49.0" />
         <PackageReference Include="Hackney.Core.Http" Version="1.49.0" />
         <PackageReference Include="Hackney.Core.JWT" Version="1.64.0" />
         <PackageReference Include="Hackney.Core.Logging" Version="1.49.0" />
@@ -39,7 +38,6 @@
         <PackageReference Include="NodaMoney" Version="1.0.5" />
         <PackageReference Include="Razor.Templating.Core" Version="1.6.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
-        <PackageReference Include="NEST" Version="7.11.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.4.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.4.1" />

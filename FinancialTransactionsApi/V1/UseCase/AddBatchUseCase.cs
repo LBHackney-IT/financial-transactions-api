@@ -1,14 +1,13 @@
 using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
+using Hackney.Core.Sns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FinancialTransactionsApi.V1.Factories;
-using FinancialTransactionsApi.V1.Infrastructure;
-using Hackney.Core.Sns;
-using Nest;
 
 namespace FinancialTransactionsApi.V1.UseCase
 {
@@ -50,18 +49,21 @@ namespace FinancialTransactionsApi.V1.UseCase
             });
 
             var response = await _gateway.AddBatchAsync(transactionList).ConfigureAwait(false);
-            var processingCount = 0;
 
-            foreach (var item in transactionList)
-            {
-                await PublishSnsMessage(item).ConfigureAwait(false);
-                processingCount++;
-            }
+            //var processingCount = 0;
 
-            if (response && (processingCount == transactionList.Count))
-                return transactionList.Count;
-            else
-                return 0;
+            //foreach (var item in transactionList)
+            //{
+            //    await PublishSnsMessage(item).ConfigureAwait(false);
+            //    processingCount++;
+            //}
+
+            //if (response && (processingCount == transactionList.Count))
+            //    return transactionList.Count;
+            //else
+            //    return 0;
+
+            return transactionList.Count;
         }
 
         private async Task PublishSnsMessage(Transaction item)
