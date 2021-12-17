@@ -1,64 +1,66 @@
 version: "3.2"
 
 services:
-  base-api:
-    image: base-api
+  financial-transactions-api:
+    image: financial-transactions-api
     build:
       context: FinancialTransactionsApi/
       dockerfile: ./Dockerfile
+      args:
+      - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     ports:
       - 3000:3000
     environment:
-      - CONNECTION_STRING=Host=dev-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
-# TODO: If using DynamoDb remove the line above and uncomment the section below.
-#      - DynamoDb_LocalMode=true
-#      - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
-#      - AWS_REGION=eu-west-2
-#      - AWS_ACCESS_KEY_ID=local
-#      - AWS_SECRET_ACCESS_KEY=local
+      - Sns_LocalMode=true
+      - DynamoDb_LocalMode=true
+      - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
+      - AWS_REGION=eu-west-2
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
     links:
-      - dev-database
-  dev-database:
-    env_file:
-      - database.env
-    image: postgres:12
-    volumes:
-      - ./database:/docker-entrypoint-initdb.d
+      - dynamodb-database
+    depends_on:
+     - pdf-generator
 
-  base-api-test:
-    image: base-api-test
+  financial-transactions-api-test:
+    image: financial-transactions-api-test
     build:
       context: .
       dockerfile: FinancialTransactionsApi.Tests/Dockerfile
+      args:
+      - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     environment:
-      - DB_HOST=test-database
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=mypassword
-      - DB_DATABASE=testdb
-# TODO: If using DynamoDb remove the line above and uncomment the section below.
-#      - DynamoDb_LocalMode=true
-#      - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
-#      - AWS_REGION=eu-west-2
-#      - AWS_ACCESS_KEY_ID=local
-#      - AWS_SECRET_ACCESS_KEY=local
+      - DynamoDb_LocalMode=true
+      - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
+      - AWS_REGION=eu-west-2
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
+      - Localstack_SnsServiceUrl=http://localstack:4566
     links:
-      - test-database
-# TODO: If using DynamoDb remove the line above and uncomment the line below.
-#      - dynamodb-database
+      - dynamodb-database
+      - localstack
+ 
+  dynamodb-database:
+    image: amazon/dynamodb-local
+    ports:
+      - 8000:8000
 
-  test-database:
-    image: test-database
+  localstack:
+    image: localstack/localstack
+    hostname: awslocal    
+    ports:
+      - "4566:4566"      
+    environment:
+      - SERVICES=sns,sqs
+      - DEBUG=1                  
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=/tmp/localstack      
+    volumes:
+      - "./.localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  pdf-generator:
+    image: pdf-api-generator
+    container_name: pdf-api-generator
     build:
       context: .
-      dockerfile: database/Dockerfile
-    ports:
-      - 5432:5432
-    env_file:
-      - database.env
-
-# TODO: If using DynamoDb remove the 'test-database' seciton above and uncomment the lines below.
-#  dynamodb-database:
-#    image: amazon/dynamodb-local
-#    ports:
-#      - 8000:8000
+      dockerfile: data/pdf/Dockerfile

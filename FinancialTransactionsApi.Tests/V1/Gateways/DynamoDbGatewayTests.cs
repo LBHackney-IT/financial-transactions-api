@@ -1,55 +1,129 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
-using FinancialTransactionsApi.Tests.V1.Helper;
+using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways;
-using FinancialTransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Moq;
-using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Gateways
 {
-    //TODO: Remove this file if DynamoDb gateway not being used
-    //TODO: Rename Tests to match gateway name
-    //For instruction on how to run tests please see the wiki: https://github.com/LBHackney-IT/lbh-base-api/wiki/Running-the-test-suite.
-    [TestFixture]
     public class DynamoDbGatewayTests
     {
         private readonly Fixture _fixture = new Fixture();
-        private Mock<IDynamoDBContext> _dynamoDb;
-        private DynamoDbGateway _classUnderTest;
-
-        [SetUp]
-        public void Setup()
+        private readonly Mock<IDynamoDBContext> _dynamoDb;
+        private readonly DynamoDbGateway _gateway;
+        private readonly Mock<IConfiguration> _mockConfig;
+        public DynamoDbGatewayTests()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
-            _classUnderTest = new DynamoDbGateway(_dynamoDb.Object);
+            _mockConfig = new Mock<IConfiguration>();
+            _gateway = new DynamoDbGateway(_dynamoDb.Object, _mockConfig.Object);
         }
 
-        [Test]
-        public void GetEntityByIdReturnsNullIfEntityDoesntExist()
+
+
+        [Fact]
+        public async Task GetById_EntityDoesntExists_ReturnsNull()
         {
-            var response = _classUnderTest.GetEntityById(123);
+            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(It.IsAny<Guid>(), default))
+                .ReturnsAsync((TransactionDbEntity) null);
 
-            response.Should().BeNull();
+            var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid(), Guid.NewGuid()).ConfigureAwait(false);
+
+            result.Should().BeNull();
         }
 
-        [Test]
-        public void GetEntityByIdReturnsTheEntityIfItExists()
+        [Fact]
+        public async Task GetById_EntityExists_ReturnsEntity()
         {
-            var entity = _fixture.Create<Entity>();
-            var dbEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
+            var expectedResult = new TransactionDbEntity()
+            {
+                Id = Guid.NewGuid(),
+                TargetId = Guid.NewGuid(),
+                TransactionDate = DateTime.UtcNow,
+                Address = "Address",
+                BalanceAmount = 145.23M,
+                ChargedAmount = 134.12M,
+                FinancialMonth = 2,
+                FinancialYear = 2022,
+                Fund = "HSGSUN",
+                HousingBenefitAmount = 123.12M,
+                PaidAmount = 123.22M,
+                PaymentReference = "123451",
+                PeriodNo = 2,
+                TransactionAmount = 126.83M,
+                TransactionSource = "DD",
+                TransactionType = TransactionType.ArrangementInterest,
+                Person = new Person
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = "Kain Hyawrd"
+                },
+                CreatedBy = "Admin",
+                CreatedAt = DateTime.UtcNow,
+                LastUpdatedAt = DateTime.UtcNow,
+                LastUpdatedBy = "Admin"
+            };
 
-            _dynamoDb.Setup(x => x.LoadAsync<DatabaseEntity>(entity.Id, default))
-                     .ReturnsAsync(dbEntity);
+            _dynamoDb.Setup(x => x.LoadAsync<TransactionDbEntity>(It.IsAny<Guid>(), It.IsAny<Guid>(),
+                default))
+                .ReturnsAsync(expectedResult);
 
-            var response = _classUnderTest.GetEntityById(entity.Id);
+            var result = await _gateway.GetTransactionByIdAsync(Guid.NewGuid(), Guid.NewGuid()).ConfigureAwait(false);
 
-            _dynamoDb.Verify(x => x.LoadAsync<DatabaseEntity>(entity.Id, default), Times.Once);
+            result.Should().NotBeNull();
 
-            entity.Id.Should().Be(response.Id);
-            entity.CreatedAt.Should().BeSameDateAs(response.CreatedAt);
+            result.Should().BeEquivalentTo(expectedResult);
         }
+
+        [Fact]
+        public async Task AddAndUpdate_SaveObject_VerifiedOneTimeWorked()
+        {
+            var entity = _fixture.Create<Transaction>();
+
+            _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
+              .Returns(Task.CompletedTask);
+
+            await _gateway.AddAsync(entity).ConfigureAwait(false);
+
+            _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Once);
+        }
+
+        [Fact]
+        public async Task AddAndUpdate_InvalidObject_VerifiedOneTimeWorked()
+        {
+            Transaction entity = null;
+
+            _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
+              .Returns(Task.CompletedTask);
+
+            await _gateway.AddAsync(entity).ConfigureAwait(false);
+
+            _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Once);
+        }
+
+        //[Fact]
+        //public async Task Add_SaveListOfObjects_VirifiedThreeTimesWorked()
+        //{
+        //    var entities = _fixture.CreateMany<Transaction>(3).ToList();
+
+        //    _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
+        //      .Returns(Task.CompletedTask);
+
+        //    await _gateway.AddBatchAsync(entities).ConfigureAwait(false);
+
+        //    _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Exactly(3));
+        //}
+
+
     }
 }

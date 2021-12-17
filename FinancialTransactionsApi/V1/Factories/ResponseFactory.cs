@@ -1,22 +1,50 @@
-using System.Collections.Generic;
-using System.Linq;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
+using System.Collections.Generic;
+using System.Linq;
+using FinancialTransactionsApi.V1.Helpers;
 
 namespace FinancialTransactionsApi.V1.Factories
 {
     public static class ResponseFactory
     {
-        //TODO: Map the fields in the domain object(s) to fields in the response object(s).
-        // More information on this can be found here https://github.com/LBHackney-IT/lbh-base-api/wiki/Factory-object-mappings
-        public static ResponseObject ToResponse(this Entity domain)
+        public static TransactionResponse ToResponse(this Transaction domain)
         {
-            return new ResponseObject();
+            return domain == null ? null : new TransactionResponse()
+            {
+                Id = domain.Id,
+                TargetId = domain.TargetId,
+                TargetType = domain.TargetType,
+                BalanceAmount = domain.BalanceAmount,
+                ChargedAmount = domain.ChargedAmount,
+                FinancialMonth = domain.FinancialMonth,
+                FinancialYear = domain.FinancialYear,
+                HousingBenefitAmount = domain.HousingBenefitAmount,
+                PaidAmount = domain.PaidAmount,
+                PaymentReference = domain.PaymentReference,
+                BankAccountNumber = domain.BankAccountNumber,
+                SortCode = domain.SortCode,
+                SuspenseResolutionInfo = domain.SuspenseResolutionInfo,
+                PeriodNo = domain.PeriodNo,
+                TransactionAmount = domain.TransactionAmount,
+                TransactionDate = domain.TransactionDate,
+                TransactionType = domain.TransactionType.GetDescription(),
+                TransactionSource = domain.TransactionSource,
+                Address = domain.Address,
+                Person = domain.Person,
+                Fund = domain.Fund,
+                CreatedAt = domain.CreatedAt,
+                CreatedBy = domain.CreatedBy,
+                LastUpdatedAt = domain.LastUpdatedAt,
+                LastUpdatedBy = domain.LastUpdatedBy
+            };
         }
 
-        public static List<ResponseObject> ToResponse(this IEnumerable<Entity> domainList)
+        public static List<TransactionResponse> ToResponse(this IEnumerable<Transaction> domainList)
         {
-            return domainList.Select(domain => domain.ToResponse()).ToList();
+            return domainList == null ?
+                new List<TransactionResponse>() :
+                domainList.Select(domain => domain.ToResponse()).ToList();
         }
     }
 }

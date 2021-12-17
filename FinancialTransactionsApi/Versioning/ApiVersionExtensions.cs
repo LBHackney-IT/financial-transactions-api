@@ -6,7 +6,7 @@ namespace FinancialTransactionsApi.Versioning
     {
         public static string GetFormattedApiVersion(this ApiVersion apiVersion)
         {
-            return $"v{apiVersion.ToString()}";
+            return $"v{apiVersion}";
         }
     }
 }

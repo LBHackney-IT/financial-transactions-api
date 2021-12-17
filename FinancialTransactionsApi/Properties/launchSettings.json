@@ -1,5 +1,4 @@
 {
-  "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -8,17 +7,26 @@
       "sslPort": 44394
     }
   },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "base_api": {
+    "WSL 2": {
+      "commandName": "WSL2"
+    },
+    "financial-transaction-api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/v1/healthcheck/ping",
-      "applicationUrl": "http://localhost:5000",
+      "launchUrl": "swagger/index.html",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Sns_LocalMode": "true",
+        "DynamoDb_LocalServiceUrl": "http://localhost:8000",
+        "DynamoDb_LocalAccessKey": "ez1lwb",
+        "TRANSACTION_SNS_ARN": "arn:aws:sns:eu-west-2:123450000001:test-topic",
+        "Localstack_SnsServiceUrl": "http://localhost:9911",
+        "DynamoDb_LocalSecretKey": "o4fejrd",
         "DynamoDb_LocalMode": "true",
-        "DynamoDb_LocalServiceUrl": "http://localhost:8000"
-      }
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sqlDebugging": true
     }
   }
 }

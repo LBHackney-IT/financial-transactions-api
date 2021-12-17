@@ -1,41 +1,51 @@
-using System.Linq;
 using AutoFixture;
-using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase;
 using FluentAssertions;
+using Hackney.Core.DynamoDb;
 using Moq;
-using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
     public class GetAllUseCaseTests
     {
-        private Mock<IExampleGateway> _mockGateway;
-        private GetAllUseCase _classUnderTest;
-        private Fixture _fixture;
+        private readonly Mock<ITransactionGateway> _mockGateway;
+        private readonly GetAllUseCase _getAllUseCase;
+        private readonly Fixture _fixture;
 
-        [SetUp]
-        public void SetUp()
+        public GetAllUseCaseTests()
         {
-            _mockGateway = new Mock<IExampleGateway>();
-            _classUnderTest = new GetAllUseCase(_mockGateway.Object);
+            _mockGateway = new Mock<ITransactionGateway>();
+            _getAllUseCase = new GetAllUseCase(_mockGateway.Object);
             _fixture = new Fixture();
         }
 
-        [Test]
-        public void GetsAllFromTheGateway()
+        [Fact]
+        public async Task GetAll_GatewayReturnsList_ReturnsList()
         {
-            var stubbedEntities = _fixture.CreateMany<Entity>().ToList();
-            _mockGateway.Setup(x => x.GetAll()).Returns(stubbedEntities);
+            var transactions = _fixture.CreateMany<Transaction>();
+            var obj = new PagedResult<Transaction>(transactions);
+            var transactionQuery = new TransactionQuery()
+            {
+                TargetId = Guid.NewGuid(),
+                TransactionType = TransactionType.ArrangementInterest,
+                EndDate = DateTime.Now,
+                StartDate = DateTime.UtcNow,
+                PaginationToken = null
+            };
 
-            var expectedResponse = new ResponseObjectList { ResponseObjects = stubbedEntities.ToResponse() };
+            _mockGateway.Setup(_ => _.GetPagedTransactionsAsync(transactionQuery)).ReturnsAsync(obj);
+            var response = await _getAllUseCase.ExecuteAsync(transactionQuery).ConfigureAwait(false);
 
-            _classUnderTest.Execute().Should().BeEquivalentTo(expectedResponse);
+            var expectedResponse = transactions.ToResponse();
+
+            response.Results.Should().BeEquivalentTo(expectedResponse);
         }
-
-        //TODO: Add extra tests here for extra functionality added to the use case
     }
 }

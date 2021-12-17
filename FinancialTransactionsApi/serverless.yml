@@ -1,4 +1,4 @@
-service: your-api-name
+service: financial-transactions-api
 provider:
   name: aws
   runtime: dotnetcore3.1
@@ -8,21 +8,11 @@ provider:
     apiGateway: true
   vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
-  # TODO: Enable this line if DynamoDb is in use
-  #account: ${opt:account}
+  account: ${opt:account}
   region: eu-west-2
-  apiKeys:
-    - secureAccess:
-      - api-key-${self:service}-${self:provider.stage}
-  usagePlan:
-    - secureAccess:
-        throttle:
-          burstLimit: 200
-          rateLimit: 100
 
 package:
-# TODO: Rename zipfile in build.sh and build.cmd to match this
-  artifact: ./bin/release/netcoreapp3.1/your-api-name.zip
+  artifact: ./bin/release/netcoreapp3.1/financial-transactions-api.zip
 
 functions:
   FinancialTransactionsApi:
@@ -30,14 +20,38 @@ functions:
     handler: FinancialTransactionsApi::FinancialTransactionsApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
     environment:
-# TODO: Create ssm variables for this API's postgres mirror then rename base-api below to match api name
-# TODO: Remove this line if DynamoDb is being used
-      CONNECTION_STRING: Host=${ssm:/base-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/base-api/${self:provider.stage}/postgres-port};Database=base-api-mirror;Username=${ssm:/base-api/${self:provider.stage}/postgres-username};Password=${ssm:/base-api/${self:provider.stage}/postgres-password}
+     REQUIRED_GOOGL_GROUPS: ${ssm:/housing-finance/${self:provider.stage}/authorization/required-google-groups}
+     TRANSACTION_SNS_ARN: ${ssm:/sns-topic/${self:provider.stage}/financial-transactions_created/arn}
+     Header: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_header}
+     SubHeader: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_header}
+     Footer: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_footer}
+     SubFooter: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_footer}
     events:
       - http:
           path: /{proxy+}
           method: ANY
+          authorizer:
+            arn: ${ssm:/api-authenticator/${self:provider.stage}/arn}
+            type: request
+            resultTtlInSeconds: 0
+            identitySource: method.request.header.Authorization
+            managedExternally: true
           private: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - If-Match
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+      - http:
+          path: /swagger/{proxy+}
+          method: GET
+          private: false
 resources:
   Resources:
     lambdaExecutionRole:
@@ -56,9 +70,16 @@ resources:
         ManagedPolicyArns:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
           - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
-# TODO: Enable this line and set the correct policy name if DynamoDb is in use
-#          - arn:aws:iam::${self:provider.account}:policy/base-api/lambda-dynamodb-base-api
         Policies:
+          - PolicyName: postToSns
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "sns:Publish"
+                  Resource:
+                    - ${ssm:/sns-topic/${self:provider.stage}/financial-transactions_created/arn}
           - PolicyName: manageLogs
             PolicyDocument:
               Version: '2012-10-17'
@@ -92,17 +113,66 @@ resources:
                   Action:
                     - "lambda:InvokeFunction"
                   Resource: "*"
+          - PolicyName: transactionsDynamoDBAccess
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "dynamodb:BatchGet*"
+                    - "dynamodb:BatchWrite"
+                    - "dynamodb:DeleteItem"
+                    - "dynamodb:DescribeStream"
+                    - "dynamodb:DescribeTable"
+                    - "dynamodb:Get*"
+                    - "dynamodb:PutItem"
+                    - "dynamodb:Query"
+                    - "dynamodb:Scan"
+                    - "dynamodb:UpdateItem"
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:dynamodb'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'table/Transactions'
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:dynamodb'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'table/Transactions/index/*'
+                - Effect: Allow
+                  Action:
+                    - "dynamodb:Query"
+                    - "dynamodb:Scan"
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:dynamodb'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'table/Transactions/index/*'
 custom:
   vpc:
     development:
+      securityGroupIds:
+        - sg-00d2e14f38245dd0b
       subnetIds:
-        - subnet-0deabb5d8fb9c3446
-        - subnet-000b89c249f12a8ad
+        - subnet-0140d06fb84fdb547
+        - subnet-05ce390ba88c42bfd
     staging:
+      securityGroupIds:
+        - sg-00c197e980177983d
       subnetIds:
-        - subnet-06d3de1bd9181b0d7
-        - subnet-0ed7d7713d1127656
+        - subnet-0743d86e9b362fa38
+        - subnet-0ea0020a44b98a2ca
     production:
+      securityGroupIds:
+        - sg-02a377899622e884c
       subnetIds:
-        - subnet-01d3657f97a243261
-        - subnet-0b7b8fea07efabf34
+        - subnet-0beb266003a56ca82
+        - subnet-06a697d86a9b6ed01
+
+#plugins:
+#  - serverless-step-functions
