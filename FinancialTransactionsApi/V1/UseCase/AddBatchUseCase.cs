@@ -49,18 +49,21 @@ namespace FinancialTransactionsApi.V1.UseCase
             });
 
             var response = await _gateway.AddBatchAsync(transactionList).ConfigureAwait(false);
-            var processingCount = 0;
+      
+            //var processingCount = 0;
 
-            foreach (var item in transactionList)
-            {
-                await PublishSnsMessage(item).ConfigureAwait(false);
-                processingCount++;
-            }
+            //foreach (var item in transactionList)
+            //{
+            //    await PublishSnsMessage(item).ConfigureAwait(false);
+            //    processingCount++;
+            //}
 
-            if (response && (processingCount == transactionList.Count))
-                return transactionList.Count;
-            else
-                return 0;
+            //if (response && (processingCount == transactionList.Count))
+            //    return transactionList.Count;
+            //else
+            //    return 0;
+     
+            return transactionList.Count;
         }
 
         private async Task PublishSnsMessage(Transaction item)
