@@ -205,29 +205,30 @@ workflows:
              branches:
                only: master
       - deploy-to-staging:
+          context: api-nuget-token-context
           requires:
             - assume-role-staging
           filters:
             branches:
               only: master
-      - assume-role-production:
-          context: api-assume-role-production-context
-          requires:
-              - deploy-to-staging
-          filters:
-             branches:
-               only: master
       - permit-production-release:
           type: approval
           requires:
             - deploy-to-staging
           filters:
             branches:
-              only: master
-      - deploy-to-production:
-          context: api-assume-role-housing-production-context
+              only: master   
+      - assume-role-production:
+          context: api-assume-role-production-context
           requires:
-            - permit-production-release
+              - permit-production-release
+          filters:
+             branches:
+               only: master
+      - deploy-to-production:
+          context: api-nuget-token-context
+          requires:
+            - assume-role-production
           filters:
             branches:
               only: master
