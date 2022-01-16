@@ -1,7 +1,8 @@
 using Amazon.DynamoDBv2.DataModel;
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Infrastructure.Conventers;
 using System;
+using FinancialTransactionsApi.V1.Infrastructure.Converters;
+using Hackney.Core.DynamoDb.Converters;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 {
