@@ -55,7 +55,7 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
                             new AttributeValue {S = _fixture.Create<TransactionType>().ToString()}
                         },
                         {
-                            "person",
+                            "sender",
                             new AttributeValue
                             {
                                 M = new Dictionary<string, AttributeValue>
