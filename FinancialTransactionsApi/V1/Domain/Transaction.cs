@@ -45,7 +45,7 @@ namespace FinancialTransactionsApi.V1.Domain
         public decimal HousingBenefitAmount { get; set; }
         public string Address { get; set; }
         [Required]
-        public Person Person { get; set; }
+        public Sender Sender { get; set; }
         [Required]
         public string Fund { get; set; }
 

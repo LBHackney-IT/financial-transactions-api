@@ -10,7 +10,7 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
         [Fact]
         public void PersonHasPropertiesSet()
         {
-            var person = new Person()
+            var person = new Sender()
             {
                 Id = new Guid("9b014c26-88be-466e-a589-0f402c6b94c1"),
                 FullName = "Kian Hyaward"

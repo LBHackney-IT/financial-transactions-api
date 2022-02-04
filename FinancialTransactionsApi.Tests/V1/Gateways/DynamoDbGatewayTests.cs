@@ -63,7 +63,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Person = new Person
+                Sender = new Sender
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"

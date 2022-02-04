@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FinancialTransactionsApi.V1.Domain
 {
-    public class Person
+    public class Sender
     {
-        [NonEmptyGuid("PersonId")]
+        [NonEmptyGuid("Id")]
         public Guid Id { get; set; }
 
         [Required]
