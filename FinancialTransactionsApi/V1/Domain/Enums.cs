@@ -12,7 +12,6 @@ namespace FinancialTransactionsApi.V1.Domain
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum TransactionType
     {
-
         [Description("Section 20 Rebate")]
         Section20Rebate,
         [Description("Section 125 Rebate")]
@@ -197,7 +196,6 @@ namespace FinancialTransactionsApi.V1.Domain
         WriteOff,
         [Description("Write On")]
         WriteOn
-
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
