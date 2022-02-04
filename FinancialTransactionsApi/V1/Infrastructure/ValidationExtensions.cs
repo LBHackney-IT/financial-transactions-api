@@ -23,13 +23,13 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 return false;
             }
 
-            if (transaction.Person == null)
+            if (transaction.Sender == null)
             {
                 return false;
             }
 
-            if (transaction.Person.Id == Guid.Empty
-                || string.IsNullOrWhiteSpace(transaction.Person.FullName))
+            if (transaction.Sender.Id == Guid.Empty
+                || string.IsNullOrWhiteSpace(transaction.Sender.FullName))
             {
                 return false;
             }
@@ -64,13 +64,13 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 return false;
             }
 
-            if (transaction.Person == null)
+            if (transaction.Sender == null)
             {
                 return false;
             }
 
-            if (transaction.Person.Id == Guid.Empty
-                || string.IsNullOrWhiteSpace(transaction.Person.FullName))
+            if (transaction.Sender.Id == Guid.Empty
+                || string.IsNullOrWhiteSpace(transaction.Sender.FullName))
             {
                 return false;
             }
