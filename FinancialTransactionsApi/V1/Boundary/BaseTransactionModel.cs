@@ -147,7 +147,7 @@ namespace FinancialTransactionsApi.V1.Boundary
         ///     "FullName": "Kian Hayward"
         /// }
         /// </example>
-        public Person Person { get; set; }
+        public Sender Person { get; set; }
 
         /// <summary>
         /// ToDO: No information about this field

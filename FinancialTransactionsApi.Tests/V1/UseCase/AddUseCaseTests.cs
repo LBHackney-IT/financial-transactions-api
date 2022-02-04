@@ -47,7 +47,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionType = TransactionType.ArrangementInterest,
-                Person = new Person()
+                Person = new Sender()
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
@@ -101,7 +101,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Person = new Person()
+                Person = new Sender()
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
@@ -154,7 +154,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 TransactionAmount = 186.90M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Person = new Person()
+                Person = new Sender()
                 {
                     Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
                     FullName = "Hyan Widro"

@@ -33,7 +33,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Person = new Person
+                Sender = new Sender
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
@@ -77,7 +77,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Person = new Person()
+                Person = new Sender()
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
@@ -119,7 +119,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Person = new Person()
+                Person = new Sender()
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
@@ -150,7 +150,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Person = new Person()
+                Person = new Sender()
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Kain Hyawrd"
@@ -190,7 +190,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                     TransactionAmount = 126.83M,
                     TransactionSource = "DD",
                     TransactionType = TransactionType.ArrangementInterest,
-                    Person = new Person()
+                    Person = new Sender()
                     {
                         Id = Guid.NewGuid(),
                         FullName = "Kain Hyawrd"
@@ -212,7 +212,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                     TransactionAmount = 126.83M,
                     TransactionSource = "DD",
                     TransactionType = TransactionType.ArrangementInterest,
-                    Person = new Person()
+                    Person = new Sender()
                     {
                         Id = Guid.NewGuid(),
                         FullName = "Andrew Hyawrd"

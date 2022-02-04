@@ -80,7 +80,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 .CreateMany(count));
             foreach (var transaction in Transactions)
             {
-                transaction.Person = new Person()
+                transaction.Sender = new Sender()
                 {
                     Id = Guid.NewGuid(),
                     FullName = "Hyan Widro"
@@ -154,7 +154,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 TransactionAmount = 186.90M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Person = new Person()
+                Sender = new Sender()
                 {
                     Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
                     FullName = "Hyan Widro"
@@ -181,7 +181,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
                 PeriodNo = transaction.PeriodNo,
-                Person = transaction.Person,
+                Person = transaction.Sender,
                 TargetId = transaction.TargetId,
                 TransactionAmount = transaction.TransactionAmount,
                 TransactionSource = transaction.TransactionSource,
