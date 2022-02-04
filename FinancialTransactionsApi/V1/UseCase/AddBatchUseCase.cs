@@ -50,20 +50,22 @@ namespace FinancialTransactionsApi.V1.UseCase
 
             var response = await _gateway.AddBatchAsync(transactionList).ConfigureAwait(false);
 
-            //var processingCount = 0;
+            var sentSnsEventsCount = 0;
 
-            //foreach (var item in transactionList)
-            //{
-            //    await PublishSnsMessage(item).ConfigureAwait(false);
-            //    processingCount++;
-            //}
+            foreach (var item in transactionList)
+            {
+                await PublishSnsMessage(item).ConfigureAwait(false);
+                sentSnsEventsCount++;
+            }
 
-            //if (response && (processingCount == transactionList.Count))
-            //    return transactionList.Count;
-            //else
-            //    return 0;
-
-            return transactionList.Count;
+            if (sentSnsEventsCount == transactionList.Count)
+            {
+                return transactionList.Count;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         private async Task PublishSnsMessage(Transaction item)
