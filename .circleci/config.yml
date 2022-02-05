@@ -87,7 +87,7 @@ commands:
           command: |
             cd ./FinancialTransactionsApi/
             apt-get update && apt-get install -y libjpeg62-turbo
-            sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
+            sls deploy --stage <<parameters.stage>> --conceal
 
 
 jobs:
