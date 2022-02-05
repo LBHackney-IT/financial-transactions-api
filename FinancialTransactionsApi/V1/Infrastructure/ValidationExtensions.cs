@@ -111,10 +111,10 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 return false;
             }
 
-            if (transaction.ChargedAmount == decimal.Zero)
-            {
-                return false;
-            }
+            //if (transaction.ChargedAmount == decimal.Zero)
+            //{
+            //    return false;
+            //}
 
             if (transaction.PeriodNo == 0)
             {
