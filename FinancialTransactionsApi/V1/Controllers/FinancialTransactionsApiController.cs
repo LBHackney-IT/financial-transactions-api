@@ -27,19 +27,22 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IAddUseCase _addUseCase;
         private readonly IUpdateUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
+        private readonly IGetByTargetIdUseCase _getByTargetIdUseCase;
 
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase,
-            IAddBatchUseCase addBatchUseCase)
+            IAddBatchUseCase addBatchUseCase,
+            IGetByTargetIdUseCase getByTargetIdUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
             _addUseCase = addUseCase;
             _updateUseCase = updateUseCase;
             _addBatchUseCase = addBatchUseCase;
+            _getByTargetIdUseCase = getByTargetIdUseCase;
         }
 
         /// <summary>
@@ -68,6 +71,17 @@ namespace FinancialTransactionsApi.V1.Controllers
             }
 
             return Ok(transaction);
+        }
+
+        [HttpGet]
+        [Route("{targetId}/tenureId")]
+        public async Task<IActionResult> GetByTargetId([FromRoute] Guid targetId)
+        {
+            var transactions = await _getByTargetIdUseCase.ExecuteAsync(targetId).ConfigureAwait(false);
+            if (transactions == null || transactions.Count == 0)
+                return NotFound(targetId);
+
+            return Ok(transactions);
         }
 
         /// <summary>
