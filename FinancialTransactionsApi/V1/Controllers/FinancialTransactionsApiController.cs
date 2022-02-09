@@ -73,6 +73,19 @@ namespace FinancialTransactionsApi.V1.Controllers
             return Ok(transaction);
         }
 
+        /// <summary>
+        /// Get transaction by provided id
+        /// </summary>
+        /// <response code="200">Success. Transaction model was received successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">Transaction by provided id cannot be found</response>
+        /// <response code="500">Internal Server Error</response>
+        /// <param name="targetId">The value by which we are looking for a transaction</param>
+        /// <returns>List of transactions</returns>
+        [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{targetId}/tenureId")]
         public async Task<IActionResult> GetByTargetId([FromRoute] Guid targetId)
