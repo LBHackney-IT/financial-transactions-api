@@ -12,8 +12,8 @@ namespace FinancialTransactionsApi.V1.Domain
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum TransactionType
     {
-        [Description("Debit Or CreditCard")]
-        DebitOrCreditCard,
+        [Description("Debit Credit Card")]
+        DebitCreditCard,
         [Description("Pay Point Post Office civica pay")]
         PayPointPostOfficecivicapay,
         [Description("Section 20 Rebate")]
