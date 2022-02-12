@@ -195,7 +195,9 @@ namespace FinancialTransactionsApi.V1.Domain
         [Description("Write Off")]
         WriteOff,
         [Description("Write On")]
-        WriteOn
+        WriteOn,
+        [Description("Debit Credit Card")]
+        DebitCreditCard
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
