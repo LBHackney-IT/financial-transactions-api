@@ -220,7 +220,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
             }
-            var existTransaction = await _getByIdUseCase.ExecuteAsync(id, transaction.TargetId).ConfigureAwait(false);
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(id, Guid.Empty).ConfigureAwait(false);
 
             if (existTransaction == null)
             {

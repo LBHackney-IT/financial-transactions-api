@@ -14,7 +14,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 94b02545-0233-4640-98dd-b2900423c0a5
         /// </example>
-        [NonEmptyGuid]
+        //[NonEmptyGuid]
         public Guid TargetId { get; set; }
 
         [FromQuery]

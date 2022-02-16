@@ -117,6 +117,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         public async Task UpdateAsync(Transaction transaction)
         {
             await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
+            await _dynamoDbContext.DeleteAsync<TransactionDbEntity>(Guid.Empty, transaction.Id).ConfigureAwait(false);
         }
 
 
