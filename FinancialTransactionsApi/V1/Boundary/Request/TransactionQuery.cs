@@ -1,8 +1,6 @@
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Infrastructure;
-using System;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace FinancialTransactionsApi.V1.Boundary.Request
 {
@@ -14,7 +12,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 94b02545-0233-4640-98dd-b2900423c0a5
         /// </example>
-        [NonEmptyGuid]
         public Guid TargetId { get; set; }
 
         [FromQuery]
