@@ -177,7 +177,7 @@ namespace FinancialTransactionsApi
             services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
             services.AddScoped<IFileGeneratorService, FileGeneratorService>();
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
-
+            services.AddScoped<IGetByTargetIdUseCase, GetByTargetIdUseCase>();
         }
         private static void RegisterFactories(IServiceCollection services)
         {

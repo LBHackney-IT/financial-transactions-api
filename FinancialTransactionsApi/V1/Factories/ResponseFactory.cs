@@ -31,7 +31,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionType = domain.TransactionType.GetDescription(),
                 TransactionSource = domain.TransactionSource,
                 Address = domain.Address,
-                Person = domain.Person,
+                Sender = domain.Sender,
                 Fund = domain.Fund,
                 CreatedAt = domain.CreatedAt,
                 CreatedBy = domain.CreatedBy,

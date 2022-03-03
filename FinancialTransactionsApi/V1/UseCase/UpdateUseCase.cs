@@ -27,6 +27,7 @@ namespace FinancialTransactionsApi.V1.UseCase
 
             await _gateway.UpdateAsync(transaction).ConfigureAwait(false);
 
+
             return transaction.ToResponse();
         }
     }

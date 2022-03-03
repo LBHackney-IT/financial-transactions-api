@@ -1,7 +1,8 @@
 using Amazon.DynamoDBv2.DataModel;
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Infrastructure.Conventers;
 using System;
+using FinancialTransactionsApi.V1.Infrastructure.Converters;
+using Hackney.Core.DynamoDb.Converters;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 {
@@ -72,8 +73,8 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "address")]
         public string Address { get; set; }
 
-        [DynamoDBProperty(AttributeName = "person", Converter = typeof(DynamoDbObjectConverter<Person>))]
-        public Person Person { get; set; }
+        [DynamoDBProperty(AttributeName = "sender", Converter = typeof(DynamoDbObjectConverter<Sender>))]
+        public Sender Sender { get; set; }
 
         [DynamoDBProperty(AttributeName = "fund")]
         public string Fund { get; set; }

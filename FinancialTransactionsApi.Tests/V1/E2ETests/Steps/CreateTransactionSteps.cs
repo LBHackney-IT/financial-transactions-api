@@ -38,7 +38,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
                 PaidAmount = response.PaidAmount,
                 PaymentReference = response.PaymentReference,
                 PeriodNo = response.PeriodNo,
-                Person = response.Person,
+                Sender = response.Sender,
                 TargetId = response.TargetId,
                 TransactionAmount = response.TransactionAmount,
                 TransactionSource = response.TransactionSource,

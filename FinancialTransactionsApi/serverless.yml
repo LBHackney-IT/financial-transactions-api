@@ -3,12 +3,13 @@ provider:
   name: aws
   runtime: dotnetcore3.1
   memorySize: 2048
+  timeout: 29 # optional, in seconds, default is 6
   tracing:
     lambda: true
     apiGateway: true
   vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
-  account: ${opt:account}
+  #account: ${opt:account}
   region: eu-west-2
 
 package:
@@ -19,6 +20,7 @@ functions:
     name: ${self:service}-${self:provider.stage}
     handler: FinancialTransactionsApi::FinancialTransactionsApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
+    timeout: 29 # optional, in seconds, default is 6
     environment:
      REQUIRED_GOOGL_GROUPS: ${ssm:/housing-finance/${self:provider.stage}/authorization/required-google-groups}
      TRANSACTION_SNS_ARN: ${ssm:/sns-topic/${self:provider.stage}/financial-transactions_created/arn}

@@ -10,6 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
+using FinancialTransactionsApi.V1.Infrastructure;
 using Microsoft.Extensions.Configuration;
 
 namespace FinancialTransactionsApi.V1.Gateways
@@ -17,11 +20,13 @@ namespace FinancialTransactionsApi.V1.Gateways
     public class DynamoDbGateway : ITransactionGateway
     {
         private const string TARGETID = "target_id";
+        private readonly IAmazonDynamoDB _amazonDynamoDb;
         private readonly IDynamoDBContext _dynamoDbContext;
         private readonly IConfiguration _configuration;
 
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IConfiguration configuration)
+        public DynamoDbGateway(IAmazonDynamoDB amazonDynamoDb, IDynamoDBContext dynamoDbContext, IConfiguration configuration)
         {
+            _amazonDynamoDb = amazonDynamoDb;
             _dynamoDbContext = dynamoDbContext;
             _configuration = configuration;
         }
@@ -114,9 +119,30 @@ namespace FinancialTransactionsApi.V1.Gateways
             return data?.ToDomain();
         }
 
+        public async Task<List<Transaction>> GetByTargetId(Guid targetId)
+        {
+            if (targetId == Guid.Empty)
+                throw new ArgumentException($"{nameof(targetId).ToString()} shouldn't be empty.");
+
+            QueryRequest request = new QueryRequest
+            {
+                TableName = "Transactions",
+                KeyConditionExpression = "target_id = :V_target_id",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":V_target_id",new AttributeValue{S = targetId.ToString()}}
+                },
+                ScanIndexForward = true
+            };
+
+            var response = await _amazonDynamoDb.QueryAsync(request).ConfigureAwait(false);
+            return response?.ToTransactions();
+        }
+
         public async Task UpdateAsync(Transaction transaction)
         {
             await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
+            await _dynamoDbContext.DeleteAsync<TransactionDbEntity>(Guid.Empty, transaction.Id).ConfigureAwait(false);
         }
 
 

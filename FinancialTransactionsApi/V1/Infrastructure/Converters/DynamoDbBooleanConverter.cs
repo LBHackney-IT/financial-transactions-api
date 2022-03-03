@@ -2,7 +2,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using System;
 
-namespace FinancialTransactionsApi.V1.Infrastructure.Conventers
+namespace FinancialTransactionsApi.V1.Infrastructure.Converters
 {
     // TODO: This should go in a common NuGet package...
 
