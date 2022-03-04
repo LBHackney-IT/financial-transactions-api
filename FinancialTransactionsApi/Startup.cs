@@ -178,6 +178,8 @@ namespace FinancialTransactionsApi
             services.AddScoped<IFileGeneratorService, FileGeneratorService>();
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
             services.AddScoped<IGetSuspenseAccountUseCase, GetSuspenseAccountUseCase>();
+            services.AddScoped<IGetByTargetIdUseCase, GetByTargetIdUseCase>();
+
         }
         private static void RegisterFactories(IServiceCollection services)
         {
