@@ -107,6 +107,50 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         }
 
+
+        public async Task<PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
+        {
+            int pageSize = query.PageSize;
+            var dbTransactions = new List<TransactionDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<TransactionDbEntity>();
+
+            var queryConfig = new QueryOperationConfig
+            {
+                BackwardSearch = true,
+                ConsistentRead = true,
+                PaginationToken = PaginationDetails.DecodeToken(query.PaginationToken),
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, Guid.Empty)
+            };
+            var search = table.Query(queryConfig);
+            var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+
+            var paginationToken = search.PaginationToken;
+            if (resultsSet.Any())
+            {
+                dbTransactions.AddRange(_dynamoDbContext.FromDocuments<TransactionDbEntity>(resultsSet));
+
+                // Look ahead for any more, but only if we have a token
+                if (!string.IsNullOrEmpty(PaginationDetails.EncodeToken(paginationToken)))
+                {
+                    queryConfig.PaginationToken = paginationToken;
+                    queryConfig.Limit = 1;
+                    search = table.Query(queryConfig);
+                    resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+                    if (!resultsSet.Any())
+                        paginationToken = null;
+                }
+            }
+            if (dbTransactions.Any() && !string.IsNullOrEmpty(query.SearchText))
+            {
+                dbTransactions = dbTransactions.Where(x => x.PaymentReference.Contains(query.SearchText) || x.Address.ToLower().Contains(query.SearchText.ToLower())
+                   || x.Sender.FullName.ToLower().Contains(query.SearchText.ToLower()) || x.TransactionAmount.ToString().Contains(query.SearchText)
+                   || x.BankAccountNumber.Contains(query.SearchText) || x.Fund.ToLower().Contains(query.SearchText.ToLower())).ToList();
+            }
+
+            return new PagedResult<Transaction>(dbTransactions.Select(x => x.ToDomain()), new PaginationDetails(paginationToken));
+
+        }
+
         public async Task<Transaction> GetTransactionByIdAsync(Guid targetId, Guid id)
         {
             var data = await _dynamoDbContext.LoadAsync<TransactionDbEntity>(targetId, id).ConfigureAwait(false);
