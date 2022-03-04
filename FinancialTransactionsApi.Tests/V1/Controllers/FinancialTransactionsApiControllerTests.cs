@@ -37,6 +37,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _addUseCase = new Mock<IAddUseCase>();
             _updateUseCase = new Mock<IUpdateUseCase>();
             _addBatchUseCase = new Mock<IAddBatchUseCase>();
+            _suspenseAccountUseCase = new Mock<IGetSuspenseAccountUseCase>();
             _controller = new FinancialTransactionsApiController(
                 _getAllUseCase.Object,
                 _getByIdUseCase.Object,
@@ -129,6 +130,34 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             };
 
             var result = await _controller.GetAll("", query).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var okResult = result as OkObjectResult;
+
+            okResult.Should().NotBeNull();
+
+            okResult?.Value.Should().BeOfType<PagedResult<TransactionResponse>>();
+
+            var responses = okResult?.Value as PagedResult<TransactionResponse>;
+
+            responses?.Results.Should().HaveCount(5);
+
+        }
+
+        [Fact]
+        public async Task GetSuspenseAccount_UseCaseReturnList_Returns200()
+        {
+            var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
+
+            var obj1 = new PagedResult<TransactionResponse>(transactionsList);
+
+            _suspenseAccountUseCase.Setup(x => x.ExecuteAsync(It.IsAny<SuspenseAccountQuery>()))
+                .ReturnsAsync(obj1);
+
+            var query = new SuspenseAccountQuery();
+
+            var result = await _controller.GetSuspenseAccount(query).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
