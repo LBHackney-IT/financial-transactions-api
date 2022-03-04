@@ -27,21 +27,21 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IAddUseCase _addUseCase;
         private readonly IUpdateUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
+        private readonly IGetSuspenseAccountUseCase _suspenseAccountUseCase;
         private readonly IGetByTargetIdUseCase _getByTargetIdUseCase;
-
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase,
-            IAddBatchUseCase addBatchUseCase,
-            IGetByTargetIdUseCase getByTargetIdUseCase)
+            IAddBatchUseCase addBatchUseCase, IGetSuspenseAccountUseCase suspenseAccountUseCase, IGetByTargetIdUseCase getByTargetIdUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
             _addUseCase = addUseCase;
             _updateUseCase = updateUseCase;
             _addBatchUseCase = addBatchUseCase;
+            _suspenseAccountUseCase = suspenseAccountUseCase;
             _getByTargetIdUseCase = getByTargetIdUseCase;
         }
 
@@ -117,6 +117,30 @@ namespace FinancialTransactionsApi.V1.Controllers
             }
 
             var transactions = await _getAllUseCase.ExecuteAsync(query).ConfigureAwait(false);
+
+            return Ok(transactions);
+        }
+
+        /// <summary>
+        /// Gets a collection of suspense account transactions for a tenancy/property
+        /// </summary>
+        /// <param name="query">Model with parameters to get collection of transactions</param>
+        /// <response code="200">Success. Transaction models were received successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [ProducesResponseType(typeof(PagedResult<TransactionResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [Route("suspense-account")]
+        [HttpGet]
+        public async Task<IActionResult> GetSuspenseAccount([FromQuery] SuspenseAccountQuery query)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
+            }
+
+            var transactions = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
 
             return Ok(transactions);
         }
