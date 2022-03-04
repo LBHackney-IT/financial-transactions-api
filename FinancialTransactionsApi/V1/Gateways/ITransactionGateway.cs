@@ -9,6 +9,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 {
     public interface ITransactionGateway
     {
+        public Task<List<Transaction>> GetByTargetId(Guid targetId);
         public Task<Transaction> GetTransactionByIdAsync(Guid targetId, Guid id);
         public Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query);
         public Task AddAsync(Transaction transaction);
