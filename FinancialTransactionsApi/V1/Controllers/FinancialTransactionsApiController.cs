@@ -28,12 +28,13 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IUpdateUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
         private readonly IGetSuspenseAccountUseCase _suspenseAccountUseCase;
+        private readonly IGetByTargetIdUseCase _getByTargetIdUseCase;
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase,
-            IAddBatchUseCase addBatchUseCase, IGetSuspenseAccountUseCase suspenseAccountUseCase)
+            IAddBatchUseCase addBatchUseCase, IGetSuspenseAccountUseCase suspenseAccountUseCase, IGetByTargetIdUseCase getByTargetIdUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
@@ -41,6 +42,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             _updateUseCase = updateUseCase;
             _addBatchUseCase = addBatchUseCase;
             _suspenseAccountUseCase = suspenseAccountUseCase;
+            _getByTargetIdUseCase = getByTargetIdUseCase;
         }
 
         /// <summary>
