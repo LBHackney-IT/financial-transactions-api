@@ -1,4 +1,5 @@
 using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -38,6 +39,7 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// <example>
         /// 2021-08-01
         /// </example>
+        [DateGreaterThan("StartDate")]
         public DateTime? EndDate { get; set; }
     }
 }
