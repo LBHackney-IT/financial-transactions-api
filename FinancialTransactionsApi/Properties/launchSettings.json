@@ -15,7 +15,7 @@
     "financial-transaction-api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "swagger/index.html",
+      "launchUrl": "swagger/index.html",                  
       "environmentVariables": {
         "Sns_LocalMode": "true",
         "DynamoDb_LocalServiceUrl": "http://localhost:8000",

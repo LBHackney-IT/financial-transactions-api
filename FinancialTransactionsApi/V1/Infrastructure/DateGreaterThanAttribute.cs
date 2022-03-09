@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.Infrastructure
 {
@@ -29,7 +26,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 }
                 else
                 {
-                    return new ValidationResult(string.Format("{0} must be greater!", DateToCompareFieldName));
+                    return new ValidationResult(string.Format("{0} can't be greater than EndDate.", DateToCompareFieldName));
                 }
             }
 
