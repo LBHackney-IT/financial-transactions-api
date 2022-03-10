@@ -37,6 +37,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
+                FinancialMonth = 8,
+                FinancialYear = 2021,
                 TransactionType = TransactionType.ArrangementInterest,
                 Sender = new Sender()
                 {
@@ -87,6 +89,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
+                FinancialMonth = 8,
+                FinancialYear = 2021,
                 TransactionType = TransactionType.ArrangementInterest,
                 Sender = new Sender()
                 {
