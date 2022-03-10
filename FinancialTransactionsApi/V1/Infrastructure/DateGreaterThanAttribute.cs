@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-
 namespace FinancialTransactionsApi.V1.Infrastructure
 {
     public class DateGreaterThanAttribute : ValidationAttribute
