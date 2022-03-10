@@ -83,11 +83,11 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         }
 
         [Fact]
-        public void ServiceUpdateWithValidModelReturns200()
+        public void ServiceSuspenseAccountUpdateWithValidModelReturns200()
         {
-            this.Given(g => _transactionFixture.GivenAUpdateTransactionRequest())
-                .When(w => _steps.WhenTheUpdateTransactionEndpointIsCalled(_transactionFixture.Transaction))
-                .Then(t => _steps.ThenTheTransactionDetailsAreUpdatedAndReturned(_transactionFixture))
+            this.Given(g => _transactionFixture.GivenASuspenseAccountTransactionRequest())
+                .When(w => _steps.WhenTheSuspenseAccountConfirmationTransactionEndpointIsCalled(_transactionFixture.Transaction))
+                .Then(t => _steps.ThenTheTransactionSuspensesAccountDetailsAreUpdatedAndReturned(_transactionFixture))
                 .BDDfy();
         }
 

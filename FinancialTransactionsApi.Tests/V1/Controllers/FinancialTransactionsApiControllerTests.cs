@@ -469,16 +469,19 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         }
 
         [Fact]
-        public async Task Update_WithValidModel_Returns200()
+        public async Task SuspenseAccount_WithValidModel_Returns200()
         {
             var guid = Guid.NewGuid();
 
             var request = new SuspenseConfirmationRequest()
             {
-                TargetId = Guid.Empty,
+                TargetId = Guid.NewGuid(),
                 Note = "Test"
             };
-            var response = new TransactionResponse() { Id = guid, TargetId = Guid.Empty };
+            var response = _fixture.Build<TransactionResponse>()
+                .With(x => x.TargetId, Guid.Empty)
+                .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
+                .Create();
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync(response);
 
@@ -494,12 +497,10 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             okResult.Should().NotBeNull();
 
             okResult?.Value.Should().BeOfType(typeof(TransactionResponse));
-
-            okResult?.Value.Should().BeEquivalentTo(request);
         }
 
         [Fact]
-        public async Task Update_WithInvalidModel_Returns400()
+        public async Task SuspenseAccountConfirmation_WithInvalidModel_Returns400()
         {
             var request = new SuspenseConfirmationRequest()
             {
@@ -520,13 +521,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             response?.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
 
-            response?.Message.Should().BeEquivalentTo("Transaction model don't have all information in fields!");
+            response?.Message.Should().BeEquivalentTo("SuspenseConfirmationRequest model don't have all information in fields!");
 
             response?.Details.Should().BeEquivalentTo(string.Empty);
         }
 
         [Fact]
-        public async Task Update_WithNullModel_Returns400()
+        public async Task SuspenseAccountConfirmation_WithNullModel_Returns400()
         {
             var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), null).ConfigureAwait(false);
 
@@ -542,7 +543,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             response?.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
 
-            response?.Message.Should().BeEquivalentTo("Transaction model cannot be null!");
+            response?.Message.Should().BeEquivalentTo("SuspenseConfirmationRequest model cannot be null!");
 
             response?.Details.Should().BeEquivalentTo(string.Empty);
         }
@@ -552,7 +553,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var request = new SuspenseConfirmationRequest()
             {
-                TargetId = Guid.Empty,
+                TargetId = Guid.NewGuid(),
                 Note = "Test"
             };
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
@@ -580,8 +581,12 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Update_UseCaseThrownException_ShouldRethrow()
         {
+            var response = _fixture.Build<TransactionResponse>()
+                .With(x => x.TargetId, Guid.Empty)
+                .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
+                .Create();
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
+                .ReturnsAsync(response);
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>(), It.IsAny<Guid>()))
                 .ThrowsAsync(new Exception("Test exception"));
@@ -590,7 +595,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             {
                 var request = new SuspenseConfirmationRequest()
                 {
-                    TargetId = Guid.Empty,
+                    TargetId = Guid.NewGuid(),
                     Note = "Test"
                 };
                 var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), request)
@@ -609,9 +614,10 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var request = new SuspenseConfirmationRequest()
             {
-                TargetId = Guid.Empty,
+                TargetId = Guid.NewGuid(),
                 Note = "Test"
             };
+
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
 
@@ -632,8 +638,12 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Update_NonSuspenseTransaction_ThrowBadRequest()
         {
+            var response = _fixture.Build<TransactionResponse>()
+              .With(x => x.TargetId, Guid.NewGuid())
+              .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
+              .Create();
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
+                .ReturnsAsync(response);
 
             var request = _fixture.Build<SuspenseConfirmationRequest>()
                 .With(s => s.TargetId, Guid.NewGuid()).Create();
