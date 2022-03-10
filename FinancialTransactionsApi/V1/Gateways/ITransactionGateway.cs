@@ -15,6 +15,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         public Task AddAsync(Transaction transaction);
         public Task<bool> AddBatchAsync(List<Transaction> transactions);
         public Task UpdateAsync(Transaction transaction);
+        public Task ApproveSuspenseAccountTransactionAsync(Transaction transaction);
         public Task<List<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate);
         Task<PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query);
 

@@ -189,6 +189,11 @@ namespace FinancialTransactionsApi.V1.Gateways
             await _dynamoDbContext.DeleteAsync<TransactionDbEntity>(Guid.Empty, transaction.Id).ConfigureAwait(false);
         }
 
+        public async Task ApproveSuspenseAccountTransactionAsync(Transaction transaction)
+        {
+            await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
+        }
+
 
         public async Task<List<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate)
         {

@@ -30,12 +30,16 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IAddBatchUseCase _addBatchUseCase;
         private readonly IGetSuspenseAccountUseCase _suspenseAccountUseCase;
         private readonly IGetByTargetIdUseCase _getByTargetIdUseCase;
+        private readonly ISuspenseAccountApprovalUseCase _suspenseAccountApprovalUseCase;
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase,
-            IAddBatchUseCase addBatchUseCase, IGetSuspenseAccountUseCase suspenseAccountUseCase, IGetByTargetIdUseCase getByTargetIdUseCase)
+            IAddBatchUseCase addBatchUseCase,
+            IGetSuspenseAccountUseCase suspenseAccountUseCase,
+            IGetByTargetIdUseCase getByTargetIdUseCase,
+            ISuspenseAccountApprovalUseCase suspenseAccountApprovalUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
@@ -44,6 +48,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             _addBatchUseCase = addBatchUseCase;
             _suspenseAccountUseCase = suspenseAccountUseCase;
             _getByTargetIdUseCase = getByTargetIdUseCase;
+            _suspenseAccountApprovalUseCase = suspenseAccountApprovalUseCase;
         }
 
         /// <summary>
@@ -290,8 +295,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             domainTransaction.SuspenseResolutionInfo = new SuspenseResolutionInfo
             {
                 IsConfirmed = true,
-                Note = transaction.Note,
-                ResolutionDate = DateTime.UtcNow
+                Note = transaction.Note
             };
             domainTransaction.LastUpdatedBy = lastUpdatedBy;
 
@@ -306,7 +310,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
         /// /// <param name="token">The jwt token value</param>
         /// <param name="transactionId">The value by which we are looking for a transaction</param>
-        /// <param name="transaction">Transaction model for update</param>
+        /// <param name="targetId">Transaction targetId</param>
         /// <response code="200">Success. Transaction model was updated successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">Transaction by provided id cannot be found</response>
@@ -320,44 +324,37 @@ namespace FinancialTransactionsApi.V1.Controllers
         public async Task<IActionResult> SuspenseAccountApproval(
                                                 [FromHeader(Name = "Authorization")] string token,
                                                 [FromRoute] Guid transactionId,
-                                                [FromBody] UpdateTransactionRequest transaction)
+                                                [FromQuery] Guid targetId)
         {
-            if (transaction == null)
+            if (targetId == Guid.Empty)
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model cannot be null!"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "targetId field is required"));
             }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
-            }
-
-            if (!CheckUpdateTransactionRequest(transaction))
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
-            }
-            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, Guid.Empty).ConfigureAwait(false);
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, targetId).ConfigureAwait(false);
 
             if (existTransaction == null)
             {
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (!existTransaction.IsSuspense)
+            if (existTransaction.SuspenseResolutionInfo == null || !existTransaction.SuspenseResolutionInfo.IsConfirmed)
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot approve this transaction!"));
             }
 
             var lastUpdatedBy = GetUserName(token);
 
-            var domainTransaction = transaction.ToDomain();
-            domainTransaction.CreatedBy = existTransaction.CreatedBy;
-            domainTransaction.CreatedAt = existTransaction.CreatedAt;
+            var domainTransaction = existTransaction.ResponseToDomain();
             domainTransaction.LastUpdatedBy = lastUpdatedBy;
+            domainTransaction.SuspenseResolutionInfo.IsApproved = true;
+            domainTransaction.SuspenseResolutionInfo.ResolutionDate = DateTime.UtcNow;
 
-            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction, transactionId).ConfigureAwait(false);
 
-            return Ok(transactionResponse);
+            var status = await _suspenseAccountApprovalUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
+            if (status)
+                return Ok("Approval successful");
+
+            return BadRequest("Approval failed");
         }
 
         /// <summary>

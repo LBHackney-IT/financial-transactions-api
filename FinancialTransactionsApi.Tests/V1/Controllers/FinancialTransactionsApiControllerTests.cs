@@ -28,6 +28,8 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         private readonly Mock<IAddBatchUseCase> _addBatchUseCase;
         private readonly Mock<IGetSuspenseAccountUseCase> _suspenseAccountUseCase;
         private readonly Mock<IGetByTargetIdUseCase> _getByTargetIdUseCase;
+
+        private readonly Mock<ISuspenseAccountApprovalUseCase> _suspenseAccountApprovalUseCase;
         private readonly Fixture _fixture = new Fixture();
         private const string Token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNjM5NDIyNzE4LCJleHAiOjE5ODY1Nzc5MTgsImF1ZCI6InRlc3QiLCJzdWIiOiJ0ZXN0IiwiZ3JvdXBzIjpbInNvbWUtdmFsaWQtZ29vZ2xlLWdyb3VwIiwic29tZS1vdGhlci12YWxpZC1nb29nbGUtZ3JvdXAiXSwibmFtZSI6InRlc3RpbmcifQ.IcpQ00PGVgksXkR_HFqWOakgbQ_PwW9dTVQu4w77tmU";
 
@@ -40,6 +42,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _addBatchUseCase = new Mock<IAddBatchUseCase>();
             _suspenseAccountUseCase = new Mock<IGetSuspenseAccountUseCase>();
             _getByTargetIdUseCase = new Mock<IGetByTargetIdUseCase>();
+            _suspenseAccountApprovalUseCase = new Mock<ISuspenseAccountApprovalUseCase>();
             _controller = new FinancialTransactionsApiController(
                 _getAllUseCase.Object,
                 _getByIdUseCase.Object,
@@ -47,7 +50,8 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 _updateUseCase.Object,
                 _addBatchUseCase.Object,
                 _suspenseAccountUseCase.Object,
-                _getByTargetIdUseCase.Object);
+                _getByTargetIdUseCase.Object,
+                _suspenseAccountApprovalUseCase.Object);
         }
 
         [Fact]

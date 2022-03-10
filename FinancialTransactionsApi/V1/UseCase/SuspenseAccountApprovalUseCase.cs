@@ -1,6 +1,4 @@
-using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System;
@@ -8,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.UseCase
 {
-    public class UpdateUseCase : IUpdateUseCase
+    public class SuspenseAccountApprovalUseCase : ISuspenseAccountApprovalUseCase
     {
         private readonly ITransactionGateway _gateway;
-        public UpdateUseCase(ITransactionGateway gateway)
+        public SuspenseAccountApprovalUseCase(ITransactionGateway gateway)
         {
             _gateway = gateway;
         }
 
-        public async Task<TransactionResponse> ExecuteAsync(Transaction transaction, Guid id)
+        public async Task<bool> ExecuteAsync(Transaction transaction)
         {
             transaction.LastUpdatedAt = DateTime.UtcNow;
 
-            await _gateway.UpdateAsync(transaction).ConfigureAwait(false);
+            await _gateway.ApproveSuspenseAccountTransactionAsync(transaction).ConfigureAwait(false);
 
 
-            return transaction.ToResponse();
+            return true;
         }
     }
 }
