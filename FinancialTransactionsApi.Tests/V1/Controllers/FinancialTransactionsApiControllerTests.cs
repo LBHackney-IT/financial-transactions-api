@@ -47,7 +47,8 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 _updateUseCase.Object,
                 _addBatchUseCase.Object,
                 _suspenseAccountUseCase.Object,
-                _getByTargetIdUseCase.Object);
+                _getByTargetIdUseCase.Object,
+                new Mock<IGetAllActiveTransactionsUseCase>().Object);
         }
 
         [Fact]

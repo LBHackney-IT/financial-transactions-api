@@ -74,6 +74,20 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
+        public static TransactionLimitedModel ToResponse(this TransactionLimitedDbEntity transactionDbEntity)
+        {
+            return transactionDbEntity == null ? null : new TransactionLimitedModel
+            {
+                Id = transactionDbEntity.Id,
+                TargetId = transactionDbEntity.TargetId,
+                TransactionAmount = transactionDbEntity.TransactionAmount,
+                HousingBenefitAmount = transactionDbEntity.HousingBenefitAmount,
+                PaidAmount = transactionDbEntity.PaidAmount,
+                BalanceAmount = transactionDbEntity.BalanceAmount,
+                ChargedAmount = transactionDbEntity.ChargedAmount,
+            };
+        }
+
         public static Transaction ToDomain(this AddTransactionRequest transactionRequest)
         {
             return transactionRequest == null ? null : new Transaction
