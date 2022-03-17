@@ -179,8 +179,9 @@ namespace FinancialTransactionsApi
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
             services.AddScoped<IGetSuspenseAccountUseCase, GetSuspenseAccountUseCase>();
             services.AddScoped<IGetByTargetIdUseCase, GetByTargetIdUseCase>();
-
+            services.AddScoped<IGetAllActiveTransactionsUseCase, GetAllActiveTransactionsUseCase>();
         }
+
         private static void RegisterFactories(IServiceCollection services)
         {
             services.AddScoped<ISnsFactory, TransactionSnsFactory>();
