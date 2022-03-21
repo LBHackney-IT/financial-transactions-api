@@ -354,7 +354,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             if (status)
                 return Ok("Approval successful");
 
-            return BadRequest("Approval failed");
+            return BadRequest("Unable to approve this request at the momment");
         }
 
         /// <summary>
