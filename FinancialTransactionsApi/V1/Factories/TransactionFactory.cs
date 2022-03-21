@@ -164,9 +164,12 @@ namespace FinancialTransactionsApi.V1.Factories
                 SuspenseResolutionInfo = new SuspenseResolutionInfo
                 {
                     IsConfirmed = true,
+                    IsApproved = true,
                     Note = transaction.Note,
                     ResolutionDate = DateTime.UtcNow
                 },
+                CreatedAt = transactionRequest.CreatedAt,
+                CreatedBy = transactionRequest.CreatedBy,
                 LastUpdatedBy = lastUpdatedBy
             };
         }

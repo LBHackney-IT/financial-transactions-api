@@ -27,9 +27,9 @@ namespace FinancialTransactionsApi.V1.UseCase
             transaction.LastUpdatedAt = DateTime.UtcNow;
 
             await _gateway.UpdateSuspenseAccountAsync(transaction).ConfigureAwait(false);
-            //var transactionSnsMessage = _snsFactory.Create(transaction);
-            //var transactionTopicArn = Environment.GetEnvironmentVariable("TRANSACTION_SNS_ARN");
-            //await _snsGateway.Publish(transactionSnsMessage, transactionTopicArn, EventConstants.MESSAGEGROUPID).ConfigureAwait(false);
+            var transactionSnsMessage = _snsFactory.Create(transaction);
+            var transactionTopicArn = Environment.GetEnvironmentVariable("TRANSACTION_SNS_ARN");
+            await _snsGateway.Publish(transactionSnsMessage, transactionTopicArn, EventConstants.MESSAGEGROUPID).ConfigureAwait(false);
 
             return transaction.ToResponse();
         }

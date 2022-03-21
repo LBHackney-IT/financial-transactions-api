@@ -181,7 +181,6 @@ namespace FinancialTransactionsApi
             services.AddScoped<IGetByTargetIdUseCase, GetByTargetIdUseCase>();
             services.AddScoped<IGetAllActiveTransactionsUseCase, GetAllActiveTransactionsUseCase>();
         }
-            services.AddScoped<ISuspenseAccountApprovalUseCase, SuspenseAccountApprovalUseCase>();
 
 
         private static void RegisterFactories(IServiceCollection services)
