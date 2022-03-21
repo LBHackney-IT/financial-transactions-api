@@ -1,16 +1,14 @@
-using FinancialTransactionsApi.Tests.V1.Helper;
-using FinancialTransactionsApi.V1.Boundary.Request;
+using AutoFixture;
+using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase;
 using FluentAssertions;
+using Hackney.Core.Sns;
 using Moq;
 using System;
 using System.Threading.Tasks;
-using AutoFixture;
-using FinancialTransactionsApi.V1.Boundary.Response;
-using Hackney.Core.Sns;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase

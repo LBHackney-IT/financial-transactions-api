@@ -1,19 +1,18 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
+using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Amazon.Lambda.Core;
-using System.IdentityModel.Tokens.Jwt;
-using FinancialTransactionsApi.V1.Infrastructure;
-using FinancialTransactionsApi.V1.Factories;
-using Hackney.Core.DynamoDb;
-using FinancialTransactionsApi.V1.Domain;
 
 namespace FinancialTransactionsApi.V1.Controllers
 {
@@ -26,20 +25,19 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IGetByIdUseCase _getByIdUseCase;
         private readonly IAddUseCase _addUseCase;
-        private readonly IUpdateUseCase _updateUseCase;
+        private readonly IUpdateSuspenseAccountUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
         private readonly IGetSuspenseAccountUseCase _suspenseAccountUseCase;
         private readonly IGetByTargetIdUseCase _getByTargetIdUseCase;
+        private readonly IGetAllActiveTransactionsUseCase _getAllActiveTransactionsUseCase;
+
         private readonly ISuspenseAccountApprovalUseCase _suspenseAccountApprovalUseCase;
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
             IUpdateUseCase updateUseCase,
-            IAddBatchUseCase addBatchUseCase,
-            IGetSuspenseAccountUseCase suspenseAccountUseCase,
-            IGetByTargetIdUseCase getByTargetIdUseCase,
-            ISuspenseAccountApprovalUseCase suspenseAccountApprovalUseCase)
+            IAddBatchUseCase addBatchUseCase, IGetSuspenseAccountUseCase suspenseAccountUseCase, IGetByTargetIdUseCase getByTargetIdUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
@@ -48,7 +46,6 @@ namespace FinancialTransactionsApi.V1.Controllers
             _addBatchUseCase = addBatchUseCase;
             _suspenseAccountUseCase = suspenseAccountUseCase;
             _getByTargetIdUseCase = getByTargetIdUseCase;
-            _suspenseAccountApprovalUseCase = suspenseAccountApprovalUseCase;
         }
 
         /// <summary>
@@ -123,6 +120,30 @@ namespace FinancialTransactionsApi.V1.Controllers
             }
 
             var transactions = await _getAllUseCase.ExecuteAsync(query).ConfigureAwait(false);
+
+            return Ok(transactions);
+        }
+
+        /// <summary>
+        /// Returns ALL non-suspense transactions wthout any filters. Note, that this endpoint has bad performance and will be used only for system needs. For better performance use HousingSearchAPI
+        /// </summary>
+        [ProducesResponseType(typeof(PagedResult<TransactionLimitedModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [Route("active")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveTransactions([FromQuery] GetActiveTransactionsRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Request model cannot be null!"));
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
+            }
+
+            var transactions = await _getAllActiveTransactionsUseCase.ExecuteAsync(request).ConfigureAwait(false);
 
             return Ok(transactions);
         }
@@ -289,17 +310,17 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             var lastUpdatedBy = GetUserName(token);
 
-            var domainTransaction = existTransaction.ResponseToDomain();
-            domainTransaction.TargetId = transaction.TargetId;
+            var domainTransaction = existTransaction.ResponseToDomain(transaction, lastUpdatedBy);
 
             domainTransaction.SuspenseResolutionInfo = new SuspenseResolutionInfo
             {
                 IsConfirmed = true,
-                Note = transaction.Note
+                Note = transaction.Note,
+                ResolutionDate = DateTime.UtcNow
             };
             domainTransaction.LastUpdatedBy = lastUpdatedBy;
 
-            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction, transactionId).ConfigureAwait(false);
+            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
 
             return Ok(transactionResponse);
         }
@@ -350,9 +371,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             domainTransaction.SuspenseResolutionInfo.ResolutionDate = DateTime.UtcNow;
 
 
-            var status = await _suspenseAccountApprovalUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
-            if (status)
-                return Ok("Approval successful");
+            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction, transactionId).ConfigureAwait(false);
 
             return BadRequest("Unable to approve this request at the momment");
         }

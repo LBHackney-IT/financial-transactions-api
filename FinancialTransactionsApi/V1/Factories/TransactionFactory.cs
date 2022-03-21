@@ -5,6 +5,7 @@ using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FinancialTransactionsApi.V1.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace FinancialTransactionsApi.V1.Factories
 {
@@ -74,6 +75,20 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
+        public static TransactionLimitedModel ToResponse(this TransactionLimitedDbEntity transactionDbEntity)
+        {
+            return transactionDbEntity == null ? null : new TransactionLimitedModel
+            {
+                Id = transactionDbEntity.Id,
+                TargetId = transactionDbEntity.TargetId,
+                TransactionAmount = transactionDbEntity.TransactionAmount,
+                HousingBenefitAmount = transactionDbEntity.HousingBenefitAmount,
+                PaidAmount = transactionDbEntity.PaidAmount,
+                BalanceAmount = transactionDbEntity.BalanceAmount,
+                ChargedAmount = transactionDbEntity.ChargedAmount,
+            };
+        }
+
         public static Transaction ToDomain(this AddTransactionRequest transactionRequest)
         {
             return transactionRequest == null ? null : new Transaction
@@ -124,12 +139,12 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
-        public static Transaction ResponseToDomain(this TransactionResponse transactionRequest)
+        public static Transaction ResponseToDomain(this TransactionResponse transactionRequest, SuspenseConfirmationRequest transaction, string lastUpdatedBy)
         {
             return transactionRequest == null ? null : new Transaction
             {
                 Id = transactionRequest.Id,
-                TargetId = transactionRequest.TargetId,
+                TargetId = transaction.TargetId,
                 TargetType = transactionRequest.TargetType,
                 BalanceAmount = transactionRequest.BalanceAmount,
                 ChargedAmount = transactionRequest.ChargedAmount,
@@ -137,7 +152,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
                 BankAccountNumber = transactionRequest.BankAccountNumber,
-                SuspenseResolutionInfo = transactionRequest.SuspenseResolutionInfo,
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
                 TransactionDate = transactionRequest.TransactionDate,
@@ -146,7 +160,14 @@ namespace FinancialTransactionsApi.V1.Factories
                 Address = transactionRequest.Address,
                 Sender = transactionRequest.Sender,
                 Fund = transactionRequest.Fund,
-                SortCode = transactionRequest.SortCode
+                SortCode = transactionRequest.SortCode,
+                SuspenseResolutionInfo = new SuspenseResolutionInfo
+                {
+                    IsConfirmed = true,
+                    Note = transaction.Note,
+                    ResolutionDate = DateTime.UtcNow
+                },
+                LastUpdatedBy = lastUpdatedBy
             };
         }
 

@@ -1,19 +1,20 @@
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using Amazon.Util;
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using Hackney.Core.DynamoDb;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using FinancialTransactionsApi.V1.Infrastructure;
-using Microsoft.Extensions.Configuration;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -30,7 +31,6 @@ namespace FinancialTransactionsApi.V1.Gateways
             _dynamoDbContext = dynamoDbContext;
             _configuration = configuration;
         }
-
 
         public async Task AddAsync(Transaction transaction)
         {
@@ -60,6 +60,43 @@ namespace FinancialTransactionsApi.V1.Gateways
             }
 
             return true;
+        }
+
+        public async Task<PagedResult<TransactionLimitedModel>> GetAllActive(GetActiveTransactionsRequest request)
+        {
+            var dbTransactions = new List<TransactionLimitedDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<TransactionLimitedDbEntity>();
+
+            var filter = new ScanFilter();
+            filter.AddCondition(TARGETID, ScanOperator.NotEqual, Guid.Empty);
+
+            var scanConfig = new ScanOperationConfig
+            {
+                Limit = request.PageSize,
+                PaginationToken = PaginationDetails.DecodeToken(request.PaginationToken),
+                Filter = filter
+            };
+
+            if (request.PeriodStartDate.HasValue)
+            {
+                request.PeriodEndDate = request.PeriodEndDate.HasValue
+                    ? request.PeriodEndDate.Value.Date.AddDays(1).AddMilliseconds(-1)
+                    : DateTime.Now.Date.AddDays(1).AddMilliseconds(-1);
+
+                string startDate = request.PeriodStartDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat);
+                string endDate = request.PeriodEndDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat);
+
+                scanConfig.Filter.AddCondition("created_at", ScanOperator.Between, startDate, endDate);
+            }
+
+            var search = table.Scan(scanConfig);
+            var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+            if (resultsSet.Any())
+            {
+                dbTransactions.AddRange(_dynamoDbContext.FromDocuments<TransactionLimitedDbEntity>(resultsSet));
+            }
+
+            return new PagedResult<TransactionLimitedModel>(dbTransactions.Select(x => x.ToResponse()), new PaginationDetails(search.PaginationToken));
         }
 
         public async Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
@@ -109,9 +146,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             }
 
             return new PagedResult<Transaction>(dbTransactions.Select(x => x.ToDomain()), new PaginationDetails(paginationToken));
-
         }
-
 
         public async Task<PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
         {
@@ -183,7 +218,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             return response?.ToTransactions();
         }
 
-        public async Task UpdateAsync(Transaction transaction)
+        public async Task UpdateSuspenseAccountAsync(Transaction transaction)
         {
             await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
             await _dynamoDbContext.DeleteAsync<TransactionDbEntity>(Guid.Empty, transaction.Id).ConfigureAwait(false);
