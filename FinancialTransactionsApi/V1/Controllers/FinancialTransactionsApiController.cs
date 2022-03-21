@@ -1,6 +1,5 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
-using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
@@ -31,13 +30,15 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IGetByTargetIdUseCase _getByTargetIdUseCase;
         private readonly IGetAllActiveTransactionsUseCase _getAllActiveTransactionsUseCase;
 
-        private readonly ISuspenseAccountApprovalUseCase _suspenseAccountApprovalUseCase;
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
-            IUpdateUseCase updateUseCase,
-            IAddBatchUseCase addBatchUseCase, IGetSuspenseAccountUseCase suspenseAccountUseCase, IGetByTargetIdUseCase getByTargetIdUseCase)
+            IUpdateSuspenseAccountUseCase updateUseCase,
+            IAddBatchUseCase addBatchUseCase,
+            IGetSuspenseAccountUseCase suspenseAccountUseCase,
+            IGetByTargetIdUseCase getByTargetIdUseCase,
+            IGetAllActiveTransactionsUseCase getAllActiveTransactionsUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
@@ -46,6 +47,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             _addBatchUseCase = addBatchUseCase;
             _suspenseAccountUseCase = suspenseAccountUseCase;
             _getByTargetIdUseCase = getByTargetIdUseCase;
+            _getAllActiveTransactionsUseCase = getAllActiveTransactionsUseCase;
         }
 
         /// <summary>
@@ -312,13 +314,6 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             var domainTransaction = existTransaction.ResponseToDomain(transaction, lastUpdatedBy);
 
-            domainTransaction.SuspenseResolutionInfo = new SuspenseResolutionInfo
-            {
-                IsConfirmed = true,
-                Note = transaction.Note,
-                ResolutionDate = DateTime.UtcNow
-            };
-            domainTransaction.LastUpdatedBy = lastUpdatedBy;
 
             var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
 
@@ -331,7 +326,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
         /// /// <param name="token">The jwt token value</param>
         /// <param name="transactionId">The value by which we are looking for a transaction</param>
-        /// <param name="targetId">Transaction targetId</param>
+        /// <param name="transaction">Transaction model for update</param>
         /// <response code="200">Success. Transaction model was updated successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">Transaction by provided id cannot be found</response>
@@ -345,35 +340,44 @@ namespace FinancialTransactionsApi.V1.Controllers
         public async Task<IActionResult> SuspenseAccountApproval(
                                                 [FromHeader(Name = "Authorization")] string token,
                                                 [FromRoute] Guid transactionId,
-                                                [FromQuery] Guid targetId)
+                                                [FromBody] UpdateTransactionRequest transaction)
         {
-            if (targetId == Guid.Empty)
+            if (transaction == null)
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "targetId field is required"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model cannot be null!"));
             }
-            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, targetId).ConfigureAwait(false);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
+            }
+
+            if (!CheckUpdateTransactionRequest(transaction))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
+            }
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, Guid.Empty).ConfigureAwait(false);
 
             if (existTransaction == null)
             {
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (existTransaction.SuspenseResolutionInfo == null || !existTransaction.SuspenseResolutionInfo.IsConfirmed)
+            if (!existTransaction.IsSuspense)
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot approve this transaction!"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
             }
 
             var lastUpdatedBy = GetUserName(token);
 
-            var domainTransaction = existTransaction.ResponseToDomain();
+            var domainTransaction = transaction.ToDomain();
+            domainTransaction.CreatedBy = existTransaction.CreatedBy;
+            domainTransaction.CreatedAt = existTransaction.CreatedAt;
             domainTransaction.LastUpdatedBy = lastUpdatedBy;
-            domainTransaction.SuspenseResolutionInfo.IsApproved = true;
-            domainTransaction.SuspenseResolutionInfo.ResolutionDate = DateTime.UtcNow;
 
+            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
 
-            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction, transactionId).ConfigureAwait(false);
-
-            return BadRequest("Unable to approve this request at the momment");
+            return Ok(transactionResponse);
         }
 
         /// <summary>
