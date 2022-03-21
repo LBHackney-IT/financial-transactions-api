@@ -1,20 +1,20 @@
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using Amazon.Util;
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using Hackney.Core.DynamoDb;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using FinancialTransactionsApi.V1.Infrastructure;
-using Microsoft.Extensions.Configuration;
-using FinancialTransactionsApi.V1.Boundary.Response;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -218,7 +218,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             return response?.ToTransactions();
         }
 
-        public async Task UpdateAsync(Transaction transaction)
+        public async Task UpdateSuspenseAccountAsync(Transaction transaction)
         {
             await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
             await _dynamoDbContext.DeleteAsync<TransactionDbEntity>(Guid.Empty, transaction.Id).ConfigureAwait(false);

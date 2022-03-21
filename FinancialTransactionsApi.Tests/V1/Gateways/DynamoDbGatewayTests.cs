@@ -1,18 +1,15 @@
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
-using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
-using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Gateways
@@ -112,6 +109,23 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
             await _gateway.AddAsync(entity).ConfigureAwait(false);
 
             _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateAndDelete_VerifiedOneTimeWorked()
+        {
+            var entity = _fixture.Create<Transaction>();
+
+            _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
+              .Returns(Task.CompletedTask);
+
+            _dynamoDb.Setup(x => x.DeleteAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
+              .Returns(Task.CompletedTask);
+
+            await _gateway.UpdateSuspenseAccountAsync(entity).ConfigureAwait(false);
+
+            _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Once);
+            _dynamoDb.Verify(x => x.DeleteAsync<TransactionDbEntity>(Guid.Empty, It.IsAny<Guid>(), default), Times.Once);
         }
 
         //[Fact]
