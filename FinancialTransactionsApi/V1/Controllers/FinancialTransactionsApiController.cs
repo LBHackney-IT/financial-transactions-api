@@ -1,6 +1,5 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
-using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
@@ -25,7 +24,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IGetByIdUseCase _getByIdUseCase;
         private readonly IAddUseCase _addUseCase;
-        private readonly IUpdateUseCase _updateUseCase;
+        private readonly IUpdateSuspenseAccountUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
         private readonly IGetSuspenseAccountUseCase _suspenseAccountUseCase;
         private readonly IGetByTargetIdUseCase _getByTargetIdUseCase;
@@ -35,8 +34,11 @@ namespace FinancialTransactionsApi.V1.Controllers
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
-            IUpdateUseCase updateUseCase,
-            IAddBatchUseCase addBatchUseCase, IGetSuspenseAccountUseCase suspenseAccountUseCase, IGetByTargetIdUseCase getByTargetIdUseCase, IGetAllActiveTransactionsUseCase getAllActiveTransactionsUseCase)
+            IUpdateSuspenseAccountUseCase updateUseCase,
+            IAddBatchUseCase addBatchUseCase,
+            IGetSuspenseAccountUseCase suspenseAccountUseCase,
+            IGetByTargetIdUseCase getByTargetIdUseCase,
+            IGetAllActiveTransactionsUseCase getAllActiveTransactionsUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
@@ -310,18 +312,10 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             var lastUpdatedBy = GetUserName(token);
 
-            var domainTransaction = existTransaction.ResponseToDomain();
-            domainTransaction.TargetId = transaction.TargetId;
+            var domainTransaction = existTransaction.ResponseToDomain(transaction, lastUpdatedBy);
 
-            domainTransaction.SuspenseResolutionInfo = new SuspenseResolutionInfo
-            {
-                IsConfirmed = true,
-                Note = transaction.Note,
-                ResolutionDate = DateTime.UtcNow
-            };
-            domainTransaction.LastUpdatedBy = lastUpdatedBy;
 
-            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction, transactionId).ConfigureAwait(false);
+            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
 
             return Ok(transactionResponse);
         }
@@ -381,7 +375,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             domainTransaction.CreatedAt = existTransaction.CreatedAt;
             domainTransaction.LastUpdatedBy = lastUpdatedBy;
 
-            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction, transactionId).ConfigureAwait(false);
+            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
 
             return Ok(transactionResponse);
         }

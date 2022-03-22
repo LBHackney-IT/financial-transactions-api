@@ -1,12 +1,11 @@
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
-using System;
 using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.UseCase.Interfaces
 {
-    public interface IUpdateUseCase
+    public interface IUpdateSuspenseAccountUseCase
     {
-        public Task<TransactionResponse> ExecuteAsync(Transaction transaction, Guid id);
+        public Task<TransactionResponse> ExecuteAsync(Transaction transaction);
     }
 }

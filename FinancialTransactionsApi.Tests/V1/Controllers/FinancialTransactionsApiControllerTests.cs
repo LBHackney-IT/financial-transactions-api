@@ -24,10 +24,12 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         private readonly Mock<IGetByIdUseCase> _getByIdUseCase;
         private readonly Mock<IGetAllUseCase> _getAllUseCase;
         private readonly Mock<IAddUseCase> _addUseCase;
-        private readonly Mock<IUpdateUseCase> _updateUseCase;
+        private readonly Mock<IUpdateSuspenseAccountUseCase> _updateUseCase;
         private readonly Mock<IAddBatchUseCase> _addBatchUseCase;
         private readonly Mock<IGetSuspenseAccountUseCase> _suspenseAccountUseCase;
         private readonly Mock<IGetByTargetIdUseCase> _getByTargetIdUseCase;
+
+        private readonly Mock<ISuspenseAccountApprovalUseCase> _suspenseAccountApprovalUseCase;
         private readonly Fixture _fixture = new Fixture();
         private const string Token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNjM5NDIyNzE4LCJleHAiOjE5ODY1Nzc5MTgsImF1ZCI6InRlc3QiLCJzdWIiOiJ0ZXN0IiwiZ3JvdXBzIjpbInNvbWUtdmFsaWQtZ29vZ2xlLWdyb3VwIiwic29tZS1vdGhlci12YWxpZC1nb29nbGUtZ3JvdXAiXSwibmFtZSI6InRlc3RpbmcifQ.IcpQ00PGVgksXkR_HFqWOakgbQ_PwW9dTVQu4w77tmU";
 
@@ -36,10 +38,11 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _getByIdUseCase = new Mock<IGetByIdUseCase>();
             _getAllUseCase = new Mock<IGetAllUseCase>();
             _addUseCase = new Mock<IAddUseCase>();
-            _updateUseCase = new Mock<IUpdateUseCase>();
+            _updateUseCase = new Mock<IUpdateSuspenseAccountUseCase>();
             _addBatchUseCase = new Mock<IAddBatchUseCase>();
             _suspenseAccountUseCase = new Mock<IGetSuspenseAccountUseCase>();
             _getByTargetIdUseCase = new Mock<IGetByTargetIdUseCase>();
+            _suspenseAccountApprovalUseCase = new Mock<ISuspenseAccountApprovalUseCase>();
             _controller = new FinancialTransactionsApiController(
                 _getAllUseCase.Object,
                 _getByIdUseCase.Object,
@@ -483,21 +486,24 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 .With(x => x.TargetId, Guid.Empty)
                 .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
                 .Create();
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), Guid.Empty))
                 .ReturnsAsync(response);
 
-            _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>(), It.IsAny<Guid>()))
-                .ReturnsAsync(response.ResponseToDomain().ToResponse());
+            _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>()))
+                .ReturnsAsync(response.ResponseToDomain(request, "Unit Test").ToResponse());
 
             var result = await _controller.SuspenseAccountConfirmation(Token, guid, request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
+
 
             var okResult = result as OkObjectResult;
 
             okResult.Should().NotBeNull();
 
             okResult?.Value.Should().BeOfType(typeof(TransactionResponse));
+            var responseObject = okResult.Value as TransactionResponse;
+            responseObject.TargetId.Should().Be(request.TargetId);
         }
 
         [Fact]
@@ -589,7 +595,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync(response);
 
-            _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>(), It.IsAny<Guid>()))
+            _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
             try
@@ -630,7 +636,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             }
             catch (Exception ex)
             {
-                _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<Transaction>(), It.IsAny<Guid>()), Times.Never);
+                _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<Transaction>()), Times.Never);
                 ex.GetType().Should().Be(typeof(ArgumentNullException));
                 ex.Message.Should().Be("Value cannot be null. (Parameter 'token')");
             }
@@ -652,7 +658,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), request)
                 .ConfigureAwait(false);
 
-            _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<Transaction>(), It.IsAny<Guid>()), Times.Never);
+            _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<Transaction>()), Times.Never);
 
             result.Should().BeOfType<BadRequestObjectResult>();
 

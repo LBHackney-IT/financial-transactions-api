@@ -170,7 +170,7 @@ namespace FinancialTransactionsApi
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
             services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
             services.AddScoped<IAddUseCase, AddUseCase>();
-            services.AddScoped<IUpdateUseCase, UpdateUseCase>();
+            services.AddScoped<IUpdateSuspenseAccountUseCase, UpdateSuspenseAccountUseCase>();
             services.AddScoped<IAddBatchUseCase, AddBatchUseCase>();
             services.AddScoped<IPagingHelper, PagingHelper>();
             services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
@@ -181,6 +181,7 @@ namespace FinancialTransactionsApi
             services.AddScoped<IGetByTargetIdUseCase, GetByTargetIdUseCase>();
             services.AddScoped<IGetAllActiveTransactionsUseCase, GetAllActiveTransactionsUseCase>();
         }
+
 
         private static void RegisterFactories(IServiceCollection services)
         {
