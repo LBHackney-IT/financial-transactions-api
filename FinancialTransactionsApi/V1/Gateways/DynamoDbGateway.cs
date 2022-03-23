@@ -224,12 +224,6 @@ namespace FinancialTransactionsApi.V1.Gateways
             await _dynamoDbContext.DeleteAsync<TransactionDbEntity>(Guid.Empty, transaction.Id).ConfigureAwait(false);
         }
 
-        public async Task ApproveSuspenseAccountTransactionAsync(Transaction transaction)
-        {
-            await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
-        }
-
-
         public async Task<List<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate)
         {
 
@@ -270,6 +264,129 @@ namespace FinancialTransactionsApi.V1.Gateways
             while (!string.Equals(paginationToken, "{}", StringComparison.Ordinal));
 
             return dbTransactions.ToDomain();
+        }
+
+        public async Task<PagedResult<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query)
+        {
+            if (query.TargetIds.Count > 1)
+                return await GetPagedTransactionsByTargetIdsWithScanAsync(query).ConfigureAwait(false);
+
+            return await GetPagedTransactionsByTargetIdWithQueryAsync(query).ConfigureAwait(false);
+
+        }
+
+
+        private async Task<PagedResult<Transaction>> GetPagedTransactionsByTargetIdsWithScanAsync(TransactionByTargetIdsQuery query)
+        {
+            int pageSize = query.PageSize;
+            var dbTransactions = new List<TransactionDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<TransactionDbEntity>();
+            var filter = new ScanFilter();
+            if (query.TargetIds.Count > 0)
+            {
+                var objectValues = query.TargetIds.Select(x => (DynamoDBEntry) x).ToArray();
+                filter.AddCondition(TARGETID, ScanOperator.In, objectValues);
+            }
+            if (query.StartDate.HasValue)
+            {
+                query.EndDate = query.EndDate.HasValue
+                    ? query.EndDate.Value.Date.AddDays(1).AddMilliseconds(-1)
+                    : DateTime.UtcNow.Date.AddDays(1).AddMilliseconds(-1);
+
+                string startDate = query.StartDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat);
+                string endDate = query.EndDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat);
+
+                filter.AddCondition("transaction_date", ScanOperator.Between, startDate, endDate);
+            }
+
+            var scanConfig = new ScanOperationConfig
+            {
+                Limit = pageSize,
+                PaginationToken = PaginationDetails.DecodeToken(query.PaginationToken),
+                Filter = filter
+            };
+
+
+
+            var search = table.Scan(scanConfig);
+            var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+
+            var paginationToken = search.PaginationToken;
+            if (resultsSet.Any())
+            {
+                dbTransactions.AddRange(_dynamoDbContext.FromDocuments<TransactionDbEntity>(resultsSet));
+                // Look ahead for any more, but only if we have a token
+                if (!string.IsNullOrEmpty(PaginationDetails.EncodeToken(paginationToken)))
+                {
+                    scanConfig.PaginationToken = paginationToken;
+                    scanConfig.Limit = 1;
+                    search = table.Scan(scanConfig);
+                    resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+                    if (!resultsSet.Any())
+                        paginationToken = null;
+                }
+            }
+
+            return new PagedResult<Transaction>(dbTransactions.Select(x => x.ToDomain()), new PaginationDetails(paginationToken));
+
+        }
+
+        private async Task<PagedResult<Transaction>> GetPagedTransactionsByTargetIdWithQueryAsync(TransactionByTargetIdsQuery query)
+        {
+            int pageSize = query.PageSize;
+            var dbTransactions = new List<TransactionDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<TransactionDbEntity>();
+            var filter = new QueryFilter();
+            if (query.TargetIds.Count == 1)
+            {
+                var objectValue = query.TargetIds.FirstOrDefault();
+                filter.AddCondition(TARGETID, QueryOperator.Equal, objectValue);
+            }
+            if (query.StartDate.HasValue)
+            {
+                query.EndDate = query.EndDate.HasValue
+                    ? query.EndDate.Value.Date.AddDays(1).AddMilliseconds(-1)
+                    : DateTime.UtcNow.Date.AddDays(1).AddMilliseconds(-1);
+
+                string startDate = query.StartDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat);
+                string endDate = query.EndDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat);
+
+                filter.AddCondition("transaction_date", QueryOperator.Between, startDate, endDate);
+            }
+
+
+            var queryConfig = new QueryOperationConfig
+            {
+                BackwardSearch = true,
+                ConsistentRead = true,
+                Filter = filter,
+                PaginationToken = PaginationDetails.DecodeToken(query.PaginationToken),
+                Limit = pageSize
+            };
+
+
+
+            var search = table.Query(queryConfig);
+            var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+
+            var paginationToken = search.PaginationToken;
+            if (resultsSet.Any())
+            {
+                dbTransactions.AddRange(_dynamoDbContext.FromDocuments<TransactionDbEntity>(resultsSet));
+                // Look ahead for any more, but only if we have a token
+                if (!string.IsNullOrEmpty(PaginationDetails.EncodeToken(paginationToken)))
+                {
+                    queryConfig.PaginationToken = paginationToken;
+                    queryConfig.Limit = 1;
+                    search = table.Query(queryConfig);
+                    resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+                    if (!resultsSet.Any())
+                        paginationToken = null;
+                }
+            }
+
+            return new PagedResult<Transaction>(dbTransactions.Select(x => x.ToDomain()), new PaginationDetails(search.PaginationToken));
+
         }
     }
 }
