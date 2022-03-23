@@ -180,6 +180,7 @@ namespace FinancialTransactionsApi
             services.AddScoped<IGetSuspenseAccountUseCase, GetSuspenseAccountUseCase>();
             services.AddScoped<IGetByTargetIdUseCase, GetByTargetIdUseCase>();
             services.AddScoped<IGetAllActiveTransactionsUseCase, GetAllActiveTransactionsUseCase>();
+            services.AddScoped<IGetByTargetIdsUseCase, GetByTargetIdsUseCase>();
         }
 
 
