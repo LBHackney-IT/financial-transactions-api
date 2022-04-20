@@ -314,7 +314,7 @@ workflows:
               only: master
       - terraform-compliance-production:
           requires:
-            - terraform-init-and-plan-production:
+            - terraform-init-and-plan-production
           filters:
              branches:
                only: master
