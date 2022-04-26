@@ -7,10 +7,20 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'
 ARG LBHPACKAGESTOKEN
 ENV LBHPACKAGESTOKEN=$LBHPACKAGESTOKEN
 
+ARG SONAR_TOKEN
+ENV SONAR_TOKEN=$SONAR_TOKEN
+
 ENV DynamoDb_LocalMode='true'
 ENV Sns_LocalMode='true'
 
 WORKDIR /app
+
+# Enable SonarCloud
+RUN apt-get update && apt-get install -y openjdk-11-jdk
+RUN dotnet tool install --global dotnet-sonarscanner
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+RUN dotnet sonarscanner begin /k:"LBHackney-IT_financial-transactions-api" /o:"lbhackney-it" /d:sonar.host.url=https://sonarcloud.io /d:sonar.login="${SONAR_TOKEN}"
 
 # Copy csproj and restore as distinct layers
 COPY ./FinancialTransactionsApi.sln ./
@@ -24,6 +34,9 @@ RUN dotnet restore ./FinancialTransactionsApi.Tests/FinancialTransactionsApi.Tes
 # Copy everything else and build
 COPY . .
 
+RUN dotnet build -c debug -o out FinancialTransactionsApi/FinancialTransactionsApi.csproj
 RUN dotnet build -c debug -o out FinancialTransactionsApi.Tests/FinancialTransactionsApi.Tests.csproj
 
 CMD dotnet test
+
+RUN dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
