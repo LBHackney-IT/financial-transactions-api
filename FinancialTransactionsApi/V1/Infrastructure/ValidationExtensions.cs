@@ -136,7 +136,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
             }
 
 
-            if (request.TargetId == null || request.TargetId == Guid.Empty)
+            if (request.TargetId == Guid.Empty)
             {
                 return false;
             }
