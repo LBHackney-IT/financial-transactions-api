@@ -237,108 +237,38 @@ workflows:
       - build-and-test:
           context: 
             - api-nuget-token-context
-            - SonarCloud 
+            - SonarCloud
+          requires:
+            - check-code-formatting
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
             - build-and-test
+          filters:
+            branches:
+              only: du-test
       - terraform-init-and-plan-development:
           requires:
             - assume-role-development
+          filters:
+            branches:
+              only: du-test
       - terraform-compliance-development:
           requires:
             - terraform-init-and-plan-development
+          filters:
+            branches:
+              only: du-test
       - terraform-apply-development:
           requires:
             - terraform-compliance-development
+          filters:
+            branches:
+              only: du-test
       - deploy-to-development:
           context: api-nuget-token-context
           requires:
             - terraform-apply-development
           filters:
             branches:
-              only: development
-  check-and-deploy-staging-and-production:
-    jobs:
-      - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud           
-          filters:
-            branches:
-              only: master
-      - assume-role-staging:
-          context: api-assume-role-housing-staging-context
-          requires:
-              - build-and-test
-          filters:
-             branches:
-               only: master
-      - terraform-init-and-plan-staging:
-          requires:
-            - assume-role-staging
-          filters:
-            branches:
-              only: master
-      - terraform-compliance-staging:
-          requires:
-            - terraform-init-and-plan-staging
-          filters:
-            branches:
-              only: master
-      - terraform-apply-staging:
-          requires:
-            - terraform-compliance-staging
-          filters:
-            branches:
-              only: master              
-      - deploy-to-staging:
-          context: api-nuget-token-context
-          requires:
-            - terraform-apply-staging
-          filters:
-            branches:
-              only: master
-      - permit-production-terraform-release:
-          type: approval
-          requires:
-            - deploy-to-staging
-      - assume-role-production:
-          context: api-assume-role-housing-production-context
-          requires:
-              - permit-production-terraform-release
-          filters:
-             branches:
-               only: master
-      - terraform-init-and-plan-production:
-          requires:
-            - assume-role-production
-          filters:
-            branches:
-              only: master
-      - terraform-compliance-production:
-          requires:
-            - terraform-init-and-plan-production
-          filters:
-             branches:
-               only: master
-      - terraform-apply-production:
-          requires:
-            - terraform-compliance-production
-          filters:
-            branches:
-              only: master              
-      - permit-production-release:
-          type: approval
-          requires:
-            - terraform-apply-production
-          filters:
-             branches:
-               only: master
-      - deploy-to-production:
-          context: api-nuget-token-context
-          requires:
-            - permit-production-release
-          filters:
-            branches:
-              only: master
+              only: du-test
