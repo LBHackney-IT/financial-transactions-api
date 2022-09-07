@@ -1,18 +1,17 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
+using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Amazon.Lambda.Core;
-using System.IdentityModel.Tokens.Jwt;
-using FinancialTransactionsApi.V1.Infrastructure;
-using FinancialTransactionsApi.V1.Factories;
-using Hackney.Core.DynamoDb;
 
 namespace FinancialTransactionsApi.V1.Controllers
 {
@@ -25,24 +24,30 @@ namespace FinancialTransactionsApi.V1.Controllers
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IGetByIdUseCase _getByIdUseCase;
         private readonly IAddUseCase _addUseCase;
-        private readonly IUpdateUseCase _updateUseCase;
+        private readonly IUpdateSuspenseAccountUseCase _updateUseCase;
         private readonly IAddBatchUseCase _addBatchUseCase;
+        private readonly IGetSuspenseAccountUseCase _suspenseAccountUseCase;
         private readonly IGetByTargetIdUseCase _getByTargetIdUseCase;
+        private readonly IGetAllActiveTransactionsUseCase _getAllActiveTransactionsUseCase;
 
         public FinancialTransactionsApiController(
             IGetAllUseCase getAllUseCase,
             IGetByIdUseCase getByIdUseCase,
             IAddUseCase addUseCase,
-            IUpdateUseCase updateUseCase,
+            IUpdateSuspenseAccountUseCase updateUseCase,
             IAddBatchUseCase addBatchUseCase,
-            IGetByTargetIdUseCase getByTargetIdUseCase)
+            IGetSuspenseAccountUseCase suspenseAccountUseCase,
+            IGetByTargetIdUseCase getByTargetIdUseCase,
+            IGetAllActiveTransactionsUseCase getAllActiveTransactionsUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
             _addUseCase = addUseCase;
             _updateUseCase = updateUseCase;
             _addBatchUseCase = addBatchUseCase;
+            _suspenseAccountUseCase = suspenseAccountUseCase;
             _getByTargetIdUseCase = getByTargetIdUseCase;
+            _getAllActiveTransactionsUseCase = getAllActiveTransactionsUseCase;
         }
 
         /// <summary>
@@ -117,6 +122,54 @@ namespace FinancialTransactionsApi.V1.Controllers
             }
 
             var transactions = await _getAllUseCase.ExecuteAsync(query).ConfigureAwait(false);
+
+            return Ok(transactions);
+        }
+
+        /// <summary>
+        /// Returns ALL non-suspense transactions wthout any filters. Note, that this endpoint has bad performance and will be used only for system needs. For better performance use HousingSearchAPI
+        /// </summary>
+        [ProducesResponseType(typeof(PagedResult<TransactionLimitedModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [Route("active")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveTransactions([FromQuery] GetActiveTransactionsRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Request model cannot be null!"));
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
+            }
+
+            var transactions = await _getAllActiveTransactionsUseCase.ExecuteAsync(request).ConfigureAwait(false);
+
+            return Ok(transactions);
+        }
+
+        /// <summary>
+        /// Gets a collection of suspense account transactions for a tenancy/property
+        /// </summary>
+        /// <param name="query">Model with parameters to get collection of transactions</param>
+        /// <response code="200">Success. Transaction models were received successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [ProducesResponseType(typeof(PagedResult<TransactionResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [Route("suspense-account")]
+        [HttpGet]
+        public async Task<IActionResult> GetSuspenseAccount([FromQuery] SuspenseAccountQuery query)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
+            }
+
+            var transactions = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
 
             return Ok(transactions);
         }
@@ -214,9 +267,8 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <summary>
         /// Update a transaction model
         /// </summary>
-        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// /// <param name="token">The jwt token value</param>
-        /// <param name="id">The value by which we are looking for a transaction</param>
+        /// <param name="transactionId">The value by which we are looking for a transaction</param>
         /// <param name="transaction">Transaction model for update</param>
         /// <response code="200">Success. Transaction model was updated successfully</response>
         /// <response code="400">Bad Request</response>
@@ -226,11 +278,68 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
-        [HttpPut]
-        [Route("{id}")]
-        public async Task<IActionResult> Update([FromHeader(Name = "x-correlation-id")] string correlationId,
+        [HttpPatch]
+        [Route("suspense-account-confirmation/{transactionId}")]
+        public async Task<IActionResult> SuspenseAccountConfirmation([FromHeader(Name = "Authorization")] string token,
+                                                [FromRoute] Guid transactionId,
+                                                [FromBody] SuspenseConfirmationRequest transaction)
+        {
+            if (transaction == null)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "SuspenseConfirmationRequest model cannot be null!"));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
+            }
+            if (transaction.TargetId == Guid.Empty)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "SuspenseConfirmationRequest model don't have all information in fields!"));
+            }
+
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, Guid.Empty).ConfigureAwait(false);
+
+            if (existTransaction == null)
+            {
+                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
+            }
+
+            if (!existTransaction.IsSuspense)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
+            }
+
+            var lastUpdatedBy = GetUserName(token);
+
+            var domainTransaction = existTransaction.ResponseToDomain(transaction, lastUpdatedBy);
+
+
+            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
+
+            return Ok(transactionResponse);
+        }
+
+        /// <summary>
+        /// Update a transaction model
+        /// </summary>
+
+        /// /// <param name="token">The jwt token value</param>
+        /// <param name="transactionId">The value by which we are looking for a transaction</param>
+        /// <param name="transaction">Transaction model for update</param>
+        /// <response code="200">Success. Transaction model was updated successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">Transaction by provided id cannot be found</response>
+        /// <response code="500">Internal Server Error</response>
+        [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [HttpPatch]
+        [Route("suspense-account-approval/{transactionId}")]
+        public async Task<IActionResult> SuspenseAccountApproval(
                                                 [FromHeader(Name = "Authorization")] string token,
-                                                [FromRoute] Guid id,
+                                                [FromRoute] Guid transactionId,
                                                 [FromBody] UpdateTransactionRequest transaction)
         {
             if (transaction == null)
@@ -247,7 +356,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
             }
-            var existTransaction = await _getByIdUseCase.ExecuteAsync(id, Guid.Empty).ConfigureAwait(false);
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, Guid.Empty).ConfigureAwait(false);
 
             if (existTransaction == null)
             {
@@ -266,7 +375,7 @@ namespace FinancialTransactionsApi.V1.Controllers
             domainTransaction.CreatedAt = existTransaction.CreatedAt;
             domainTransaction.LastUpdatedBy = lastUpdatedBy;
 
-            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction, id).ConfigureAwait(false);
+            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
 
             return Ok(transactionResponse);
         }

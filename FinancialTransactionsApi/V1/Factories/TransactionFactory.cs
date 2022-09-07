@@ -1,8 +1,11 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
+using FinancialTransactionsApi.V1.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace FinancialTransactionsApi.V1.Factories
 {
@@ -72,6 +75,20 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
+        public static TransactionLimitedModel ToResponse(this TransactionLimitedDbEntity transactionDbEntity)
+        {
+            return transactionDbEntity == null ? null : new TransactionLimitedModel
+            {
+                Id = transactionDbEntity.Id,
+                TargetId = transactionDbEntity.TargetId,
+                TransactionAmount = transactionDbEntity.TransactionAmount,
+                HousingBenefitAmount = transactionDbEntity.HousingBenefitAmount,
+                PaidAmount = transactionDbEntity.PaidAmount,
+                BalanceAmount = transactionDbEntity.BalanceAmount,
+                ChargedAmount = transactionDbEntity.ChargedAmount,
+            };
+        }
+
         public static Transaction ToDomain(this AddTransactionRequest transactionRequest)
         {
             return transactionRequest == null ? null : new Transaction
@@ -119,6 +136,41 @@ namespace FinancialTransactionsApi.V1.Factories
                 Sender = transactionRequest.Sender,
                 Fund = transactionRequest.Fund,
                 SortCode = transactionRequest.SortCode
+            };
+        }
+
+        public static Transaction ResponseToDomain(this TransactionResponse transactionRequest, SuspenseConfirmationRequest transaction, string lastUpdatedBy)
+        {
+            return transactionRequest == null ? null : new Transaction
+            {
+                Id = transactionRequest.Id,
+                TargetId = transaction.TargetId,
+                TargetType = transactionRequest.TargetType,
+                BalanceAmount = transactionRequest.BalanceAmount,
+                ChargedAmount = transactionRequest.ChargedAmount,
+                HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
+                PaidAmount = transactionRequest.PaidAmount,
+                PaymentReference = transactionRequest.PaymentReference,
+                BankAccountNumber = transactionRequest.BankAccountNumber,
+                PeriodNo = transactionRequest.PeriodNo,
+                TransactionAmount = transactionRequest.TransactionAmount,
+                TransactionDate = transactionRequest.TransactionDate,
+                TransactionType = EnumHelper.GetValueFromDescription<TransactionType>(transactionRequest.TransactionType),
+                TransactionSource = transactionRequest.TransactionSource,
+                Address = transactionRequest.Address,
+                Sender = transactionRequest.Sender,
+                Fund = transactionRequest.Fund,
+                SortCode = transactionRequest.SortCode,
+                SuspenseResolutionInfo = new SuspenseResolutionInfo
+                {
+                    IsConfirmed = true,
+                    IsApproved = true,
+                    Note = transaction.Note,
+                    ResolutionDate = DateTime.UtcNow
+                },
+                CreatedAt = transactionRequest.CreatedAt,
+                CreatedBy = transactionRequest.CreatedBy,
+                LastUpdatedBy = lastUpdatedBy
             };
         }
 

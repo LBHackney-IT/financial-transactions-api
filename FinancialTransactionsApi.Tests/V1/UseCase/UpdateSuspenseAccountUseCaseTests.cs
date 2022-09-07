@@ -3,6 +3,7 @@ using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase;
 using FluentAssertions;
+using Hackney.Core.Sns;
 using Moq;
 using System;
 using System.Threading.Tasks;
@@ -10,15 +11,19 @@ using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
-    public class UpdateUseCaseTests
+    public class UpdateSuspenseAccountUseCaseTests
     {
         private readonly Mock<ITransactionGateway> _mockGateway;
-        private readonly UpdateUseCase _updateUseCase;
+        private readonly UpdateSuspenseAccountUseCase _updateUseCase;
+        private readonly Mock<ISnsGateway> _mockSnsGateway;
+        private readonly Mock<ISnsFactory> _mockSnsFactory;
 
-        public UpdateUseCaseTests()
+        public UpdateSuspenseAccountUseCaseTests()
         {
             _mockGateway = new Mock<ITransactionGateway>();
-            _updateUseCase = new UpdateUseCase(_mockGateway.Object);
+            _mockSnsFactory = new Mock<ISnsFactory>();
+            _mockSnsGateway = new Mock<ISnsGateway>();
+            _updateUseCase = new UpdateSuspenseAccountUseCase(_mockGateway.Object, _mockSnsGateway.Object, _mockSnsFactory.Object);
         }
 
         [Fact]
@@ -37,6 +42,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
+                FinancialMonth = 8,
+                FinancialYear = 2021,
                 TransactionType = TransactionType.ArrangementInterest,
                 Sender = new Sender()
                 {
@@ -48,15 +55,15 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 LastUpdatedBy = "new admin"
             };
 
-            _mockGateway.Setup(x => x.UpdateAsync(It.IsAny<Transaction>()))
+            _mockGateway.Setup(x => x.UpdateSuspenseAccountAsync(It.IsAny<Transaction>()))
                 .Returns(Task.CompletedTask);
 
-            var response = await _updateUseCase.ExecuteAsync(entity, Guid.NewGuid())
+            var response = await _updateUseCase.ExecuteAsync(entity)
                 .ConfigureAwait(false);
 
             var expectedResponse = entity.ToResponse();
 
-            _mockGateway.Verify(_ => _.UpdateAsync(It.IsAny<Transaction>()), Times.Once);
+            _mockGateway.Verify(_ => _.UpdateSuspenseAccountAsync(It.IsAny<Transaction>()), Times.Once);
 
             response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id)
                                                                          .Excluding(x => x.FinancialYear)
@@ -66,6 +73,9 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             response.FinancialMonth.Should().Be(8);
             response.FinancialYear.Should().Be(2021);
             response.LastUpdatedAt.Should().BeCloseTo(DateTime.UtcNow, 1000);
+
+            _mockSnsFactory.Verify(x => x.Create(It.IsAny<Transaction>()));
+            _mockSnsGateway.Verify(x => x.Publish(It.IsAny<TransactionSns>(), It.IsAny<string>(), It.IsAny<string>()));
         }
 
         [Fact]
@@ -87,6 +97,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
+                FinancialMonth = 8,
+                FinancialYear = 2021,
                 TransactionType = TransactionType.ArrangementInterest,
                 Sender = new Sender()
                 {
@@ -105,15 +117,17 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 LastUpdatedBy = "new admin"
             };
 
-            _mockGateway.Setup(x => x.UpdateAsync(It.IsAny<Transaction>()))
+            _mockGateway.Setup(x => x.UpdateSuspenseAccountAsync(It.IsAny<Transaction>()))
                 .Returns(Task.CompletedTask);
 
-            var response = await _updateUseCase.ExecuteAsync(entity, Guid.NewGuid())
+            var response = await _updateUseCase.ExecuteAsync(entity)
                 .ConfigureAwait(false);
 
             var expectedResponse = entity.ToResponse();
 
-            _mockGateway.Verify(_ => _.UpdateAsync(It.IsAny<Transaction>()), Times.Once);
+            _mockGateway.Verify(_ => _.UpdateSuspenseAccountAsync(It.IsAny<Transaction>()), Times.Once);
+            _mockSnsFactory.Verify(x => x.Create(It.IsAny<Transaction>()));
+            _mockSnsGateway.Verify(x => x.Publish(It.IsAny<TransactionSns>(), It.IsAny<string>(), It.IsAny<string>()));
 
             response.Should().BeEquivalentTo(expectedResponse, opt => opt.Excluding(x => x.Id)
                                                                          .Excluding(x => x.FinancialYear)
@@ -124,5 +138,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             response.FinancialYear.Should().Be(2021);
             response.LastUpdatedAt.Should().BeCloseTo(DateTime.UtcNow, 1000);
         }
+
+
     }
 }

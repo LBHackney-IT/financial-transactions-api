@@ -137,12 +137,13 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
             };
         }
 
-        public void GivenAUpdateTransactionRequest()
+        public void GivenASuspenseAccountTransactionRequest()
         {
             var transaction = new TransactionDbEntity
             {
                 Id = new Guid("6479ffee-b0e8-4c2a-b887-63f2dec086aa"),
                 TransactionDate = new DateTime(2021, 8, 1),
+                TargetId = Guid.Empty,
                 Address = "Address",
                 BalanceAmount = 154.12M,
                 ChargedAmount = 123.78M,
@@ -164,13 +165,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
             transaction.PaymentReference = "PaymentReference";
             transaction.Fund = "Fund";
             transaction.HousingBenefitAmount = 999.9M;
-            transaction.SuspenseResolutionInfo = new SuspenseResolutionInfo()
-            {
-                IsConfirmed = true,
-                IsApproved = true,
-                ResolutionDate = new DateTime(2021, 9, 1),
-                Note = "Note"
-            };
 
             Transaction = new Transaction
             {
@@ -194,7 +188,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 SuspenseResolutionInfo = new SuspenseResolutionInfo
                 {
                     IsConfirmed = true,
-                    IsApproved = true,
+                    IsApproved = false,
                     ResolutionDate = new DateTime(2021, 9, 1),
                     Note = "Note"
                 },

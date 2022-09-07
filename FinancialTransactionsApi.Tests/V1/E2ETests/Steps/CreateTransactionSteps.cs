@@ -81,15 +81,15 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
         }
 
 
-        public async Task WhenTheUpdateTransactionEndpointIsCalled(Transaction requestObject)
+        public async Task WhenTheSuspenseAccountConfirmationTransactionEndpointIsCalled(Transaction requestObject)
         {
-
-            var route = new Uri($"api/v1/transactions/{requestObject.Id}", UriKind.Relative);
-            var body = JsonSerializer.Serialize(requestObject);
+            var reqObj = new SuspenseConfirmationRequest { TargetId = Guid.NewGuid(), Note = "Test" };
+            var route = new Uri($"api/v1/transactions/suspense-account-confirmation/{requestObject.Id}", UriKind.Relative);
+            var body = JsonSerializer.Serialize(reqObj);
 
             using var stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            _lastResponse = await _httpClient.PutAsync(route, stringContent).ConfigureAwait(false);
+            _lastResponse = await _httpClient.PatchAsync(route, stringContent).ConfigureAwait(false);
         }
 
         private async Task<List<string>> GetResponseErrorProperties()
@@ -143,7 +143,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             apiEntity.FinancialYear.Should().Be(2021);
         }
 
-        public async Task ThenTheTransactionDetailsAreUpdatedAndReturned(TransactionDetailsFixture fixture)
+        public async Task ThenTheTransactionSuspensesAccountDetailsAreUpdatedAndReturned(TransactionDetailsFixture fixture)
         {
             var expected = fixture.Transaction;
             var responseContent = await _lastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -152,16 +152,8 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             _lastResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             updateApiEntity.Should().NotBeNull();
-
-            updateApiEntity.Should().BeEquivalentTo(expected, options => options
-                .Excluding(t => t.CreatedAt)
-                .Excluding(t => t.CreatedBy)
-                .Excluding(t => t.LastUpdatedBy)
-                .Excluding(t => t.LastUpdatedAt)
-                .Excluding(x => x.TransactionType));
-
-            updateApiEntity?.FinancialMonth.Should().Be(expected.FinancialMonth);
-            updateApiEntity?.FinancialYear.Should().Be(expected.FinancialYear);
+            updateApiEntity.TargetId.Should().Equals(Guid.Empty);
+            updateApiEntity.SuspenseResolutionInfo.IsConfirmed.Should().BeTrue();
             updateApiEntity?.LastUpdatedBy.Should().Be("testing");
         }
 

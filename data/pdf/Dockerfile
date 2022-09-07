@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/dotnet:3.1
+FROM public.ecr.aws/lambda/dotnet:6
 
 WORKDIR /var/task
 # For Rotativa SDK

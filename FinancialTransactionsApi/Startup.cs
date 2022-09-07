@@ -49,9 +49,8 @@ namespace FinancialTransactionsApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc();
+
             services.AddApiVersioning(o =>
             {
                 o.DefaultApiVersion = new ApiVersion(1, 0);
@@ -170,15 +169,20 @@ namespace FinancialTransactionsApi
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
             services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
             services.AddScoped<IAddUseCase, AddUseCase>();
-            services.AddScoped<IUpdateUseCase, UpdateUseCase>();
+            services.AddScoped<IUpdateSuspenseAccountUseCase, UpdateSuspenseAccountUseCase>();
             services.AddScoped<IAddBatchUseCase, AddBatchUseCase>();
             services.AddScoped<IPagingHelper, PagingHelper>();
             services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
             services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
             services.AddScoped<IFileGeneratorService, FileGeneratorService>();
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
+            services.AddScoped<IGetSuspenseAccountUseCase, GetSuspenseAccountUseCase>();
             services.AddScoped<IGetByTargetIdUseCase, GetByTargetIdUseCase>();
+            services.AddScoped<IGetAllActiveTransactionsUseCase, GetAllActiveTransactionsUseCase>();
+            services.AddScoped<IGetByTargetIdsUseCase, GetByTargetIdsUseCase>();
         }
+
+
         private static void RegisterFactories(IServiceCollection services)
         {
             services.AddScoped<ISnsFactory, TransactionSnsFactory>();

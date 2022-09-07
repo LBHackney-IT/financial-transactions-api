@@ -2,28 +2,22 @@ using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 
 namespace FinancialTransactionsApi.V1.Boundary.Request
 {
-    public class TransactionQuery : BaseSearchQuery
+    public class TransactionByTargetIdsQuery : BaseSearchQuery
     {
         /// <summary>
-        /// The guid of a tenancy/property
+        /// The guids of a tenancy/property
         /// </summary>
         /// <example>
-        /// 94b02545-0233-4640-98dd-b2900423c0a5
+        /// 94b02545-0233-4640-98dd-b2900423c0a5,94b02545-0233-4640-98dd-b2900423c0a6,94b02545-0233-4640-98dd-b2900423c0a7
         /// </example>
-        public Guid TargetId { get; set; }
+        public List<Guid> TargetIds { get; set; }
 
         [FromQuery]
         public string PaginationToken { get; set; }
-        /// <summary>
-        /// Type of transaction tenancy/property
-        /// </summary>
-        /// <example>
-        /// Rent
-        /// </example>
-        public TransactionType? TransactionType { get; set; }
 
         /// <summary>
         /// Selected start date

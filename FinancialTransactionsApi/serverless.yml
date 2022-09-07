@@ -1,7 +1,7 @@
 service: financial-transactions-api
 provider:
   name: aws
-  runtime: dotnetcore3.1
+  runtime: dotnet6
   memorySize: 2048
   timeout: 29 # optional, in seconds, default is 6
   tracing:
@@ -13,7 +13,10 @@ provider:
   region: eu-west-2
 
 package:
-  artifact: ./bin/release/netcoreapp3.1/financial-transactions-api.zip
+  artifact: ./bin/release/net6.0/financial-transactions-api.zip
+
+  plugins:
+  - serverless-associate-waf  
 
 functions:
   FinancialTransactionsApi:
@@ -156,6 +159,9 @@ resources:
                           - Ref: 'AWS::AccountId'
                           - 'table/Transactions/index/*'
 custom:
+  associateWaf:
+    name: Platform_APIs_Web_ACL
+    version: V2
   vpc:
     development:
       securityGroupIds:
