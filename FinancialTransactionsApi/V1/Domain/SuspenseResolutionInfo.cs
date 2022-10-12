@@ -1,7 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using System;
 
 namespace FinancialTransactionsApi.V1.Domain
 {
+    [Keyless]
     public class SuspenseResolutionInfo
     {
         public DateTime? ResolutionDate { get; set; }

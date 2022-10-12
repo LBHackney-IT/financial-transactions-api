@@ -3,6 +3,7 @@ using FinancialTransactionsApi.V1.Domain;
 using System;
 using FinancialTransactionsApi.V1.Infrastructure.Converters;
 using Hackney.Core.DynamoDb.Converters;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 {
@@ -53,6 +54,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "is_suspense", Converter = typeof(DynamoDbBooleanConverter))]
         public bool IsSuspense => TargetId == Guid.Empty;
 
+        [NotMapped]
         [DynamoDBProperty(AttributeName = "suspense_resolution_info", Converter = typeof(DynamoDbObjectConverter<SuspenseResolutionInfo>))]
         public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
 
