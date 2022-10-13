@@ -9,7 +9,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
         public DatabaseContext() { }
         public DatabaseContext(DbContextOptions options) : base(options) { }
 
-        public DbSet<TransactionPGEntity> TransactionEntities { get; set; }
+        public DbSet<TransactionEntity> TransactionEntities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

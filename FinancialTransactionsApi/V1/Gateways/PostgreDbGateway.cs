@@ -26,7 +26,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         {
             if (targetId == Guid.Empty) throw new ArgumentException($"{nameof(targetId)} shouldn't be empty.");
 
-            var response = await _databaseContext.TransactionEntities.Where(x => x.TargetId == targetId.ToString().ToUpper()).ToListAsync().ConfigureAwait(false);
+            var response = await _databaseContext.TransactionEntities.Where(x => x.TargetId == targetId).ToListAsync().ConfigureAwait(false);
 
             return response?.ToDomain();
         }

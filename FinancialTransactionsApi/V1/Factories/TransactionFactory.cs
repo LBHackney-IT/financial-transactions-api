@@ -193,38 +193,35 @@ namespace FinancialTransactionsApi.V1.Factories
         }
 
 
-        public static Transaction ToDomain(this TransactionPGEntity transactionPGEntity)
+        public static Transaction ToDomain(this TransactionEntity entity)
         {
-            return transactionPGEntity == null ? null : new Transaction
+            return entity == null ? null : new Transaction
             {
-                Id = Guid.NewGuid(),
-                TargetId = Guid.Parse(transactionPGEntity.TargetId),
-                TargetType = (TargetType) Enum.Parse(typeof(TargetType), transactionPGEntity.TargetType),
-                BalanceAmount = transactionPGEntity.BalanceAmount,
-                ChargedAmount = transactionPGEntity.ChargedAmount,
-                FinancialMonth = (short)transactionPGEntity.FinancialMonth,
-                FinancialYear = (short)transactionPGEntity.FinancialYear,
-                HousingBenefitAmount = transactionPGEntity.HousingBenefitAmount ?? 0,
-                PaidAmount = transactionPGEntity.PaidAmount ?? 0,
-                PaymentReference = transactionPGEntity.PaymentReference,
-                BankAccountNumber = transactionPGEntity.BankAccountNumber,
-                //SuspenseResolutionInfo = transactionPGEntity.SuspenseResolutionInfo,
-                PeriodNo = (short)transactionPGEntity.PeriodNumber,
-                TransactionAmount = transactionPGEntity.TransactionAmount,
-                TransactionDate = transactionPGEntity.TransactionDate,
-                //TransactionType = transactionPGEntity.TransactionType,
-                TransactionSource = transactionPGEntity.TransactionSource,
-                Address = transactionPGEntity.Address,
-                Sender = new Sender() { Id = Guid.NewGuid(), FullName = transactionPGEntity.Sender },
-                Fund = transactionPGEntity.Fund ?? String.Empty,
-                SortCode = transactionPGEntity.SortCode,
-                CreatedAt = transactionPGEntity.CreatedAt,
-                CreatedBy = transactionPGEntity.CreatedBy,
-                LastUpdatedAt = transactionPGEntity.LastUpdatedAt.Value,
-                LastUpdatedBy = transactionPGEntity.LastUpdatedBy
+                Id = entity.Id,
+                TargetId = entity.TargetId,
+                TargetType = (TargetType) Enum.Parse(typeof(TargetType), entity.TargetType),
+                AssetId = entity.AssetId,
+                AssetType = entity.AssetType,
+                TenancyAgreementRef = entity.TenancyAgreementRef,
+                PropertyRef = entity.PropertyRef,
+                BalanceAmount = entity.BalanceAmount,
+                ChargedAmount = entity.ChargedAmount,
+                FinancialMonth = entity.FinancialMonth,
+                FinancialYear = entity.FinancialYear,
+                HousingBenefitAmount = entity.HousingBenefitAmount,
+                PaidAmount = entity.PaidAmount,
+                PaymentReference = entity.PaymentReference,
+                PeriodNo = entity.PeriodNo,
+                TransactionSource = entity.TransactionSource,
+                PostDate = entity.PostDate,
+                RealValue = entity.RealValue,
+                Address = entity.Address,
+                Fund = entity.Fund ?? String.Empty,
+                CreatedAt = entity.CreatedAt,
+                CreatedBy = entity.CreatedBy,
             };
         }
-        public static List<Transaction> ToDomain(this IEnumerable<TransactionPGEntity> databaseEntity)
+        public static List<Transaction> ToDomain(this IEnumerable<TransactionEntity> databaseEntity)
         {
             return databaseEntity.Select(p => p.ToDomain()).OrderBy(x => x.TransactionDate).ToList();
         }
