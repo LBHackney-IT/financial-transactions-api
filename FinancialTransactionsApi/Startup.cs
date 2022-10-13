@@ -169,7 +169,7 @@ namespace FinancialTransactionsApi
         private static void RegisterGateways(IServiceCollection services)
         {
             //services.AddScoped<ITransactionGateway, DynamoDbGateway>();
-            services.AddScoped<ITransactionGateway, PostgreGateway>();
+            services.AddScoped<ITransactionGateway, PostgreDbGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)

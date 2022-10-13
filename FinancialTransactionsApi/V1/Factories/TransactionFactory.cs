@@ -192,5 +192,41 @@ namespace FinancialTransactionsApi.V1.Factories
             return transactions.Select(item => item.ToDatabase()).ToList();
         }
 
+
+        public static Transaction ToDomain(this TransactionPGEntity transactionPGEntity)
+        {
+            return transactionPGEntity == null ? null : new Transaction
+            {
+                Id = Guid.NewGuid(),
+                TargetId = Guid.Parse(transactionPGEntity.TargetId),
+                TargetType = (TargetType) Enum.Parse(typeof(TargetType), transactionPGEntity.TargetType),
+                BalanceAmount = transactionPGEntity.BalanceAmount,
+                ChargedAmount = transactionPGEntity.ChargedAmount,
+                FinancialMonth = (short)transactionPGEntity.FinancialMonth,
+                FinancialYear = (short)transactionPGEntity.FinancialYear,
+                HousingBenefitAmount = transactionPGEntity.HousingBenefitAmount ?? 0,
+                PaidAmount = transactionPGEntity.PaidAmount ?? 0,
+                PaymentReference = transactionPGEntity.PaymentReference,
+                BankAccountNumber = transactionPGEntity.BankAccountNumber,
+                //SuspenseResolutionInfo = transactionPGEntity.SuspenseResolutionInfo,
+                PeriodNo = (short)transactionPGEntity.PeriodNumber,
+                TransactionAmount = transactionPGEntity.TransactionAmount,
+                TransactionDate = transactionPGEntity.TransactionDate,
+                //TransactionType = transactionPGEntity.TransactionType,
+                TransactionSource = transactionPGEntity.TransactionSource,
+                Address = transactionPGEntity.Address,
+                Sender = new Sender() { Id = Guid.NewGuid(), FullName = transactionPGEntity.Sender },
+                Fund = transactionPGEntity.Fund ?? String.Empty,
+                SortCode = transactionPGEntity.SortCode,
+                CreatedAt = transactionPGEntity.CreatedAt,
+                CreatedBy = transactionPGEntity.CreatedBy,
+                LastUpdatedAt = transactionPGEntity.LastUpdatedAt.Value,
+                LastUpdatedBy = transactionPGEntity.LastUpdatedBy
+            };
+        }
+        public static List<Transaction> ToDomain(this IEnumerable<TransactionPGEntity> databaseEntity)
+        {
+            return databaseEntity.Select(p => p.ToDomain()).OrderBy(x => x.TransactionDate).ToList();
+        }
     }
 }

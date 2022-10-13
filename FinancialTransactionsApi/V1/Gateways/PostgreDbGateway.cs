@@ -14,19 +14,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
-    public class PostgreGateway : ITransactionGateway
+    public class PostgreDbGateway : ITransactionGateway
     {
         private readonly DatabaseContext _databaseContext;
-        public PostgreGateway(DatabaseContext databaseContext)
+        public PostgreDbGateway(DatabaseContext databaseContext)
         {
             this._databaseContext = databaseContext;
         }
 
         public async Task<List<Transaction>> GetByTargetId(Guid targetId)
         {
-            if (targetId == Guid.Empty) throw new ArgumentException($"{nameof(targetId).ToString()} shouldn't be empty.");
+            if (targetId == Guid.Empty) throw new ArgumentException($"{nameof(targetId)} shouldn't be empty.");
 
-            var response = await _databaseContext.TransactionEntities.Where(x => x.TargetId == targetId).ToListAsync().ConfigureAwait(false);
+            var response = await _databaseContext.TransactionEntities.Where(x => x.TargetId == targetId.ToString().ToUpper()).ToListAsync().ConfigureAwait(false);
 
             return response?.ToDomain();
         }
