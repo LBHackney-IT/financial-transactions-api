@@ -10,9 +10,9 @@ namespace FinancialTransactionsApi.V1.UseCase
 {
     public class GetByIdUseCase : IGetByIdUseCase
     {
-        private readonly ITransactionGateway _gateway;
+        private readonly IPostgresDbGateway _gateway;
 
-        public GetByIdUseCase(ITransactionGateway gateway)
+        public GetByIdUseCase(IPostgresDbGateway gateway)
         {
             _gateway = gateway;
         }

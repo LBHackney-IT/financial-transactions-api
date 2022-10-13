@@ -1,4 +1,6 @@
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using Amazon.XRay.Recorder.Core;
+using Amazon.XRay.Recorder.Core.Strategies;
 using FinancialTransactionsApi.V1;
 using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.Factories;
@@ -8,6 +10,7 @@ using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
+using FinancialTransactionsApi.V1.Infrastructure;
 using Hackney.Core.Authorization;
 using Hackney.Core.DynamoDb;
 using Hackney.Core.Http;
@@ -22,6 +25,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -41,6 +45,7 @@ namespace FinancialTransactionsApi
             Configuration = configuration;
 
             AWSSDKHandler.RegisterXRayForAllServices();
+            AWSXRayRecorder.Instance.ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR;
         }
 
         public IConfiguration Configuration { get; }
@@ -125,6 +130,9 @@ namespace FinancialTransactionsApi
             services.ConfigureSns();
             services.AddLocalStack(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+
+            ConfigureDbContext(services);
+
             RegisterGateways(services);
             RegisterUseCases(services);
             RegisterFactories(services);
