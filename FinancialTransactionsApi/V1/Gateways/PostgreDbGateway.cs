@@ -31,9 +31,9 @@ namespace FinancialTransactionsApi.V1.Gateways
             return response?.ToDomain();
         }
 
-        public Task<Transaction> GetTransactionByIdAsync(Guid targetId, Guid id)=> throw new NotImplementedException();
+        public Task<Transaction> GetTransactionByIdAsync(Guid targetId, Guid id) => throw new NotImplementedException();
 
-        public Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)=> throw new NotImplementedException();
+        public Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query) => throw new NotImplementedException();
 
         public Task AddAsync(Transaction transaction) => throw new NotImplementedException();
 
