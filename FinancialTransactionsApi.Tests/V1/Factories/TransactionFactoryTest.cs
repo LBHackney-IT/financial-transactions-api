@@ -43,7 +43,12 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
 
             var domain = dbEntity.ToDomain();
 
-            domain.Should().BeEquivalentTo(dbEntity);
+            domain.Should().BeEquivalentTo(dbEntity, options =>
+            {
+                options.Excluding(info => info.TransactionType);
+                options.Excluding(info => info.TargetType);
+                return options;
+            });
         }
 
         [Fact]
