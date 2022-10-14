@@ -11,16 +11,31 @@ services:
     ports:
       - 3000:3000
     environment:
+      - CONNECTION_STRING=Host=postgres-dev-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
       - Sns_LocalMode=true
       - DynamoDb_LocalMode=true
       - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
       - AWS_REGION=eu-west-2
       - AWS_ACCESS_KEY_ID=local
       - AWS_SECRET_ACCESS_KEY=local
+      - REQUIRED_GOOGL_GROUPS=e2e-testing-development
     links:
+      - postgres-dev-database
       - dynamodb-database
     depends_on:
      - pdf-generator
+
+  postgres-dev-database:
+    env_file:
+      - database.env
+    image: postgres-dev-database
+    build:
+      context: .
+      dockerfile: database/Dockerfile
+    ports:
+      - 5432:5432
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
 
   financial-transactions-api-test:
     image: financial-transactions-api-test
@@ -31,6 +46,7 @@ services:
       - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
       - SONAR_TOKEN=${SONAR_TOKEN}
     environment:
+      - CONNECTION_STRING=Host=postgres-test-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
       - DynamoDb_LocalMode=true
       - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
       - AWS_REGION=eu-west-2
@@ -40,7 +56,18 @@ services:
     links:
       - dynamodb-database
       - localstack
+      - postgres-test-database
  
+  postgres-test-database:
+    image: postgres-test-database
+    build:
+      context: .
+      dockerfile: database/Dockerfile
+    ports:
+      - 6000:5432
+    env_file:
+      - database.env
+      
   dynamodb-database:
     image: amazon/dynamodb-local
     ports:

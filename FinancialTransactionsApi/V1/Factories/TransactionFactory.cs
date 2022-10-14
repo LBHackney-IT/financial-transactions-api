@@ -192,7 +192,6 @@ namespace FinancialTransactionsApi.V1.Factories
             return transactions.Select(item => item.ToDatabase()).ToList();
         }
 
-
         public static Transaction ToDomain(this TransactionEntity entity)
         {
             return entity == null ? null : new Transaction
