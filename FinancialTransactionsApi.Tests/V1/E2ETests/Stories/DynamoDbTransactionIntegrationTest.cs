@@ -63,7 +63,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var uri = new Uri($"api/v1/transactions/{id}?targetId={targetId}", UriKind.Relative);
             var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().Be(500);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);

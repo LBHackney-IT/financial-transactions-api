@@ -28,7 +28,7 @@ services:
   postgres-dev-database:
     env_file:
       - database.env
-    image: postgres-dev-database
+    image: postgres:12
     build:
       context: .
       dockerfile: database/Dockerfile
@@ -59,7 +59,7 @@ services:
       - postgres-test-database
  
   postgres-test-database:
-    image: postgres-test-database
+    image: postgres:12
     build:
       context: .
       dockerfile: database/Dockerfile
