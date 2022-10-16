@@ -90,13 +90,13 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             apiEntity.Success.Should().BeTrue();
         }
 
-        [Fact]
-        public async Task Add_WithValidModel_Returns201()
-        {
-            var transaction = ConstructTransaction();
+        //[Fact]
+        //public async Task Add_WithValidModel_Returns201()
+        //{
+        //    var transaction = ConstructTransaction();
 
-            await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
-        }
+        //    await CreateTransactionAndValidateResponse(transaction).ConfigureAwait(false);
+        //}
 
         //[Fact]
         //public async Task AddAndThenGetById_WithValidModelAndValidId_Returns201And200()
@@ -234,42 +234,42 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
         //}
 
-        [Fact]
-        public async Task GetTargetIdAndTransactionTypeFoundReturnsResponse()
-        {
-            var targetId = Guid.NewGuid();
-            var transactionsObj = _fixture.Build<Transaction>()
-                             .With(x => x.TargetId, targetId)
-                             .With(x => x.TransactionType, TransactionType.ArrangementInterest)
-                             .CreateMany(5);
-            var transType = transactionsObj.FirstOrDefault().TransactionType;
+        //[Fact]
+        //public async Task GetTargetIdAndTransactionTypeFoundReturnsResponse()
+        //{
+        //    var targetId = Guid.NewGuid();
+        //    var transactionsObj = _fixture.Build<Transaction>()
+        //                     .With(x => x.TargetId, targetId)
+        //                     .With(x => x.TransactionType, TransactionType.ArrangementInterest)
+        //                     .CreateMany(5);
+        //    var transType = transactionsObj.FirstOrDefault().TransactionType;
 
-            int d = -5;
-            var startDate = DateTime.UtcNow.AddDays(d).ToString("yyyy-MM-dd");
-            foreach (var entity in transactionsObj)
-            {
-                entity.TransactionDate = DateTime.UtcNow.AddDays(d);
-                await SetupTestData(entity).ConfigureAwait(false);
-                d++;
-            }
-            var endDate = DateTime.UtcNow.AddDays(d).ToString("yyyy-MM-dd");
-            var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11", UriKind.Relative);
-            var response = await Client.GetAsync(uri).ConfigureAwait(false);
+        //    int d = -5;
+        //    var startDate = DateTime.UtcNow.AddDays(d).ToString("yyyy-MM-dd");
+        //    foreach (var entity in transactionsObj)
+        //    {
+        //        entity.TransactionDate = DateTime.UtcNow.AddDays(d);
+        //        await SetupTestData(entity).ConfigureAwait(false);
+        //        d++;
+        //    }
+        //    var endDate = DateTime.UtcNow.AddDays(d).ToString("yyyy-MM-dd");
+        //    var uri = new Uri($"api/v1/transactions?targetId={targetId}&transactionType={transType}&startDate={startDate}&endDate={endDate}&pageSize=11", UriKind.Relative);
+        //    var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        //    response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<PagedResult<TransactionResponse>>(responseContent);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        //    var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //    var apiEntity = JsonConvert.DeserializeObject<PagedResult<TransactionResponse>>(responseContent);
+        //    response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            foreach (var item in transactionsObj)
-            {
-                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(item.TargetId, item.Id).ConfigureAwait(false));
-            }
+        //    foreach (var item in transactionsObj)
+        //    {
+        //        CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(item.TargetId, item.Id).ConfigureAwait(false));
+        //    }
 
-            // apiEntity.Total.Should().Be(5);
-            apiEntity.Results.Should().HaveCount(5);
-        }
+        //    // apiEntity.Total.Should().Be(5);
+        //    apiEntity.Results.Should().HaveCount(5);
+        //}
 
         //[Fact]
         //public async Task AddAndUpdate_WithValidModel_Returns201And200()
