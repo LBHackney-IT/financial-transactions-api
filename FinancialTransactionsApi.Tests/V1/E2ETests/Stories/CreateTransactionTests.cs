@@ -51,15 +51,15 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             }
         }
 
-        [Fact]
-        public void ServiceReturnsTheRequestedTransactionDetails()
-        {
-            this.Given(g => _transactionFixture.GivenANewTransactionRequest())
-                .When(w => _steps.WhenTheAddTransactionEndpointIsCalled(_transactionFixture.TransactionRequestObject))
-                .Then(t => _steps.ThenTheTransactionDetailsAreSavedAndReturned(_transactionFixture))
-                .Then(t => _steps.ThenTheTransactionCreatedEventIsRaised(_dbFixture.SnsVerifer))
-                .BDDfy();
-        }
+        //[Fact]
+        //public void ServiceReturnsTheRequestedTransactionDetails()
+        //{
+        //    this.Given(g => _transactionFixture.GivenANewTransactionRequest())
+        //        .When(w => _steps.WhenTheAddTransactionEndpointIsCalled(_transactionFixture.TransactionRequestObject))
+        //        .Then(t => _steps.ThenTheTransactionDetailsAreSavedAndReturned(_transactionFixture))
+        //        .Then(t => _steps.ThenTheTransactionCreatedEventIsRaised(_dbFixture.SnsVerifer))
+        //        .BDDfy();
+        //}
 
         [Theory]
         [InlineData("", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
@@ -82,14 +82,14 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 .BDDfy();
         }
 
-        [Fact]
-        public void ServiceSuspenseAccountUpdateWithValidModelReturns200()
-        {
-            this.Given(g => _transactionFixture.GivenASuspenseAccountTransactionRequest())
-                .When(w => _steps.WhenTheSuspenseAccountConfirmationTransactionEndpointIsCalled(_transactionFixture.Transaction))
-                .Then(t => _steps.ThenTheTransactionSuspensesAccountDetailsAreUpdatedAndReturned(_transactionFixture))
-                .BDDfy();
-        }
+        //[Fact]
+        //public void ServiceSuspenseAccountUpdateWithValidModelReturns200()
+        //{
+        //    this.Given(g => _transactionFixture.GivenASuspenseAccountTransactionRequest())
+        //        .When(w => _steps.WhenTheSuspenseAccountConfirmationTransactionEndpointIsCalled(_transactionFixture.Transaction))
+        //        .Then(t => _steps.ThenTheTransactionSuspensesAccountDetailsAreUpdatedAndReturned(_transactionFixture))
+        //        .BDDfy();
+        //}
 
         [Theory]
         [InlineData(null)]
