@@ -39,8 +39,6 @@ namespace FinancialTransactionsApi.Tests
             EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
             EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "o4fejrd");
             EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "ez1lwb");
-            EnsureEnvVarConfigured("CONNECTION_STRING", "Host=postgres-test-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword");
-            EnsureEnvVarConfigured("REQUIRED_GOOGL_GROUPS", "e2e-testing-development;HackneyAll;saml-aws-mtfh-developer;saml-aws-developer");
             EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
             EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:9911");
 
@@ -48,7 +46,7 @@ namespace FinancialTransactionsApi.Tests
             EnsureEnvVarConfigured("SubHeader", "SubHeader");
             EnsureEnvVarConfigured("Footer", "Footer");
             EnsureEnvVarConfigured("SubFooter", "SubFooter");
-            EnsureEnvVarConfigured("REQUIRED_GOOGL_GROUPS", "some-valid-google-group");
+            EnsureEnvVarConfigured("REQUIRED_GOOGL_GROUPS", "e2e-testing-development;HackneyAll;saml-aws-mtfh-developer;saml-aws-developer");
             Factory = new AwsMockWebApplicationFactory<TStartup>(_tables);
 
             Client = Factory.CreateClient();
