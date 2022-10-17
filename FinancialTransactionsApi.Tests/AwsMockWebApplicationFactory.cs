@@ -46,11 +46,8 @@ namespace FinancialTransactionsApi.Tests
             {
                 services.ConfigureDynamoDB();
                 services.ConfigureSns();
-                
                 var serviceProvider = services.BuildServiceProvider();
-
                 AWSConfigs.AWSRegion = "eu-west-2";
-
                 DynamoDb = serviceProvider.GetRequiredService<IAmazonDynamoDB>();
                 DynamoDbContext = serviceProvider.GetRequiredService<IDynamoDBContext>();
 
