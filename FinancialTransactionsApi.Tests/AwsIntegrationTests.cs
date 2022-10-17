@@ -39,7 +39,7 @@ namespace FinancialTransactionsApi.Tests
             EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
             EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "o4fejrd");
             EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "ez1lwb");
-            EnsureEnvVarConfigured("CONNECTION_STRING", "Host=127.0.0.1;Port=6000;Database=testdb;Username=postgres;Password=mypassword");
+            EnsureEnvVarConfigured("CONNECTION_STRING", "Host=postgres-test-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword");
             EnsureEnvVarConfigured("REQUIRED_GOOGL_GROUPS", "e2e-testing-development;HackneyAll;saml-aws-mtfh-developer;saml-aws-developer");
             EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
             EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:9911");
