@@ -122,7 +122,6 @@ namespace FinancialTransactionsApi
 
             ConfigureLogging(services, Configuration);
 
-            //services.ConfigureDynamoDB();
             services.ConfigureSns();
             services.AddLocalStack(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
@@ -168,7 +167,6 @@ namespace FinancialTransactionsApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            //services.AddScoped<ITransactionGateway, DynamoDbGateway>();
             services.AddScoped<ITransactionGateway, PostgreDbGateway>();
         }
 
