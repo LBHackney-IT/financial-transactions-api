@@ -13,12 +13,11 @@ namespace FinancialTransactionsApi.Tests
 {
     public class AwsIntegrationTests<TStartup> : IDisposable where TStartup : class
     {
-        private const string TestToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0IiwiaWF0IjoxNjM5NDIyNzE4LCJleHAiOjE5ODY1Nzc5MTgsImF1ZCI6InRlc3QiLCJzdWIiOiJ0ZXN0IiwiZ3JvdXBzIjpbInNvbWUtdmFsaWQtZ29vZ2xlLWdyb3VwIiwic29tZS1vdGhlci12YWxpZC1nb29nbGUtZ3JvdXAiXSwibmFtZSI6InRlc3RpbmcifQ.IcpQ00PGVgksXkR_HFqWOakgbQ_PwW9dTVQu4w77tmU";
+        private const string TestToken = " Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTUxNjQ3NDY2MzU4MTYwNTkxODQiLCJlbWFpbCI6ImdhYnJpZWxhLm1hcnRpbmlAaGFja25leS5nb3YudWsiLCJpc3MiOiJIYWNrbmV5IiwibmFtZSI6IkdhYnJpZWxhIE1hcnRpbmkiLCJncm91cHMiOlsiZGV2ZWxvcG1lbnQtdGVhbS1wcm9kdWN0aW9uIiwiZGV2ZWxvcG1lbnQtdGVhbS1zdGFnaW5nIiwiSGFja25leUFsbCIsImhvdXNpbmctbmVlZHMtY29sbGFidG9vbHMtcHJvdG8iLCJpbmgtYWRtaW4tZGV2IiwiaW5oLXVzZXJzLWRldiIsIm1hbmFnZS1hcnJlYXJzLWxlYXNlaG9sZC1zdGFnaW5nIiwibWFuYWdlLWFycmVhcnMtbGVhc2Vob2xkIiwibWFuYWdlYXJyZWFycy1pbmNvbWUtY29sbGVjdGlvbi1yZWFkLXdyaXRlLWRldmVsb3BtZW50IiwibWFuYWdlYXJyZWFycy1sZWFzZWhvbGQtcmVhZC13cml0ZS1kZXZlbG9wbWVudCIsIm1taC1nZW5lcmFsLXVzZXItYWNjZXNzIiwibXRmaC11YXQtYWNjZXNzIiwic2FtbC1hd3MtYXBwc3RyZWFtLWNlZGFyIiwic2FtbC1hd3MtZGFzaGJvYXJkLWFjY2VzcyIsInNhbWwtYXdzLWRldmVsb3BlciIsInNhbWwtYXdzLW10ZmgtZGV2ZWxvcGVyIiwic2FtbC1ob3VzaW5nZmluYW5jZSIsInNpbmdsZS12aWV3LWFjY2VzcyJdLCJpYXQiOjE2NjU1NzU2ODB9.pqGJjNXrgR8e7YWjTBjiHJdWgFFoVxm-ror3UnngBXE";
 
         public HttpClient Client { get; private set; }
         public readonly AwsMockWebApplicationFactory<TStartup> Factory;
         public IDynamoDBContext DynamoDbContext => Factory?.DynamoDbContext;
-        public IAmazonSimpleNotificationService SimpleNotificationService => Factory?.SimpleNotificationService;
         public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
@@ -40,6 +39,8 @@ namespace FinancialTransactionsApi.Tests
             EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
             EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "o4fejrd");
             EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "ez1lwb");
+            EnsureEnvVarConfigured("CONNECTION_STRING", "Host=127.0.0.1;Port=6000;Database=testdb;Username=postgres;Password=mypassword");
+            EnsureEnvVarConfigured("REQUIRED_GOOGL_GROUPS", "e2e-testing-development;HackneyAll;saml-aws-mtfh-developer;saml-aws-developer");
             EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
             EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:9911");
 
@@ -53,7 +54,6 @@ namespace FinancialTransactionsApi.Tests
             Client = Factory.CreateClient();
             Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(TestToken);
             CleanupActions = new List<Action>();
-            CreateSnsTopic();
         }
         public void Dispose()
         {
@@ -79,23 +79,6 @@ namespace FinancialTransactionsApi.Tests
                 _disposed = true;
             }
         }
-        private void CreateSnsTopic()
-        {
-            var snsAttrs = new Dictionary<string, string>();
-            snsAttrs.Add("FifoTopic", "true");
-            snsAttrs.Add("ContentBasedDeduplication", "true");
-
-            var response = SimpleNotificationService.CreateTopicAsync(new CreateTopicRequest
-            {
-                Name = "transactioncreated.fifo",
-                Attributes = snsAttrs
-            }).Result;
-
-            Environment.SetEnvironmentVariable("TRANSACTION_SNS_ARN", response.TopicArn);
-
-            SnsVerifer = new SnsEventVerifier<TransactionSns>(Factory.AmazonSqs, SimpleNotificationService, response.TopicArn);
-        }
-
     }
 
     public class TableDef
