@@ -24,9 +24,7 @@
         "Localstack_SnsServiceUrl": "http://localhost:9911",
         "DynamoDb_LocalSecretKey": "o4fejrd",
         "DynamoDb_LocalMode": "true",
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "CONNECTION_STRING": "User ID =financeadmin;Password=X55ugV9utKtS;Server=localhost;Port=55112;Database=housingfinance;Integrated Security=true;Pooling=true;",
-        "REQUIRED_GOOGL_GROUPS": "e2e-testing-development;HackneyAll;saml-aws-mtfh-developer;saml-aws-developer"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sqlDebugging": true
     }
