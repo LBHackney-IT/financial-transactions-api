@@ -16,6 +16,19 @@ namespace FinancialTransactionsApi.V1.Boundary
         // 94b02545-0233-4640-98dd-b2900423c0a5
         // </example>
         public Guid TargetId { get; set; }
+
+        public Guid AssetId { get; set; }
+
+        public string AssetType { get; set; }
+
+        public string TenancyAgreementRef { get; set; }
+
+        public string PropertyRef { get; set; }
+
+        public DateTime PostDate { get; set; }
+
+        public decimal RealValue { get; set; }
+
         // <summary>
         //     The target of provided id by the target_id
         // </summary>
@@ -189,17 +202,5 @@ namespace FinancialTransactionsApi.V1.Boundary
         //     Admin
         // </example>
         public string CreatedBy { get; set; }
-
-        public Guid AssetId { get; set; }
-
-        public string AssetType { get; set; }
-
-        public string TenancyAgreementRef { get; set; }
-
-        public string PropertyRef { get; set; }
-
-        public DateTime PostDate { get; set; }
-
-        public int RealValue { get; set; }
     }
 }

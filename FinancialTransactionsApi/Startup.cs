@@ -131,8 +131,6 @@ namespace FinancialTransactionsApi
             services.AddLocalStack(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
 
-            ConfigureDbContext(services);
-
             RegisterGateways(services);
             RegisterUseCases(services);
             RegisterFactories(services);
