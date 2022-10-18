@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using FinancialTransactionsApi.V1.Helpers;
 
+using System;
+
 namespace FinancialTransactionsApi.V1.Factories
 {
     public static class ResponseFactory
@@ -28,21 +30,15 @@ namespace FinancialTransactionsApi.V1.Factories
                 HousingBenefitAmount = domain.HousingBenefitAmount,
                 PaidAmount = domain.PaidAmount,
                 PaymentReference = domain.PaymentReference,
-                BankAccountNumber = domain.BankAccountNumber,
-                SortCode = domain.SortCode,
-                SuspenseResolutionInfo = domain.SuspenseResolutionInfo,
                 PeriodNo = domain.PeriodNo,
                 TransactionAmount = domain.TransactionAmount,
                 TransactionDate = domain.TransactionDate,
                 TransactionType = domain.TransactionType.GetDescription(),
                 TransactionSource = domain.TransactionSource,
                 Address = domain.Address,
-                Sender = domain.Sender,
                 Fund = domain.Fund,
                 CreatedAt = domain.CreatedAt,
                 CreatedBy = domain.CreatedBy,
-                LastUpdatedAt = domain.LastUpdatedAt,
-                LastUpdatedBy = domain.LastUpdatedBy
             };
         }
 

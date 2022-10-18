@@ -52,16 +52,16 @@ namespace FinancialTransactionsApi.V1.Controllers
             _getAllActiveTransactionsUseCase = getAllActiveTransactionsUseCase;
         }
 
-        /// <summary>
-        /// Get transaction by provided id
-        /// </summary>
-        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="id">The value by which we are looking for a transaction</param>
-        ///<param name="targetId">The value by which we are looking for a transaction</param>
-        /// <response code="200">Success. Transaction model was received successfully</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="404">Transaction by provided id cannot be found</response>
-        /// <response code="500">Internal Server Error</response>
+        // <summary>
+        // Get transaction by provided id
+        // </summary>
+        // <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        // <param name="id">The value by which we are looking for a transaction</param>
+        //<param name="targetId">The value by which we are looking for a transaction</param>
+        // <response code="200">Success. Transaction model was received successfully</response>
+        // <response code="400">Bad Request</response>
+        // <response code="404">Transaction by provided id cannot be found</response>
+        // <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
@@ -80,15 +80,15 @@ namespace FinancialTransactionsApi.V1.Controllers
             return Ok(transaction);
         }
 
-        /// <summary>
-        /// Get transaction by provided id
-        /// </summary>
-        /// <response code="200">Success. Transaction model was received successfully</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="404">Transaction by provided id cannot be found</response>
-        /// <response code="500">Internal Server Error</response>
-        /// <param name="targetId">The value by which we are looking for a transaction</param>
-        /// <returns>List of transactions</returns>
+        // <summary>
+        // Get transaction by provided id
+        // </summary>
+        // <response code="200">Success. Transaction model was received successfully</response>
+        // <response code="400">Bad Request</response>
+        // <response code="404">Transaction by provided id cannot be found</response>
+        // <response code="500">Internal Server Error</response>
+        // <param name="targetId">The value by which we are looking for a transaction</param>
+        // <returns>List of transactions</returns>
         [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
@@ -102,14 +102,14 @@ namespace FinancialTransactionsApi.V1.Controllers
             return (response.IsEmpty) ? NotFound(targetId) : Ok(response.Value);
         }
 
-        /// <summary>
-        /// Gets a collection of transactions for a tenancy/property
-        /// </summary>
-        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="query">Model with parameters to get collection of transactions</param>
-        /// <response code="200">Success. Transaction models were received successfully</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
+        // <summary>
+        // Gets a collection of transactions for a tenancy/property
+        // </summary>
+        // <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        // <param name="query">Model with parameters to get collection of transactions</param>
+        // <response code="200">Success. Transaction models were received successfully</response>
+        // <response code="400">Bad Request</response>
+        // <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(PagedResult<TransactionResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -126,9 +126,9 @@ namespace FinancialTransactionsApi.V1.Controllers
             return Ok(transactions);
         }
 
-        /// <summary>
-        /// Returns ALL non-suspense transactions wthout any filters. Note, that this endpoint has bad performance and will be used only for system needs. For better performance use HousingSearchAPI
-        /// </summary>
+        // <summary>
+        // Returns ALL non-suspense transactions wthout any filters. Note, that this endpoint has bad performance and will be used only for system needs. For better performance use HousingSearchAPI
+        // </summary>
         [ProducesResponseType(typeof(PagedResult<TransactionLimitedModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -150,13 +150,13 @@ namespace FinancialTransactionsApi.V1.Controllers
             return Ok(transactions);
         }
 
-        /// <summary>
-        /// Gets a collection of suspense account transactions for a tenancy/property
-        /// </summary>
-        /// <param name="query">Model with parameters to get collection of transactions</param>
-        /// <response code="200">Success. Transaction models were received successfully</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
+        // <summary>
+        // Gets a collection of suspense account transactions for a tenancy/property
+        // </summary>
+        // <param name="query">Model with parameters to get collection of transactions</param>
+        // <response code="200">Success. Transaction models were received successfully</response>
+        // <response code="400">Bad Request</response>
+        // <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(PagedResult<TransactionResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -175,15 +175,15 @@ namespace FinancialTransactionsApi.V1.Controllers
         }
 
 
-        /// <summary>
-        /// Create a new transaction model
-        /// </summary>
-        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="token">The jwt token value</param>
-        /// <param name="transaction">Transaction model for create</param>
-        /// <response code="201">Created. Transaction model was created successfully</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
+        // <summary>
+        // Create a new transaction model
+        // </summary>
+        // <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        // <param name="token">The jwt token value</param>
+        // <param name="transaction">Transaction model for create</param>
+        // <response code="201">Created. Transaction model was created successfully</response>
+        // <response code="400">Bad Request</response>
+        // <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -202,10 +202,10 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
-            if (!CheckAddTransactionRequest(transaction))
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
-            }
+            // if (!CheckAddTransactionRequest(transaction))
+            // {
+            //     return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
+            // }
 
             var createdBy = GetUserName(token);
 
@@ -216,15 +216,15 @@ namespace FinancialTransactionsApi.V1.Controllers
             return CreatedAtAction(nameof(Get), new { id = transactionResponse.Id }, transactionResponse);
         }
 
-        /// <summary>
-        /// Create a list of new transaction records
-        /// </summary>
-        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="token">The jwt token value</param>
-        /// <param name="transactions">List of Transaction model for create</param>
-        /// <response code="201">Created. Transaction model was created successfully</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
+        // <summary>
+        // Create a list of new transaction records
+        // </summary>
+        // <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        // <param name="token">The jwt token value</param>
+        // <param name="transactions">List of Transaction model for create</param>
+        // <response code="201">Created. Transaction model was created successfully</response>
+        // <response code="400">Bad Request</response>
+        // <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -244,10 +244,10 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
-            if (!CheckAddTransactionRequestCollection(transactions))
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
-            }
+            // if (!CheckAddTransactionRequestCollection(transactions))
+            // {
+            //     return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
+            // }
 
             var createdBy = GetUserName(token);
 
@@ -264,16 +264,16 @@ namespace FinancialTransactionsApi.V1.Controllers
             return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction entries processing failed!"));
         }
 
-        /// <summary>
-        /// Update a transaction model
-        /// </summary>
-        /// /// <param name="token">The jwt token value</param>
-        /// <param name="transactionId">The value by which we are looking for a transaction</param>
-        /// <param name="transaction">Transaction model for update</param>
-        /// <response code="200">Success. Transaction model was updated successfully</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="404">Transaction by provided id cannot be found</response>
-        /// <response code="500">Internal Server Error</response>
+        // <summary>
+        // Update a transaction model
+        // </summary>
+        // // <param name="token">The jwt token value</param>
+        // <param name="transactionId">The value by which we are looking for a transaction</param>
+        // <param name="transaction">Transaction model for update</param>
+        // <response code="200">Success. Transaction model was updated successfully</response>
+        // <response code="400">Bad Request</response>
+        // <response code="404">Transaction by provided id cannot be found</response>
+        // <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
@@ -305,10 +305,10 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (!existTransaction.IsSuspense)
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
-            }
+            // if (!existTransaction.IsSuspense)
+            // {
+            //     return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
+            // }
 
             var lastUpdatedBy = GetUserName(token);
 
@@ -320,17 +320,17 @@ namespace FinancialTransactionsApi.V1.Controllers
             return Ok(transactionResponse);
         }
 
-        /// <summary>
-        /// Update a transaction model
-        /// </summary>
+        // <summary>
+        // Update a transaction model
+        // </summary>
 
-        /// /// <param name="token">The jwt token value</param>
-        /// <param name="transactionId">The value by which we are looking for a transaction</param>
-        /// <param name="transaction">Transaction model for update</param>
-        /// <response code="200">Success. Transaction model was updated successfully</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="404">Transaction by provided id cannot be found</response>
-        /// <response code="500">Internal Server Error</response>
+        // // <param name="token">The jwt token value</param>
+        // <param name="transactionId">The value by which we are looking for a transaction</param>
+        // <param name="transaction">Transaction model for update</param>
+        // <response code="200">Success. Transaction model was updated successfully</response>
+        // <response code="400">Bad Request</response>
+        // <response code="404">Transaction by provided id cannot be found</response>
+        // <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
@@ -352,10 +352,10 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
-            if (!CheckUpdateTransactionRequest(transaction))
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
-            }
+            // if (!CheckUpdateTransactionRequest(transaction))
+            // {
+            //     return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
+            // }
             var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, Guid.Empty).ConfigureAwait(false);
 
             if (existTransaction == null)
@@ -363,10 +363,10 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (!existTransaction.IsSuspense)
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
-            }
+            // if (!existTransaction.IsSuspense)
+            // {
+            //     return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
+            // }
 
             var lastUpdatedBy = GetUserName(token);
 
@@ -380,11 +380,11 @@ namespace FinancialTransactionsApi.V1.Controllers
             return Ok(transactionResponse);
         }
 
-        /// <summary>
-        ///   Returns the name of the user used in token
-        /// </summary>
-        /// <exception cref="ArgumentNullException">Parameter 'token' is null.</exception>
-        /// <exception cref="ArgumentException">Value of parameter 'name' in token is null or empty.</exception>
+        // <summary>
+        //   Returns the name of the user used in token
+        // </summary>
+        // <exception cref="ArgumentNullException">Parameter 'token' is null.</exception>
+        // <exception cref="ArgumentException">Value of parameter 'name' in token is null or empty.</exception>
         private static string GetUserName(string token)
         {
             if (string.IsNullOrEmpty(token))
@@ -406,28 +406,28 @@ namespace FinancialTransactionsApi.V1.Controllers
             return name;
         }
 
-        /// <summary>
-        ///  Checks if transaction model is valid for add operation
-        /// </summary>
-        private static bool CheckAddTransactionRequest(AddTransactionRequest transaction)
-        {
-            return transaction.IsSuspense || transaction.HaveAllFieldsInAddTransactionModel();
-        }
+        // <summary>
+        //  Checks if transaction model is valid for add operation
+        // </summary>
+        // private static bool CheckAddTransactionRequest(AddTransactionRequest transaction)
+        // {
+        //     return transaction.IsSuspense || transaction.HaveAllFieldsInAddTransactionModel();
+        // }
 
-        /// <summary>
-        ///  Checks if transaction model collection is valid for add-batch operation
-        /// </summary>
-        private static bool CheckAddTransactionRequestCollection(IEnumerable<AddTransactionRequest> transactions)
-        {
-            return transactions.All(t => t.IsSuspense || (!t.IsSuspense && t.ToDomain().HaveAllFieldsInBatchProcessingModel()));
-        }
+        // <summary>
+        //  Checks if transaction model collection is valid for add-batch operation
+        // </summary>
+        // private static bool CheckAddTransactionRequestCollection(IEnumerable<AddTransactionRequest> transactions)
+        // {
+        //     return transactions.All(t => t.IsSuspense || (!t.IsSuspense && t.ToDomain().HaveAllFieldsInBatchProcessingModel()));
+        // }
 
-        /// <summary>
-        ///  Checks if transaction model collection is valid for update operation
-        /// </summary>
-        private static bool CheckUpdateTransactionRequest(UpdateTransactionRequest transaction)
-        {
-            return transaction.IsSuspense || transaction.HaveAllFieldsInUpdateTransactionModel();
-        }
+        // <summary>
+        //  Checks if transaction model collection is valid for update operation
+        // </summary>
+        // private static bool CheckUpdateTransactionRequest(UpdateTransactionRequest transaction)
+        // {
+        //     return transaction.IsSuspense || transaction.HaveAllFieldsInUpdateTransactionModel();
+        // }
     }
 }

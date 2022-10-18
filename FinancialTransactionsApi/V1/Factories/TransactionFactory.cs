@@ -100,17 +100,13 @@ namespace FinancialTransactionsApi.V1.Factories
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
-                BankAccountNumber = transactionRequest.BankAccountNumber,
-                SuspenseResolutionInfo = null,
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
                 TransactionDate = transactionRequest.TransactionDate,
                 TransactionType = transactionRequest.TransactionType,
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
-                Sender = transactionRequest.Sender,
                 Fund = transactionRequest.Fund,
-                SortCode = transactionRequest.SortCode
             };
         }
 
@@ -125,17 +121,13 @@ namespace FinancialTransactionsApi.V1.Factories
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
-                BankAccountNumber = transactionRequest.BankAccountNumber,
-                SuspenseResolutionInfo = transactionRequest.SuspenseResolutionInfo,
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
                 TransactionDate = transactionRequest.TransactionDate,
                 TransactionType = transactionRequest.TransactionType,
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
-                Sender = transactionRequest.Sender,
                 Fund = transactionRequest.Fund,
-                SortCode = transactionRequest.SortCode
             };
         }
 
@@ -151,16 +143,13 @@ namespace FinancialTransactionsApi.V1.Factories
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
                 PaymentReference = transactionRequest.PaymentReference,
-                BankAccountNumber = transactionRequest.BankAccountNumber,
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
                 TransactionDate = transactionRequest.TransactionDate,
                 TransactionType = EnumHelper.GetValueFromDescription<TransactionType>(transactionRequest.TransactionType),
                 TransactionSource = transactionRequest.TransactionSource,
                 Address = transactionRequest.Address,
-                Sender = transactionRequest.Sender,
                 Fund = transactionRequest.Fund,
-                SortCode = transactionRequest.SortCode,
                 SuspenseResolutionInfo = new SuspenseResolutionInfo
                 {
                     IsConfirmed = true,

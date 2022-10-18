@@ -14,13 +14,13 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
     public class GetByIdUseCaseTests
     {
-        private readonly Mock<ITransactionGateway> _mockGateway;
+        private readonly Mock<IPostgresDbGateway> _mockGateway;
         private readonly GetByIdUseCase _getByIdUseCase;
         private readonly Fixture _fixture = new Fixture();
 
         public GetByIdUseCaseTests()
         {
-            _mockGateway = new Mock<ITransactionGateway>();
+            _mockGateway = new Mock<IPostgresDbGateway>();
             _getByIdUseCase = new GetByIdUseCase(_mockGateway.Object);
         }
 

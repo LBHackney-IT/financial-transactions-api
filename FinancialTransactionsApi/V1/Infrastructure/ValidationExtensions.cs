@@ -23,16 +23,16 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 return false;
             }
 
-            if (transaction.Sender == null)
-            {
-                return false;
-            }
+            // if (transaction.Sender == null)
+            // {
+            //     return false;
+            // }
 
-            if (transaction.Sender.Id == Guid.Empty
-                || string.IsNullOrWhiteSpace(transaction.Sender.FullName))
-            {
-                return false;
-            }
+            // if (transaction.Sender.Id == Guid.Empty
+            //     || string.IsNullOrWhiteSpace(transaction.Sender.FullName))
+            // {
+            //     return false;
+            // }
 
             if (transaction.Fund == null)
             {
@@ -64,16 +64,16 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 return false;
             }
 
-            if (transaction.Sender == null)
-            {
-                return false;
-            }
+            // if (transaction.Sender == null)
+            // {
+            //     return false;
+            // }
 
-            if (transaction.Sender.Id == Guid.Empty
-                || string.IsNullOrWhiteSpace(transaction.Sender.FullName))
-            {
-                return false;
-            }
+            // if (transaction.Sender.Id == Guid.Empty
+            //     || string.IsNullOrWhiteSpace(transaction.Sender.FullName))
+            // {
+            //     return false;
+            // }
 
             if (transaction.Fund == null)
             {
