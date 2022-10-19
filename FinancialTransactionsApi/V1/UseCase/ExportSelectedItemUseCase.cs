@@ -26,7 +26,7 @@ namespace FinancialTransactionsApi.V1.UseCase
             {
                 foreach (var item in request.SelectedItems)
                 {
-                    var rId = await _gateway.GetTransactionByIdAsync(request.TargetId, item).ConfigureAwait(false);
+                    var rId = await _gateway.GetTransactionByIdAsync(item).ConfigureAwait(false);
                     if (rId != null)
                         response.Add(rId);
                 };

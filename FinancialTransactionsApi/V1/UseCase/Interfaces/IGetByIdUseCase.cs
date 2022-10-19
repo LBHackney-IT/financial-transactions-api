@@ -6,6 +6,6 @@ namespace FinancialTransactionsApi.V1.UseCase.Interfaces
 {
     public interface IGetByIdUseCase
     {
-        public Task<TransactionResponse> ExecuteAsync(Guid id, Guid targetId);
+        public Task<TransactionResponse> ExecuteAsync(Guid id);
     }
 }
