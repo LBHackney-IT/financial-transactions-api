@@ -22,7 +22,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             this._databaseContext = databaseContext;
         }
 
-        public async Task<List<Transaction>> GetByTargetId(Guid targetId)
+        public async Task<IEnumerable<Transaction>> GetByTargetId(Guid targetId)
         {
             if (targetId == Guid.Empty) throw new ArgumentException($"{nameof(targetId)} shouldn't be empty.");
 

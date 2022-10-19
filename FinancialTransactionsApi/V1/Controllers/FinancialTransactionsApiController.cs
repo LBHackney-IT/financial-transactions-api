@@ -1,6 +1,8 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using Hackney.Core.DynamoDb;
@@ -95,11 +97,9 @@ namespace FinancialTransactionsApi.V1.Controllers
         [Route("{targetId}/tenureId")]
         public async Task<IActionResult> GetByTargetId([FromRoute] Guid targetId)
         {
-            var transactions = await _getByTargetIdUseCase.ExecuteAsync(targetId).ConfigureAwait(false);
-            if (transactions == null || transactions.Count == 0)
-                return NotFound(targetId);
+            ResponseWrapper<IEnumerable<TransactionResponse>> response = await _getByTargetIdUseCase.ExecuteAsync(targetId).ConfigureAwait(false);
 
-            return Ok(transactions);
+            return  (response.IsEmpty) ? NotFound(targetId) : Ok(response.Value);
         }
 
         /// <summary>

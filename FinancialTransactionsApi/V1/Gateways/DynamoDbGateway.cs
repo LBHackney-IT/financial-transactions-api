@@ -7,6 +7,7 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using Hackney.Core.DynamoDb;
@@ -198,25 +199,8 @@ namespace FinancialTransactionsApi.V1.Gateways
             return data?.ToDomain();
         }
 
-        public async Task<List<Transaction>> GetByTargetId(Guid targetId)
-        {
-            if (targetId == Guid.Empty)
-                throw new ArgumentException($"{nameof(targetId).ToString()} shouldn't be empty.");
+        public Task<IEnumerable<Transaction>> GetByTargetId(Guid targetId) => throw new NotImplementedException();
 
-            QueryRequest request = new QueryRequest
-            {
-                TableName = "Transactions",
-                KeyConditionExpression = "target_id = :V_target_id",
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
-                    {":V_target_id",new AttributeValue{S = targetId.ToString()}}
-                },
-                ScanIndexForward = true
-            };
-
-            var response = await _amazonDynamoDb.QueryAsync(request).ConfigureAwait(false);
-            return response?.ToTransactions();
-        }
 
         public async Task UpdateSuspenseAccountAsync(Transaction transaction)
         {

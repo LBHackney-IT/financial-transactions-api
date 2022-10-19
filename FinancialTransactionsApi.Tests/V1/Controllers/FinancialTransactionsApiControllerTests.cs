@@ -60,9 +60,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetByTargerId_UseCaseReturnTransactionByTargetId_ShouldReturns200()
         {
-            var transactionsList = _fixture.Build<Transaction>().CreateMany(5);
+            var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(_fixture.Build<TransactionResponse>().CreateMany(5));
 
-            _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>())).ReturnsAsync(transactionsList.ToList());
+            _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>())).ReturnsAsync(responseMock);
 
             var result = await _controller.GetByTargetId(It.IsAny<Guid>()).ConfigureAwait(false);
 
@@ -72,15 +72,17 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeEquivalentTo(transactionsList);
+            okResult?.Value.Should().BeEquivalentTo(responseMock.Value);
         }
 
         [Fact]
         public async Task GetByTargetId_UseCaseReturnNullByInvalidTargetId_ShouldReturns404()
         {
-            List<Transaction> transactionsList = null;
+            IEnumerable<TransactionResponse> transactionsList = null;
 
-            _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>())).ReturnsAsync(transactionsList);
+            var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(transactionsList);
+
+            _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>())).ReturnsAsync(responseMock);
 
             var result = await _controller.GetByTargetId(It.IsAny<Guid>()).ConfigureAwait(false);
 

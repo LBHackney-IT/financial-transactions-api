@@ -52,5 +52,10 @@ namespace FinancialTransactionsApi.V1.Factories
                 new List<TransactionResponse>() :
                 domainList.Select(domain => domain.ToResponse()).ToList();
         }
+
+        public static ResponseWrapper<IEnumerable<TransactionResponse>> ToResponseWrapper(this IEnumerable<Transaction> domainList)
+        {
+            return new ResponseWrapper<IEnumerable<TransactionResponse>>(domainList.Select(domain => domain.ToResponse()));
+        }
     }
 }
