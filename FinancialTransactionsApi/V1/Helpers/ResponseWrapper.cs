@@ -9,7 +9,8 @@ namespace FinancialTransactionsApi.V1.Helpers
 
         public bool IsEmpty
         {
-            get {
+            get
+            {
                 if (this.Value?.GetType().GetGenericTypeDefinition() == typeof(List<>))
                 {
                     return !(this.Value as IEnumerable<object>).Any();

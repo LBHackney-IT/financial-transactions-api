@@ -99,7 +99,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         {
             ResponseWrapper<IEnumerable<TransactionResponse>> response = await _getByTargetIdUseCase.ExecuteAsync(targetId).ConfigureAwait(false);
 
-            return  (response.IsEmpty) ? NotFound(targetId) : Ok(response.Value);
+            return (response.IsEmpty) ? NotFound(targetId) : Ok(response.Value);
         }
 
         /// <summary>
