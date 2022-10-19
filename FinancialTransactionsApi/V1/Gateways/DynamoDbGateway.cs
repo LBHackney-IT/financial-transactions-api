@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
-    public class DynamoDbGateway : ITransactionGateway
+    public class DynamoDbGateway
     {
         private const string TARGETID = "target_id";
         private readonly IAmazonDynamoDB _amazonDynamoDb;
@@ -199,9 +199,6 @@ namespace FinancialTransactionsApi.V1.Gateways
             return data?.ToDomain();
         }
 
-        public Task<IEnumerable<Transaction>> GetByTargetId(Guid targetId) => throw new NotImplementedException();
-
-
         public async Task UpdateSuspenseAccountAsync(Transaction transaction)
         {
             await _dynamoDbContext.SaveAsync(transaction.ToDatabase()).ConfigureAwait(false);
@@ -258,7 +255,6 @@ namespace FinancialTransactionsApi.V1.Gateways
             return await GetPagedTransactionsByTargetIdWithQueryAsync(query).ConfigureAwait(false);
 
         }
-
 
         private async Task<PagedResult<Transaction>> GetPagedTransactionsByTargetIdsWithScanAsync(TransactionByTargetIdsQuery query)
         {
