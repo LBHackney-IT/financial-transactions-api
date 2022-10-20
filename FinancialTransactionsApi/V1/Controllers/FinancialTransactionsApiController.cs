@@ -68,14 +68,10 @@ namespace FinancialTransactionsApi.V1.Controllers
         [Route("{id}")]
         public async Task<IActionResult> Get([FromRoute] Guid id)
         {
-            var transaction = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
 
-            if (transaction == null)
-            {
-                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
-            }
+            ResponseWrapper<TransactionResponse> transaction = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
 
-            return Ok(transaction);
+            return (transaction.IsEmpty) ? NotFound(id) : Ok(transaction.Value);
         }
 
         /// <summary>
@@ -303,17 +299,17 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (!existTransaction.IsSuspense)
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
-            }
+            // if (!existTransaction.IsSuspense)
+            // {
+            //     return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
+            // }
 
             var lastUpdatedBy = GetUserName(token);
 
-            var domainTransaction = existTransaction.ResponseToDomain(transaction, lastUpdatedBy);
+            // var domainTransaction = existTransaction.ResponseToDomain(transaction, lastUpdatedBy);
 
 
-            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
+            var transactionResponse = await _updateUseCase.ExecuteAsync(null).ConfigureAwait(false);
 
             return Ok(transactionResponse);
         }
@@ -361,16 +357,16 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (!existTransaction.IsSuspense)
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
-            }
+            // if (!existTransaction.IsSuspense)
+            // {
+            //     return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
+            // }
 
             var lastUpdatedBy = GetUserName(token);
 
             var domainTransaction = transaction.ToDomain();
-            domainTransaction.CreatedBy = existTransaction.CreatedBy;
-            domainTransaction.CreatedAt = existTransaction.CreatedAt;
+            // domainTransaction.CreatedBy = existTransaction.CreatedBy;
+            // domainTransaction.CreatedAt = existTransaction.CreatedAt;
             domainTransaction.LastUpdatedBy = lastUpdatedBy;
 
             var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
