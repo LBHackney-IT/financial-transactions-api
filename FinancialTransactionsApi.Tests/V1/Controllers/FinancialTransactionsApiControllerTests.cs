@@ -100,10 +100,10 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var transactionResponse = _fixture.Create<TransactionResponse>();
 
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(transactionResponse);
 
-            var result = await _controller.Get("", transactionResponse.Id, transactionResponse.TargetId).ConfigureAwait(false);
+            var result = await _controller.Get(transactionResponse.Id).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -121,9 +121,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetById_UseCaseReturnNullWithInvalidId_ShouldReturns404()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((TransactionResponse) null);
-            var result = await _controller.Get("", Guid.NewGuid(), Guid.NewGuid()).ConfigureAwait(false);
+            var result = await _controller.Get(Guid.NewGuid()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -145,13 +145,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetById_UseCaseThrownException_ShouldRethrow()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
             try
             {
 
-                var result = await _controller.Get("", new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"), Guid.NewGuid())
+                var result = await _controller.Get(new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }
@@ -527,7 +527,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 .With(x => x.TargetId, Guid.Empty)
                 .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
                 .Create();
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), Guid.Empty))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(response);
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>()))
@@ -604,7 +604,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 TargetId = Guid.NewGuid(),
                 Note = "Test"
             };
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((TransactionResponse) null);
 
             var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), request).ConfigureAwait(false);
@@ -633,7 +633,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 .With(x => x.TargetId, Guid.Empty)
                 .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
                 .Create();
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(response);
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>()))
@@ -666,7 +666,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 Note = "Test"
             };
 
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
 
             try
@@ -690,7 +690,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
               .With(x => x.TargetId, Guid.NewGuid())
               .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
               .Create();
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(response);
 
             var request = _fixture.Build<SuspenseConfirmationRequest>()

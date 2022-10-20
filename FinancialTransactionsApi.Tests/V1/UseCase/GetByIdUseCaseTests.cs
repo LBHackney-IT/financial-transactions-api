@@ -33,8 +33,8 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             var transaction = _fixture.Create<Transaction>();
 
-            _mockGateway.Setup(x => x.GetTransactionByIdAsync(targetId, id)).ReturnsAsync(transaction);
-            var response = await _getByIdUseCase.ExecuteAsync(id, targetId).ConfigureAwait(false);
+            _mockGateway.Setup(x => x.GetTransactionByIdAsync(id)).ReturnsAsync(transaction);
+            var response = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
 
             response.Should().BeEquivalentTo(transaction.ToResponse());
         }
@@ -44,10 +44,10 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         {
             var id = Guid.NewGuid();
             var targetId = Guid.NewGuid();
-            var queryParam = new TransactionByIdQueryParameter { Id = id, TargetId = targetId };
-            _mockGateway.Setup(x => x.GetTransactionByIdAsync(targetId, id)).ReturnsAsync((Transaction) null);
+            var queryParam = new TransactionByIdQueryParameter { Id = id };
+            _mockGateway.Setup(x => x.GetTransactionByIdAsync(id)).ReturnsAsync((Transaction) null);
 
-            var response = await _getByIdUseCase.ExecuteAsync(id, targetId).ConfigureAwait(false);
+            var response = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
 
             response.Should().BeNull();
         }
