@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS housingfinance_dbo.transactions
 (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     transactiontype text,
+	transactiondate timestamp without time zone,
 	targetid uuid,
 	targettype text,
 	assetid uuid,

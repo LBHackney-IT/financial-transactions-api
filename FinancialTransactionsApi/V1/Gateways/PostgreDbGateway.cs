@@ -11,6 +11,8 @@ using Amazon.DynamoDBv2.Model;
 using Amazon.DynamoDBv2;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using FinancialTransactionsApi.V1.Infrastructure.Entities;
+using Amazon.Util;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -33,7 +35,25 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public Task<Transaction> GetTransactionByIdAsync(Guid targetId, Guid id) => throw new NotImplementedException();
 
-        public Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query) => throw new NotImplementedException();
+        public async Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
+        {
+            var transactionEntities = _databaseContext.TransactionEntities.AsQueryable();
+
+            if(query.TransactionType != null)
+            {
+                transactionEntities.Where(x => x.TransactionType == query.TransactionType.ToString());
+            }
+
+            if (query.StartDate.HasValue)
+            {
+                query.EndDate ??= DateTime.Now;
+                transactionEntities.Where(x => x.TransactionDate >= query.StartDate.Value && x.TransactionDate <= query.EndDate.Value);
+            }
+
+            var response = await transactionEntities.ToListAsync().ConfigureAwait(false);
+
+            return new PagedResult<Transaction>(response.Select(x => x.ToDomain()), new PaginationDetails(String.Empty));
+        }
 
         public Task AddAsync(Transaction transaction) => throw new NotImplementedException();
 

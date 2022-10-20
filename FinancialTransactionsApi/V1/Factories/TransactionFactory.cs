@@ -199,6 +199,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 Id = entity.Id,
                 TargetId = entity.TargetId,
                 TargetType = (TargetType) Enum.Parse(typeof(TargetType), entity.TargetType),
+                TransactionDate = entity.TransactionDate,
                 AssetId = entity.AssetId,
                 AssetType = entity.AssetType,
                 TenancyAgreementRef = entity.TenancyAgreementRef,

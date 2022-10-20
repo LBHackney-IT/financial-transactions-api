@@ -13,6 +13,9 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [Column("transactiontype")]
         public string TransactionType { get; set; }
 
+        [Column("transactiondate")]
+        public DateTime TransactionDate { get; set; }
+
         [Column("targetid")]
         public Guid TargetId { get; set; }
 

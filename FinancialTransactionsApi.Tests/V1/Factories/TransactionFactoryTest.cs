@@ -20,6 +20,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 Id = Guid.NewGuid(),
                 TargetId = Guid.NewGuid(),
                 TargetType = TargetType.Tenure.ToString(),
+                TransactionDate = DateTime.Now,
                 AssetId = Guid.NewGuid(),
                 AssetType = "Dwelling",
                 TenancyAgreementRef = "061646/01",
