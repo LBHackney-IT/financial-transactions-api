@@ -125,11 +125,6 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             response.FinancialMonth.Should().Be(8);
             response.FinancialYear.Should().Be(2021);
 
-            var curDate = DateTime.UtcNow;
-            response.LastUpdatedBy.Should().Be(expectedResponse.CreatedBy);
-            response.CreatedAt.Should().BeCloseTo(curDate);
-            response.LastUpdatedAt.Should().BeCloseTo(curDate);
-
             _mockGateway.Verify(x => x.AddAsync(It.IsAny<Transaction>()), Times.Once);
         }
 
