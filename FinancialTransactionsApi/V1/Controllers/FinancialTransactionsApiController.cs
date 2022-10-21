@@ -98,7 +98,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [Route("{targetType}/{targetId}")]
         public async Task<IActionResult> GetByTargetId([FromRoute] string targetType, [FromRoute] Guid targetId)
         {
-           ResponseWrapper<IEnumerable<TransactionResponse>> response = await _getByTargetIdUseCase.ExecuteAsync(targetType, targetId).ConfigureAwait(false);
+            ResponseWrapper<IEnumerable<TransactionResponse>> response = await _getByTargetIdUseCase.ExecuteAsync(targetType, targetId).ConfigureAwait(false);
 
             return (response.IsEmpty) ? NotFound(targetId) : Ok(response.Value);
         }
