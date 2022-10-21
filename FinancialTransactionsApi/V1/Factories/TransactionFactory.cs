@@ -220,6 +220,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 CreatedBy = entity.CreatedBy,
             };
         }
+
         public static IEnumerable<Transaction> ToDomain(this IEnumerable<TransactionEntity> databaseEntity)
         {
             return databaseEntity.Select(p => p.ToDomain()).OrderBy(x => x.TransactionDate).ToList();

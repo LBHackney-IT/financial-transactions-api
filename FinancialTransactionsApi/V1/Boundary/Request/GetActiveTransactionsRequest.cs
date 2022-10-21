@@ -11,9 +11,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         public int PageSize { get; set; }
 
         [FromQuery]
-        public string PaginationToken { get; set; }
-
-        [FromQuery]
         public DateTime? PeriodStartDate { get; set; }
 
         [FromQuery]

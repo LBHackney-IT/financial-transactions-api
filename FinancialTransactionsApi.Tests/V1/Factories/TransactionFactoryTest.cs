@@ -47,6 +47,8 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
             {
                 options.Excluding(info => info.TransactionType);
                 options.Excluding(info => info.TargetType);
+                options.Excluding(info => info.TransactionDate);
+                options.Excluding(info => info.TransactionAmount);
                 return options;
             });
         }
