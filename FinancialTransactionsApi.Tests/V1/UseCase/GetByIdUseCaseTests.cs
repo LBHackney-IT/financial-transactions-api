@@ -9,6 +9,8 @@ using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase;
 using Xunit;
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Helpers;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
@@ -29,14 +31,13 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         public async Task GetById_GatewayReturnTransaction_ReturnTransaction()
         {
             var id = Guid.NewGuid();
-            var targetId = Guid.NewGuid();
 
             var transaction = _fixture.Create<Transaction>();
 
             _mockGateway.Setup(x => x.GetTransactionByIdAsync(id)).ReturnsAsync(transaction);
             var response = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
 
-            response.Should().BeEquivalentTo(transaction.ToResponse());
+            response.Should().BeEquivalentTo(transaction.ToResponseWrapper());
         }
 
         [Fact]
