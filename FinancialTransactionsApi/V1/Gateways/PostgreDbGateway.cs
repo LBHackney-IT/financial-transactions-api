@@ -7,10 +7,9 @@ using System.Collections.Generic;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using Hackney.Core.DynamoDb;
 using FinancialTransactionsApi.V1.Boundary.Response;
-using Amazon.DynamoDBv2.Model;
-using Amazon.DynamoDBv2;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using FinancialTransactionsApi.V1.Infrastructure.Specs;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -22,11 +21,13 @@ namespace FinancialTransactionsApi.V1.Gateways
             this._databaseContext = databaseContext;
         }
 
-        public async Task<IEnumerable<Transaction>> GetByTargetId(Guid targetId)
+        public async Task<IEnumerable<Transaction>> GetByTargetId(string targetType, Guid targetId)
         {
             if (targetId == Guid.Empty) throw new ArgumentException($"{nameof(targetId)} shouldn't be empty.");
 
-            var response = await _databaseContext.TransactionEntities.Where(x => x.TargetId == targetId).ToListAsync().ConfigureAwait(false);
+            var spec = new GetTransactionByTargetTypeAndTargetId(targetType, targetId);
+
+            var response = await _databaseContext.TransactionEntities.Where(spec.Criteria).ToListAsync().ConfigureAwait(false);
 
             return response?.ToDomain();
         }

@@ -18,9 +18,9 @@ namespace FinancialTransactionsApi.V1.UseCase
         {
             _gateway = gateway;
         }
-        public async Task<ResponseWrapper<IEnumerable<TransactionResponse>>> ExecuteAsync(Guid targetId)
+        public async Task<ResponseWrapper<IEnumerable<TransactionResponse>>> ExecuteAsync(string targetType, Guid targetId)
         {
-            var response = await _gateway.GetByTargetId(targetId).ConfigureAwait(false);
+            var response = await _gateway.GetByTargetId(targetType, targetId).ConfigureAwait(false);
 
             return response?.ToResponseWrapper();
         }
