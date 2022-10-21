@@ -116,7 +116,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             transaction.Should().NotBeNull();
 
-            transaction.Should().BeEquivalentTo(transactionResponse);
+            transaction.Should().BeEquivalentTo(transactionResponse.Value);
         }
 
         [Fact]
@@ -612,16 +612,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             var notFoundResult = result as NotFoundObjectResult;
 
             notFoundResult.Should().NotBeNull();
-
-            // var response = notFoundResult?.Value as BaseErrorResponse;
-
-            // response.Should().NotBeNull();
-
-            // response?.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
-
-            // response?.Message.Should().BeEquivalentTo("No transaction by provided Id cannot be found!");
-
-            // response?.Details.Should().BeEquivalentTo(string.Empty);
         }
 
         [Fact]
@@ -645,7 +635,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             transaction.Should().NotBeNull();
 
-            transaction.Should().BeEquivalentTo(transactionResponse);
+            transaction.Should().BeEquivalentTo(transactionResponse.Value);
 
 
             var response = new ResponseWrapper<TransactionResponse>(_fixture.Build<TransactionResponse>()
@@ -711,17 +701,10 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
               .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
               .Create());
 
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(response);
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>())).ReturnsAsync(response);
 
-            // var request = _fixture.Build<SuspenseConfirmationRequest>()
-            //     .With(s => s.TargetId, Guid.NewGuid()).Create();
+            var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), null).ConfigureAwait(false);
 
-            var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), null)
-                .ConfigureAwait(false);
-
-            // _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<Transaction>()), Times.Never);
-            Console.WriteLine(result);
             result.Should().BeOfType<BadRequestObjectResult>();
 
         }
