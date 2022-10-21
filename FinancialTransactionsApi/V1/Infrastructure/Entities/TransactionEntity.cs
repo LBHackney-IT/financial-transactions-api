@@ -38,10 +38,10 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         public string TransactionSource { get; set; }
 
         [Column("transactiondate")]
-        public DateTime PostDate { get; set; }
+        public DateTime TransactionDate { get; set; }
 
         [Column("transactionamount")]
-        public decimal RealValue { get; set; }
+        public decimal TransactionAmount { get; set; }
 
         [Column("paymentreference")]
         public string PaymentReference { get; set; }

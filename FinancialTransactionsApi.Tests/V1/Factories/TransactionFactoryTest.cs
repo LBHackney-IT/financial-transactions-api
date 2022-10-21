@@ -33,8 +33,8 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 PaymentReference = "123451",
                 PeriodNo = 2,
                 TransactionSource = "DD",
-                PostDate = DateTime.Now,
-                RealValue = 2.45M,
+                TransactionDate = DateTime.Now,
+                TransactionAmount = 2.45M,
                 Address = "Address",
                 Fund = "HSGRENT",
                 CreatedAt = DateTime.Now,
@@ -47,6 +47,8 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
             {
                 options.Excluding(info => info.TransactionType);
                 options.Excluding(info => info.TargetType);
+                options.Excluding(info => info.TransactionDate);
+                options.Excluding(info => info.TransactionAmount);
                 return options;
             });
         }
