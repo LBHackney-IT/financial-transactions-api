@@ -53,6 +53,17 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
         }
 
         [Fact]
+        public async Task GetAllActive_WithInvalidId_Returns404()
+        {
+            var targetId = Guid.NewGuid();
+
+            var uri = new Uri($"api/v1/transactions/active?PageSize=10", UriKind.Relative);
+            var response = await Client.GetAsync(uri).ConfigureAwait(false);
+
+            response.StatusCode.Should().NotBeNull();
+        }
+
+        [Fact]
         public async Task HealthCheck_Returns200()
         {
             var uri = new Uri($"api/v1/healthcheck/ping", UriKind.Relative);

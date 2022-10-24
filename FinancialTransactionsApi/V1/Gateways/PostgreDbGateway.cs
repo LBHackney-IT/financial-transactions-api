@@ -6,12 +6,10 @@ using FinancialTransactionsApi.V1.Factories;
 using System.Collections.Generic;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using Hackney.Core.DynamoDb;
-using FinancialTransactionsApi.V1.Boundary.Response;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using FinancialTransactionsApi.V1.Infrastructure.Entities;
-using Amazon.DynamoDBv2.DocumentModel;
+using FinancialTransactionsApi.V1.Infrastructure.Specs;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -23,11 +21,13 @@ namespace FinancialTransactionsApi.V1.Gateways
             this._databaseContext = databaseContext;
         }
 
-        public async Task<IEnumerable<Transaction>> GetByTargetId(Guid targetId)
+        public async Task<IEnumerable<Transaction>> GetByTargetId(string targetType, Guid targetId)
         {
             if (targetId == Guid.Empty) throw new ArgumentException($"{nameof(targetId)} shouldn't be empty.");
 
-            var response = await _databaseContext.TransactionEntities.Where(x => x.TargetId == targetId).ToListAsync().ConfigureAwait(false);
+            var spec = new GetTransactionByTargetTypeAndTargetId(targetType, targetId);
+
+            var response = await _databaseContext.TransactionEntities.Where(spec.Criteria).ToListAsync().ConfigureAwait(false);
 
             return response?.ToDomain();
         }
@@ -48,11 +48,19 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task<PagedResult<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)
         {
-            getActiveTransactionsRequest.PeriodEndDate = getActiveTransactionsRequest.PeriodEndDate ?? DateTime.Now;
+            getActiveTransactionsRequest.PeriodEndDate = getActiveTransactionsRequest.PeriodEndDate ?? DateTime.UtcNow;
 
-            Expression<Func<TransactionEntity, bool>> predicate = (x => x.TransactionDate >= getActiveTransactionsRequest.PeriodStartDate && x.TransactionDate <= getActiveTransactionsRequest.PeriodEndDate);
+            var spec = new GetTransactionByDate(getActiveTransactionsRequest.PeriodStartDate, getActiveTransactionsRequest.PeriodEndDate);
 
-            var response = await _databaseContext.TransactionEntities.Where(predicate).ToListAsync().ConfigureAwait(false);
+            var count = _databaseContext.TransactionEntities.Where(spec.Criteria).Count();
+
+            var lastPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(count) / getActiveTransactionsRequest.PageSize));
+
+            var page = getActiveTransactionsRequest.Page <= lastPage ? getActiveTransactionsRequest.Page : lastPage;
+
+            var itemStart = getActiveTransactionsRequest.Page == 1 ? 0 : page * getActiveTransactionsRequest.PageSize;
+
+            var response = await _databaseContext.TransactionEntities.Where(spec.Criteria).Skip(itemStart).Take(getActiveTransactionsRequest.PageSize).ToListAsync().ConfigureAwait(false);
 
             return new PagedResult<Transaction>(response.Select(x => x.ToDomain()), new PaginationDetails(string.Empty));
         }
