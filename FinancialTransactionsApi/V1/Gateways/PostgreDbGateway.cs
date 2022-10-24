@@ -21,11 +21,11 @@ namespace FinancialTransactionsApi.V1.Gateways
             this._databaseContext = databaseContext;
         }
 
-        public async Task<IEnumerable<Transaction>> GetByTargetId(string targetType, Guid targetId)
+        public async Task<IEnumerable<Transaction>> GetByTargetId(string targetType, Guid targetId, DateTime? startDate, DateTime? endDate)
         {
             if (targetId == Guid.Empty) throw new ArgumentException($"{nameof(targetId)} shouldn't be empty.");
 
-            var spec = new GetTransactionByTargetTypeAndTargetId(targetType, targetId);
+            var spec = new GetTransactionByTargetTypeAndTargetId(targetType, targetId, startDate, endDate);
 
             var response = await _databaseContext.TransactionEntities.Where(spec.Criteria).ToListAsync().ConfigureAwait(false);
 
