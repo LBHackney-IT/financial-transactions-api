@@ -28,8 +28,8 @@ namespace FinancialTransactionsApi.V1.Helpers
             model.SubFooter = lines[1];
             model.SubFooter = lines[2];
             model.Footer = lines[3];
-            decimal balance = (transactions.LastOrDefault() == null) ? default(decimal) : transactions.LastOrDefault().BalanceAmount;
-            decimal balanceBroughtForward = (transactions.FirstOrDefault() == null) ? default(decimal) : transactions.FirstOrDefault().BalanceAmount;
+            decimal balance = (transactions?.LastOrDefault() == null) ? default(decimal) : transactions.LastOrDefault().BalanceAmount;
+            decimal balanceBroughtForward = (transactions?.FirstOrDefault() == null) ? default(decimal) : transactions.FirstOrDefault().BalanceAmount;
             model.Balance = Money.PoundSterling(balance).ToString();
             model.BalanceBroughtForward = Money.PoundSterling(balanceBroughtForward).ToString();
             model.StatementPeriod = period;
