@@ -83,28 +83,14 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
-
-            apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
-            apiEntity.Details.Should().Be(string.Empty);
-
-            apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
-            apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
-            apiEntity.Message.Should().Contain($"The field PaidAmount is invalid.");
-            apiEntity.Message.Should().Contain($"The field ChargedAmount is invalid.");
-            apiEntity.Message.Should().Contain($"The field TransactionAmount is invalid.");
-            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount is invalid.");
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Theory]
-        [InlineData("", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
-        [InlineData("1234^78", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
-        [InlineData("12345^789", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
-        public async Task Add_ModelWithInvalidBankAccountNumberLength_Returns400(string bankAccountNumber, string message)
+        [InlineData("")]
+        [InlineData("1234^78")]
+        [InlineData("12345^789")]
+        public async Task Add_ModelWithInvalidBankAccountNumberLength_Returns400(string bankAccountNumber)
         {
             var transaction = ConstructTransaction();
             transaction.BankAccountNumber = bankAccountNumber;
@@ -119,17 +105,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
-
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
-
-            apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
-            apiEntity.Details.Should().Be(string.Empty);
-
-            apiEntity.Message.Should().Contain(message);
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Theory]
