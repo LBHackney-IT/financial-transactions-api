@@ -9,6 +9,6 @@ namespace FinancialTransactionsApi.V1.UseCase.Interfaces
 {
     public interface IGetByTargetIdUseCase
     {
-        Task<ResponseWrapper<IEnumerable<TransactionResponse>>> ExecuteAsync(string targetType, Guid targetId);
+        Task<ResponseWrapper<IEnumerable<TransactionResponse>>> ExecuteAsync(string targetType, Guid targetId, DateTime? startDate, DateTime? endDate);
     }
 }

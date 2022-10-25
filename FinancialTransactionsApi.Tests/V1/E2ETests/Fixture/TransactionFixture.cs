@@ -36,7 +36,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
                 BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
-                PaymentReference = transaction.PaymentReference,
                 PeriodNo = transaction.PeriodNo,
                 Sender = transaction.Sender,
                 TargetId = transaction.TargetId,

@@ -51,7 +51,6 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                     Fund = item["fund"].S,
                     HousingBenefitAmount = decimal.Parse(item["housing_benefit_amount"].N),
                     PaidAmount = decimal.Parse(item["paid_amount"].N),
-                    PaymentReference = item["payment_reference"].S,
                     PeriodNo = short.Parse(item["period_no"].N),
                     Sender = person,
                     SuspenseResolutionInfo = suspenseResolutionInfo,

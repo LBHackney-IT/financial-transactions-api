@@ -21,13 +21,13 @@ namespace FinancialTransactionsApi.V1.Gateways
             this._databaseContext = databaseContext;
         }
 
-        public async Task<IEnumerable<Transaction>> GetByTargetId(string targetType, Guid targetId)
+        public async Task<IEnumerable<Transaction>> GetByTargetId(string targetType, Guid targetId, DateTime? startDate, DateTime? endDate)
         {
             if (targetId == Guid.Empty) throw new ArgumentException($"{nameof(targetId)} shouldn't be empty.");
 
-            var spec = new GetTransactionByTargetTypeAndTargetId(targetType, targetId);
+            var spec = new GetTransactionByTargetTypeAndTargetId(targetType, targetId, startDate, endDate);
 
-            var response = await _databaseContext.TransactionEntities.Where(spec.Criteria).ToListAsync().ConfigureAwait(false);
+            var response = await _databaseContext.Transactions.Where(spec.Criteria).ToListAsync().ConfigureAwait(false);
 
             return response?.ToDomain();
         }
@@ -42,7 +42,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public Task UpdateSuspenseAccountAsync(Transaction transaction) => throw new NotImplementedException();
 
-        public Task<List<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate) => throw new NotImplementedException();
+        public Task<IEnumerable<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate) => throw new NotImplementedException();
 
         public Task<PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query) => throw new NotImplementedException();
 
@@ -52,7 +52,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var spec = new GetTransactionByDate(getActiveTransactionsRequest.PeriodStartDate, getActiveTransactionsRequest.PeriodEndDate);
 
-            var count = _databaseContext.TransactionEntities.Where(spec.Criteria).Count();
+            var count = _databaseContext.Transactions.Where(spec.Criteria).Count();
 
             var lastPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(count) / getActiveTransactionsRequest.PageSize));
 
@@ -60,7 +60,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var itemStart = getActiveTransactionsRequest.Page == 1 ? 0 : page * getActiveTransactionsRequest.PageSize;
 
-            var response = await _databaseContext.TransactionEntities.Where(spec.Criteria).Skip(itemStart).Take(getActiveTransactionsRequest.PageSize).ToListAsync().ConfigureAwait(false);
+            var response = await _databaseContext.Transactions.Where(spec.Criteria).Skip(itemStart).Take(getActiveTransactionsRequest.PageSize).ToListAsync().ConfigureAwait(false);
 
             return new PagedResult<Transaction>(response.Select(x => x.ToDomain()), new PaginationDetails(string.Empty));
         }

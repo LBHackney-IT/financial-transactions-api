@@ -15,7 +15,7 @@
     "financial-transaction-api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "swagger/index.html",                  
+      "launchUrl": "swagger/index.html",
       "environmentVariables": {
         "Sns_LocalMode": "true",
         "DynamoDb_LocalServiceUrl": "http://localhost:8000",
@@ -24,7 +24,10 @@
         "Localstack_SnsServiceUrl": "http://localhost:9911",
         "DynamoDb_LocalSecretKey": "o4fejrd",
         "DynamoDb_LocalMode": "true",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CONNECTION_STRING": "User ID =financeadmin;Password=X55ugV9utKtS;Server=localhost;Port=55111;Database=housingfinance;Integrated Security=true;Pooling=true;",
+        //"CONNECTION_STRING": "Host=127.0.0.1;Port=6000;Database=testdb;Username=postgres;Password=mypassword",
+        "REQUIRED_GOOGL_GROUPS": "e2e-testing-development;HackneyAll;saml-aws-mtfh-developer;saml-aws-developer"
       },
       "sqlDebugging": true
     }
