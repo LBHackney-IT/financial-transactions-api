@@ -4,6 +4,7 @@ using FinancialTransactionsApi.V1.Boundary;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure;
+using GenFu;
 using NodaMoney;
 using Razor.Templating.Core;
 using System;
@@ -26,8 +27,14 @@ namespace FinancialTransactionsApi.V1.Helpers
             model.SubFooter = lines[1];
             model.SubFooter = lines[2];
             model.Footer = lines[3];
-            model.Balance = (transactions == null) ? string.Empty : Money.PoundSterling(transactions.LastOrDefault().BalanceAmount).ToString();
-            model.BalanceBroughtForward = (transactions == null) ? string.Empty : Money.PoundSterling(transactions.FirstOrDefault().BalanceAmount).ToString();
+
+            transactions ??= new List<Transaction>();
+            if (transactions.Any())
+            {
+                model.Balance = Money.PoundSterling(transactions.LastOrDefault().BalanceAmount).ToString();
+                model.BalanceBroughtForward = Money.PoundSterling(transactions.FirstOrDefault().BalanceAmount).ToString();
+            }
+            
             model.StatementPeriod = period;
             foreach (var item in transactions)
             {
