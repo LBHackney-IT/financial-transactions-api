@@ -18,7 +18,6 @@ namespace FinancialTransactionsApi.Tests
         public HttpClient Client { get; private set; }
         public readonly AwsMockWebApplicationFactory<TStartup> Factory;
         public IDynamoDBContext DynamoDbContext => Factory?.DynamoDbContext;
-        public IAmazonSimpleNotificationService SimpleNotificationService => Factory?.SimpleNotificationService;
         public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
@@ -47,13 +46,12 @@ namespace FinancialTransactionsApi.Tests
             EnsureEnvVarConfigured("SubHeader", "SubHeader");
             EnsureEnvVarConfigured("Footer", "Footer");
             EnsureEnvVarConfigured("SubFooter", "SubFooter");
-            EnsureEnvVarConfigured("REQUIRED_GOOGL_GROUPS", "some-valid-google-group");
+            EnsureEnvVarConfigured("REQUIRED_GOOGL_GROUPS", "e2e-testing-development;HackneyAll;saml-aws-mtfh-developer;saml-aws-developer");
             Factory = new AwsMockWebApplicationFactory<TStartup>(_tables);
 
             Client = Factory.CreateClient();
             Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(TestToken);
             CleanupActions = new List<Action>();
-            CreateSnsTopic();
         }
         public void Dispose()
         {
@@ -79,23 +77,6 @@ namespace FinancialTransactionsApi.Tests
                 _disposed = true;
             }
         }
-        private void CreateSnsTopic()
-        {
-            var snsAttrs = new Dictionary<string, string>();
-            snsAttrs.Add("FifoTopic", "true");
-            snsAttrs.Add("ContentBasedDeduplication", "true");
-
-            var response = SimpleNotificationService.CreateTopicAsync(new CreateTopicRequest
-            {
-                Name = "transactioncreated.fifo",
-                Attributes = snsAttrs
-            }).Result;
-
-            Environment.SetEnvironmentVariable("TRANSACTION_SNS_ARN", response.TopicArn);
-
-            SnsVerifer = new SnsEventVerifier<TransactionSns>(Factory.AmazonSqs, SimpleNotificationService, response.TopicArn);
-        }
-
     }
 
     public class TableDef

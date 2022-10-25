@@ -3,6 +3,7 @@ using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -14,44 +15,42 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
         [Fact]
         public void CanMapADatabaseEntityToADomainObject()
         {
-            var dbEntity = new TransactionDbEntity()
+            var dbEntity = new TransactionEntity()
             {
                 Id = Guid.NewGuid(),
                 TargetId = Guid.NewGuid(),
-                TransactionDate = DateTime.UtcNow,
-                Address = "Address",
+                TargetType = TargetType.Tenure.ToString(),
+                AssetId = Guid.NewGuid(),
+                AssetType = "Dwelling",
+                TenancyAgreementRef = "061646/01",
+                PropertyRef = "00039884",
                 BalanceAmount = 145.23M,
                 ChargedAmount = 134.12M,
                 FinancialMonth = 2,
                 FinancialYear = 2022,
-                Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
-                BankAccountNumber = "12345678",
                 PaidAmount = 123.22M,
-                PaymentReference = "123451",
                 PeriodNo = 2,
-                TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                },
-                SuspenseResolutionInfo = new SuspenseResolutionInfo
-                {
-                    ResolutionDate = new DateTime(2021, 8, 1),
-                    Note = "Some note"
-                },
-                CreatedBy = "Admin",
-                CreatedAt = DateTime.UtcNow,
-                LastUpdatedAt = DateTime.UtcNow,
-                LastUpdatedBy = "Admin"
+                TransactionDate = DateTime.Now,
+                TransactionAmount = 2.45M,
+                Address = "Address",
+                Fund = "HSGRENT",
+                CreatedAt = DateTime.Now,
+                CreatedBy = "HFS",
             };
 
             var domain = dbEntity.ToDomain();
 
-            domain.Should().BeEquivalentTo(dbEntity);
+            domain.Should().BeEquivalentTo(dbEntity, options =>
+            {
+                options.Excluding(info => info.TransactionType);
+                options.Excluding(info => info.TargetType);
+                options.Excluding(info => info.TransactionDate);
+                options.Excluding(info => info.TransactionAmount);
+                options.Excluding(info => info.PaymentReference);
+                return options;
+            });
         }
 
         [Fact]
@@ -61,6 +60,12 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
             {
                 Id = Guid.NewGuid(),
                 TargetId = Guid.NewGuid(),
+                AssetId = Guid.NewGuid(),
+                AssetType = "Dwelling",
+                TenancyAgreementRef = "061646/01",
+                PropertyRef = "00039884",
+                PostDate = DateTime.Now,
+                RealValue = 2.45M,
                 TransactionDate = DateTime.UtcNow,
                 Address = "Address",
                 BalanceAmount = 145.23M,
@@ -72,7 +77,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
                 PaidAmount = 123.22M,
-                PaymentReference = "123451",
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
@@ -97,7 +101,17 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
 
             var dbEntity = domain.ToDatabase();
 
-            dbEntity.Should().BeEquivalentTo(domain);
+            dbEntity.Should().BeEquivalentTo(domain, options =>
+            {
+                options.Excluding(info => info.AssetId);
+                options.Excluding(info => info.AssetType);
+                options.Excluding(info => info.TenancyAgreementRef);
+                options.Excluding(info => info.PropertyRef);
+                options.Excluding(info => info.PostDate);
+                options.Excluding(info => info.RealValue);
+
+                return options;
+            });
         }
 
         [Fact]
@@ -128,7 +142,11 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
 
             var domain = request.ToDomain();
 
-            domain.Should().BeEquivalentTo(request);
+            domain.Should().BeEquivalentTo(request, options =>
+            {
+                options.Excluding(info => info.PaymentReference);
+                return options;
+            });
         }
 
         [Fact]
@@ -166,7 +184,11 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
 
             var domain = request.ToDomain();
 
-            domain.Should().BeEquivalentTo(request);
+            domain.Should().BeEquivalentTo(request, options =>
+            {
+                options.Excluding(info => info.PaymentReference);
+                return options;
+            });
         }
 
         [Fact]
@@ -222,7 +244,11 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
 
             var domainCollection = requestCollection.ToDomain();
 
-            domainCollection.Should().BeEquivalentTo(requestCollection);
+            domainCollection.Should().BeEquivalentTo(requestCollection, options =>
+            {
+                options.Excluding(info => info.PaymentReference);
+                return options;
+            });
         }
     }
 }

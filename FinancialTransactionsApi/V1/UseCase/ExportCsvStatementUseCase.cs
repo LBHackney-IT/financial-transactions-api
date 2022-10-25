@@ -73,7 +73,8 @@ namespace FinancialTransactionsApi.V1.UseCase
             var response = await _gateway.GetTransactionsAsync(query.TargetId, query.TransactionType.ToString(), startDate, endDate).ConfigureAwait(false);
             if (response.Any())
             {
-                var accountBalance = $"{ response.LastOrDefault().BalanceAmount}";
+                decimal balance = (response?.LastOrDefault() == null) ? default(decimal) : response.LastOrDefault().BalanceAmount;
+                var accountBalance = $"{balance}";
                 var date = $"{DateTime.Today:D}";
                 period = $"{startDate:D} to {endDate:D}";
                 lines.Add(_header.Replace("{itemId}", name));

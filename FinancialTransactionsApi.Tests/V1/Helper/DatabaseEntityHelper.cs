@@ -29,7 +29,6 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
                 TargetId = entity.TargetId,
                 TransactionType = entity.TransactionType,
                 TransactionDate = entity.TransactionDate,
-                PaymentReference = entity.PaymentReference,
                 PeriodNo = entity.PeriodNo,
                 FinancialMonth = entity.FinancialMonth,
                 FinancialYear = entity.FinancialYear,

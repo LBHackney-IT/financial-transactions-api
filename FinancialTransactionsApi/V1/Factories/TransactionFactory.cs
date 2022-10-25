@@ -24,7 +24,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 FinancialYear = transaction.FinancialYear,
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
                 PaidAmount = transaction.PaidAmount,
-                PaymentReference = transaction.PaymentReference,
                 BankAccountNumber = transaction.BankAccountNumber,
                 SuspenseResolutionInfo = transaction.SuspenseResolutionInfo,
                 PeriodNo = transaction.PeriodNo,
@@ -56,7 +55,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 FinancialYear = transactionDbEntity.FinancialYear,
                 HousingBenefitAmount = transactionDbEntity.HousingBenefitAmount,
                 PaidAmount = transactionDbEntity.PaidAmount,
-                PaymentReference = transactionDbEntity.PaymentReference,
                 BankAccountNumber = transactionDbEntity.BankAccountNumber,
                 SuspenseResolutionInfo = transactionDbEntity.SuspenseResolutionInfo,
                 PeriodNo = transactionDbEntity.PeriodNo,
@@ -99,7 +97,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 ChargedAmount = transactionRequest.ChargedAmount,
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
-                PaymentReference = transactionRequest.PaymentReference,
                 BankAccountNumber = transactionRequest.BankAccountNumber,
                 SuspenseResolutionInfo = null,
                 PeriodNo = transactionRequest.PeriodNo,
@@ -124,7 +121,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 ChargedAmount = transactionRequest.ChargedAmount,
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
-                PaymentReference = transactionRequest.PaymentReference,
                 BankAccountNumber = transactionRequest.BankAccountNumber,
                 SuspenseResolutionInfo = transactionRequest.SuspenseResolutionInfo,
                 PeriodNo = transactionRequest.PeriodNo,
@@ -150,7 +146,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 ChargedAmount = transactionRequest.ChargedAmount,
                 HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
                 PaidAmount = transactionRequest.PaidAmount,
-                PaymentReference = transactionRequest.PaymentReference,
                 BankAccountNumber = transactionRequest.BankAccountNumber,
                 PeriodNo = transactionRequest.PeriodNo,
                 TransactionAmount = transactionRequest.TransactionAmount,
@@ -192,5 +187,36 @@ namespace FinancialTransactionsApi.V1.Factories
             return transactions.Select(item => item.ToDatabase()).ToList();
         }
 
+        public static Transaction ToDomain(this TransactionEntity entity)
+        {
+            return entity == null ? null : new Transaction
+            {
+                Id = entity.Id,
+                TargetId = entity.TargetId,
+                TargetType = (TargetType) Enum.Parse(typeof(TargetType), entity.TargetType),
+                AssetId = entity.AssetId,
+                AssetType = entity.AssetType,
+                TenancyAgreementRef = entity.TenancyAgreementRef,
+                PropertyRef = entity.PropertyRef,
+                BalanceAmount = entity.BalanceAmount,
+                ChargedAmount = entity.ChargedAmount,
+                FinancialMonth = entity.FinancialMonth,
+                FinancialYear = entity.FinancialYear,
+                HousingBenefitAmount = entity.HousingBenefitAmount,
+                PaidAmount = entity.PaidAmount,
+                PeriodNo = entity.PeriodNo,
+                TransactionSource = entity.TransactionSource,
+                PostDate = entity.TransactionDate,
+                RealValue = entity.TransactionAmount,
+                Address = entity.Address,
+                Fund = entity.Fund ?? String.Empty,
+                CreatedAt = entity.CreatedAt,
+                CreatedBy = entity.CreatedBy,
+            };
+        }
+        public static IEnumerable<Transaction> ToDomain(this IEnumerable<TransactionEntity> databaseEntity)
+        {
+            return databaseEntity.Select(p => p.ToDomain()).OrderBy(x => x.TransactionDate).ToList();
+        }
     }
 }

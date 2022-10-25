@@ -4,6 +4,7 @@ using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Helpers;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -120,7 +122,6 @@ namespace FinancialTransactionsApi
 
             ConfigureLogging(services, Configuration);
 
-            services.ConfigureDynamoDB();
             services.ConfigureSns();
             services.AddLocalStack(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
@@ -128,15 +129,20 @@ namespace FinancialTransactionsApi
             RegisterUseCases(services);
             RegisterFactories(services);
             ConfigureHackneyCoreDi(services);
-            services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
-                builder
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod()));
+            ConfigureDbContext(services);
+            services.AddCors(opt => opt.AddPolicy("corsPolicy", builder => builder.AllowAnyOrigin().AllowAnyMethod()));
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+        }
+
+        private static void ConfigureDbContext(IServiceCollection services)
+        {
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
+            services.AddDbContext<DatabaseContext>(opt => opt.UseNpgsql(connectionString));
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -161,7 +167,7 @@ namespace FinancialTransactionsApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddScoped<ITransactionGateway, DynamoDbGateway>();
+            services.AddScoped<ITransactionGateway, PostgreDbGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)

@@ -18,9 +18,10 @@ namespace FinancialTransactionsApi.V1.Helpers
             var model = new ExportResponse();
             var data = new List<ExportTransactionResponse>();
 
-            // model.BankAccountNumber = string.Join(",", transactions.Select(x => x.RentAccountNumber).Distinct().ToArray());
-            model.Balance = Money.PoundSterling(transactions.LastOrDefault().BalanceAmount).ToString();
-            model.BalanceBroughtForward = Money.PoundSterling(transactions.FirstOrDefault().BalanceAmount).ToString();
+            decimal balance = (transactions?.LastOrDefault() == null) ? default(decimal) : transactions.LastOrDefault().BalanceAmount;
+            decimal balanceBroughtForward = (transactions?.FirstOrDefault() == null) ? default(decimal) : transactions.FirstOrDefault().BalanceAmount;
+            model.Balance = Money.PoundSterling(balance).ToString();
+            model.BalanceBroughtForward = Money.PoundSterling(balanceBroughtForward).ToString();
             model.StatementPeriod = period;
             foreach (var item in transactions)
             {

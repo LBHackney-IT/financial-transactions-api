@@ -11,7 +11,10 @@ using FluentAssertions;
 using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -52,6 +55,44 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 _suspenseAccountUseCase.Object,
                 _getByTargetIdUseCase.Object,
                 new Mock<IGetAllActiveTransactionsUseCase>().Object);
+        }
+
+        [Fact]
+        public async Task GetByTargerId_UseCaseReturnTransactionByTargetId_ShouldReturns200()
+        {
+            var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(_fixture.Build<TransactionResponse>().CreateMany(5));
+
+            _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>())).ReturnsAsync(responseMock);
+
+            var result = await _controller.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var okResult = result as OkObjectResult;
+
+            okResult.Should().NotBeNull();
+
+            okResult?.Value.Should().BeEquivalentTo(responseMock.Value);
+        }
+
+        [Fact]
+        public async Task GetByTargetId_UseCaseReturnNullByInvalidTargetId_ShouldReturns404()
+        {
+            IEnumerable<TransactionResponse> transactionsList = null;
+
+            var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(transactionsList);
+
+            _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>())).ReturnsAsync(responseMock);
+
+            var result = await _controller.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var notFoundResult = result as NotFoundObjectResult;
+
+            notFoundResult.Should().NotBeNull();
+
+            notFoundResult?.Value.Should().BeEquivalentTo(default(Guid));
         }
 
         [Fact]

@@ -14,6 +14,12 @@ namespace FinancialTransactionsApi.V1.Factories
             {
                 Id = domain.Id,
                 TargetId = domain.TargetId,
+                AssetId = domain.AssetId,
+                AssetType = domain.AssetType,
+                TenancyAgreementRef = domain.TenancyAgreementRef,
+                PropertyRef = domain.PropertyRef,
+                PostDate = domain.PostDate,
+                RealValue = domain.RealValue,
                 TargetType = domain.TargetType,
                 BalanceAmount = domain.BalanceAmount,
                 ChargedAmount = domain.ChargedAmount,
@@ -21,7 +27,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 FinancialYear = domain.FinancialYear,
                 HousingBenefitAmount = domain.HousingBenefitAmount,
                 PaidAmount = domain.PaidAmount,
-                PaymentReference = domain.PaymentReference,
+                //PaymentReference = domain.PaymentReference,
                 BankAccountNumber = domain.BankAccountNumber,
                 SortCode = domain.SortCode,
                 SuspenseResolutionInfo = domain.SuspenseResolutionInfo,
@@ -45,6 +51,11 @@ namespace FinancialTransactionsApi.V1.Factories
             return domainList == null ?
                 new List<TransactionResponse>() :
                 domainList.Select(domain => domain.ToResponse()).ToList();
+        }
+
+        public static ResponseWrapper<IEnumerable<TransactionResponse>> ToResponseWrapper(this IEnumerable<Transaction> domainList)
+        {
+            return new ResponseWrapper<IEnumerable<TransactionResponse>>(domainList.Select(domain => domain.ToResponse()));
         }
     }
 }

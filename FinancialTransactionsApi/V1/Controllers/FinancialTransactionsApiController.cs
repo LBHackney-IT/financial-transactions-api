@@ -1,6 +1,8 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
+using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using Hackney.Core.DynamoDb;
@@ -85,21 +87,22 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="404">Transaction by provided id cannot be found</response>
         /// <response code="500">Internal Server Error</response>
+        /// <param name="targetType">The value by which we are looking for a transaction</param>
         /// <param name="targetId">The value by which we are looking for a transaction</param>
+        /// <param name="startDate">The value by which we are looking for a transaction</param>
+        /// <param name="endDate">The value by which we are looking for a transaction</param>
         /// <returns>List of transactions</returns>
         [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        [Route("{targetId}/tenureId")]
-        public async Task<IActionResult> GetByTargetId([FromRoute] Guid targetId)
+        [Route("{targetType}/{targetId}")]
+        public async Task<IActionResult> GetByTargetId([FromRoute] string targetType, [FromRoute] Guid targetId, [FromQuery] DateTime? startDate = default(DateTime?), [FromQuery] DateTime? endDate = default(DateTime?))
         {
-            var transactions = await _getByTargetIdUseCase.ExecuteAsync(targetId).ConfigureAwait(false);
-            if (transactions == null || transactions.Count == 0)
-                return NotFound(targetId);
+            ResponseWrapper<IEnumerable<TransactionResponse>> response = await _getByTargetIdUseCase.ExecuteAsync(targetType, targetId, startDate, endDate).ConfigureAwait(false);
 
-            return Ok(transactions);
+            return (response.IsEmpty) ? NotFound(targetId) : Ok(response.Value);
         }
 
         /// <summary>
