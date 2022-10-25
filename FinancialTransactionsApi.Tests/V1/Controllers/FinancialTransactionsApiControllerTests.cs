@@ -607,7 +607,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
-            Console.WriteLine(result);
 
             var notFoundResult = result as NotFoundObjectResult;
 
