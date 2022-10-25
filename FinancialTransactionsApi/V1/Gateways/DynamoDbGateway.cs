@@ -74,7 +74,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             var scanConfig = new ScanOperationConfig
             {
                 Limit = request.PageSize,
-                PaginationToken = PaginationDetails.DecodeToken(request.PaginationToken),
+                PaginationToken = PaginationDetails.DecodeToken(string.Empty),
                 Filter = filter
             };
 
