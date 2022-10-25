@@ -58,14 +58,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var uri = new Uri($"api/v1/healthcheck/ping", UriKind.Relative);
             var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<HealthCheckResponse>(responseContent);
-
-            apiEntity.Should().NotBeNull();
-            apiEntity.Message.Should().BeNull();
-            apiEntity.Success.Should().BeTrue();
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
