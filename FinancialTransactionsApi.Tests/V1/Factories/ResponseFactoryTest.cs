@@ -25,7 +25,12 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
         {
             var domain = _fixture.Create<Transaction>();
             var response = domain.ToResponse();
-            domain.Should().BeEquivalentTo(response, opt => opt.Excluding(x => x.TransactionType));
+            domain.Should().BeEquivalentTo(response, options =>
+            {
+                options.Excluding(info => info.TransactionType);
+                options.Excluding(info => info.PaymentReference);
+                return options;
+            });
 
         }
 

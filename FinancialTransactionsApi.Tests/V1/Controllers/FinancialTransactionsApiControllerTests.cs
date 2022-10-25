@@ -62,9 +62,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(_fixture.Build<TransactionResponse>().CreateMany(5));
 
-            _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>())).ReturnsAsync(responseMock);
+            _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>())).ReturnsAsync(responseMock);
 
-            var result = await _controller.GetByTargetId(It.IsAny<Guid>()).ConfigureAwait(false);
+            var result = await _controller.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -82,9 +82,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(transactionsList);
 
-            _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>())).ReturnsAsync(responseMock);
+            _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>())).ReturnsAsync(responseMock);
 
-            var result = await _controller.GetByTargetId(It.IsAny<Guid>()).ConfigureAwait(false);
+            var result = await _controller.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 

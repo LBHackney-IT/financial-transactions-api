@@ -27,7 +27,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 FinancialYear = domain.FinancialYear,
                 HousingBenefitAmount = domain.HousingBenefitAmount,
                 PaidAmount = domain.PaidAmount,
-                PaymentReference = domain.PaymentReference,
+                //PaymentReference = domain.PaymentReference,
                 BankAccountNumber = domain.BankAccountNumber,
                 SortCode = domain.SortCode,
                 SuspenseResolutionInfo = domain.SuspenseResolutionInfo,

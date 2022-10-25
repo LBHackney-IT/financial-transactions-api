@@ -21,14 +21,14 @@ namespace FinancialTransactionsApi.V1.UseCase
         public async Task<byte[]> ExecuteAsync(TransactionExportRequest request)
         {
 
-            List<Transaction> response = new List<Transaction>();
+            IEnumerable<Transaction> response = default(IEnumerable<Transaction>);
             if (request.SelectedItems?.Count > 0)
             {
                 foreach (var item in request.SelectedItems)
                 {
                     var rId = await _gateway.GetTransactionByIdAsync(item).ConfigureAwait(false);
                     if (rId != null)
-                        response.Add(rId);
+                        response.ToList().Add(rId);
                 };
             }
             else
