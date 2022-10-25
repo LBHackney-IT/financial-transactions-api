@@ -28,13 +28,12 @@ namespace FinancialTransactionsApi.V1.Helpers
             model.SubFooter = lines[2];
             model.Footer = lines[3];
 
-            transactions ??= new List<Transaction>();
-            if (transactions.Any())
+            if (transactions == null) throw new ArgumentNullException(nameof(transactions));
+            else
             {
                 model.Balance = Money.PoundSterling(transactions.LastOrDefault().BalanceAmount).ToString();
                 model.BalanceBroughtForward = Money.PoundSterling(transactions.FirstOrDefault().BalanceAmount).ToString();
             }
-            
             model.StatementPeriod = period;
             foreach (var item in transactions)
             {
