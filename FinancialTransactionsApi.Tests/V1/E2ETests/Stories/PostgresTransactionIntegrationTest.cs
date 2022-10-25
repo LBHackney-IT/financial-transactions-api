@@ -21,7 +21,7 @@ using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
-    public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
+    public class PostgresTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
 
@@ -137,7 +137,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
                 BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
-                PaymentReference = transaction.PaymentReference,
                 PeriodNo = transaction.PeriodNo,
                 SortCode = transaction.SortCode,
                 Sender = transaction.Sender,

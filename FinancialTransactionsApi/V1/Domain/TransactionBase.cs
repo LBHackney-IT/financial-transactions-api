@@ -37,9 +37,6 @@ namespace FinancialTransactionsApi.V1.Domain
 
         public decimal RealValue { get; set; }
 
-        [Required]
-        public string PaymentReference { get; set; }
-
         [GreatAndEqualThan("0.0")]
         public decimal PaidAmount { get; set; }
 

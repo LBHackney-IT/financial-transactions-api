@@ -26,7 +26,6 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
                 HousingBenefitAmount = 214.11M,
                 BankAccountNumber = "12345678",
                 PaidAmount = 12356.17M,
-                PaymentReference = "213456",
                 PeriodNo = 35,
                 TransactionAmount = 1238.12M,
                 TransactionType = TransactionType.ArrangementInterest,
@@ -51,7 +50,6 @@ namespace FinancialTransactionsApi.Tests.V1.Domain
             transaction.BankAccountNumber.Should().Be("12345678");
             transaction.IsSuspense.Should().BeFalse();
             transaction.PaidAmount.Should().Be(12356.17M);
-            transaction.PaymentReference.Should().BeEquivalentTo("213456");
             transaction.PeriodNo.Should().Be(35);
             transaction.TransactionAmount.Should().Be(1238.12M);
             transaction.TransactionType.Should().Be(TransactionType.ArrangementInterest);

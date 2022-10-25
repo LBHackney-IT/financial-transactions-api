@@ -67,7 +67,7 @@ namespace FinancialTransactionsApi.V1.Helpers
         //    var result = converter.Convert(pdf);
         //    return result;
         //}
-        public static async Task<string> CreatePdfTemplate(List<Transaction> transactions, string period, List<string> lines)
+        public static async Task<string> CreatePdfTemplate(IEnumerable<Transaction> transactions, string period, List<string> lines)
         {
 
             var model = new ExportResponse();
@@ -99,7 +99,7 @@ namespace FinancialTransactionsApi.V1.Helpers
 
             return template.EncodeBase64();
         }
-        public static byte[] WriteCSVFile(List<Transaction> transactions, List<string> lines)
+        public static byte[] WriteCSVFile(IEnumerable<Transaction> transactions, List<string> lines)
         {
             var data = new List<ExportTransactionResponse>();
             foreach (var item in transactions)
@@ -140,7 +140,6 @@ namespace FinancialTransactionsApi.V1.Helpers
             var data = transactions.Select(_ => new
             {
                 Date = _.TransactionDate.ToString("dd/MM/yyyy"),
-                RentAccountNumber = _.PaymentReference,
                 Type = _.TransactionSource,
                 Charge = _.ChargedAmount,
                 Paid = _.PaidAmount,
