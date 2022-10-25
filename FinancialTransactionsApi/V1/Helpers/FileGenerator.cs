@@ -6,6 +6,7 @@ using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure;
 using GenFu;
 using NodaMoney;
+using Npgsql.Replication.PgOutput.Messages;
 using Razor.Templating.Core;
 using System;
 using System.Collections.Generic;
@@ -27,13 +28,10 @@ namespace FinancialTransactionsApi.V1.Helpers
             model.SubFooter = lines[1];
             model.SubFooter = lines[2];
             model.Footer = lines[3];
-
-            if (transactions == null) throw new ArgumentNullException(nameof(transactions));
-            else
-            {
-                model.Balance = Money.PoundSterling(transactions.LastOrDefault().BalanceAmount).ToString();
-                model.BalanceBroughtForward = Money.PoundSterling(transactions.FirstOrDefault().BalanceAmount).ToString();
-            }
+            decimal balance = (transactions.LastOrDefault() == null) ? default(decimal) : transactions.LastOrDefault().BalanceAmount;
+            decimal balanceBroughtForward = (transactions.FirstOrDefault() == null) ? default(decimal) : transactions.FirstOrDefault().BalanceAmount;
+            model.Balance = Money.PoundSterling(balance).ToString();
+            model.BalanceBroughtForward = Money.PoundSterling(balanceBroughtForward).ToString();
             model.StatementPeriod = period;
             foreach (var item in transactions)
             {
