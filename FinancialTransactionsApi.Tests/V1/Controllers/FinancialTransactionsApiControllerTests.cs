@@ -166,15 +166,17 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         public async Task GetAll_UseCaseReturnList_Returns200()
         {
             var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
-
-            var obj1 = new PagedResult<TransactionResponse>(transactionsList);
+            var paginationMeta = new PaginationMetaData(1, 1, 1, 1, 1);
+            var obj1 = new PaginatedResponse<TransactionResponse>(transactionsList, paginationMeta);
 
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>()))
                 .ReturnsAsync(obj1);
 
             var query = new TransactionQuery()
             {
-                TargetId = Guid.NewGuid()
+                TargetId = Guid.NewGuid(),
+                PageSize = 1,
+                Page = 1
             };
 
             var result = await _controller.GetAll("", query).ConfigureAwait(false);

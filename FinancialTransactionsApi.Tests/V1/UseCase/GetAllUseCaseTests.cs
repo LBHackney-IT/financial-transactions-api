@@ -1,5 +1,6 @@
 using AutoFixture;
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
@@ -30,14 +31,16 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         public async Task GetAll_GatewayReturnsList_ReturnsList()
         {
             var transactions = _fixture.CreateMany<Transaction>();
-            var obj = new PagedResult<Transaction>(transactions);
+            var paginationMeta = new PaginationMetaData(1, 1, 1, 1, 1);
+            var obj = new PaginatedResponse<Transaction>(transactions, paginationMeta);
             var transactionQuery = new TransactionQuery()
             {
                 TargetId = Guid.NewGuid(),
                 TransactionType = TransactionType.ArrangementInterest,
                 EndDate = DateTime.Now,
                 StartDate = DateTime.UtcNow,
-                PaginationToken = null
+                Page = 1,
+                PageSize = 1
             };
 
             _mockGateway.Setup(_ => _.GetPagedTransactionsAsync(transactionQuery)).ReturnsAsync(obj);

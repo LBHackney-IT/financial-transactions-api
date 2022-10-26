@@ -35,24 +35,28 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public Task<Transaction> GetTransactionByIdAsync(Guid targetId, Guid id) => throw new NotImplementedException();
 
-        public async Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
+        public async Task<PaginatedResponse<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
         {
             var transactionEntities = _databaseContext.TransactionEntities.AsQueryable();
 
             if(query.TransactionType != null)
             {
-                transactionEntities.Where(x => x.TransactionType == query.TransactionType.ToString());
+                transactionEntities = transactionEntities.Where(x => x.TransactionType == query.TransactionType.ToString());
             }
 
             if (query.StartDate.HasValue)
             {
                 query.EndDate ??= DateTime.Now;
-                transactionEntities.Where(x => x.TransactionDate >= query.StartDate.Value && x.TransactionDate <= query.EndDate.Value);
+                transactionEntities = transactionEntities.Where(x => x.TransactionDate >= query.StartDate.Value && x.TransactionDate <= query.EndDate.Value);
             }
 
             var response = await transactionEntities.ToListAsync().ConfigureAwait(false);
 
-            return new PagedResult<Transaction>(response.Select(x => x.ToDomain()), new PaginationDetails(String.Empty));
+            var page = query.Page > 1 ? query.Page : 0;
+
+            var filteredResponse = response.Skip(page * query.PageSize).Take(query.PageSize).Select(x => x.ToDomain());
+
+            return new PaginatedResponse<Transaction>(filteredResponse, new PaginationMetaData(filteredResponse.Count(), response.Count, 0, query.PageSize, query.Page));
         }
 
         public Task AddAsync(Transaction transaction) => throw new NotImplementedException();
