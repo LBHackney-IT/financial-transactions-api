@@ -23,8 +23,6 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task<IEnumerable<Transaction>> GetByTargetId(string targetType, Guid targetId, DateTime? startDate, DateTime? endDate)
         {
-            if (targetId == Guid.Empty) throw new ArgumentException($"{nameof(targetId)} shouldn't be empty.");
-
             var spec = new GetTransactionByTargetTypeAndTargetId(targetType, targetId, startDate, endDate);
 
             var response = await _databaseContext.Transactions.Where(spec.Criteria).ToListAsync().ConfigureAwait(false);

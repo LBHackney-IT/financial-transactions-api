@@ -22,13 +22,11 @@ namespace FinancialTransactionsApi.V1.Gateways
     public class DynamoDbGateway
     {
         private const string TARGETID = "target_id";
-        private readonly IAmazonDynamoDB _amazonDynamoDb;
         private readonly IDynamoDBContext _dynamoDbContext;
         private readonly IConfiguration _configuration;
 
-        public DynamoDbGateway(IAmazonDynamoDB amazonDynamoDb, IDynamoDBContext dynamoDbContext, IConfiguration configuration)
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IConfiguration configuration)
         {
-            _amazonDynamoDb = amazonDynamoDb;
             _dynamoDbContext = dynamoDbContext;
             _configuration = configuration;
         }
