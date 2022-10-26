@@ -64,7 +64,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>())).ReturnsAsync(responseMock);
 
-            var result = await _controller.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
+            var result = await _controller.GetByTargetId(It.IsAny<string>(), Guid.NewGuid(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -84,7 +84,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>())).ReturnsAsync(responseMock);
 
-            var result = await _controller.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
+            var targetId = Guid.NewGuid();
+
+            var result = await _controller.GetByTargetId(It.IsAny<string>(), targetId, It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -92,7 +94,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             notFoundResult.Should().NotBeNull();
 
-            notFoundResult?.Value.Should().BeEquivalentTo(default(Guid));
+            notFoundResult?.Value.Should().BeEquivalentTo(targetId);
         }
 
         [Fact]

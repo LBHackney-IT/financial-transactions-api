@@ -100,6 +100,11 @@ namespace FinancialTransactionsApi.V1.Controllers
         [Route("{targetType}/{targetId}")]
         public async Task<IActionResult> GetByTargetId([FromRoute] string targetType, [FromRoute] Guid targetId, [FromQuery] DateTime? startDate = default(DateTime?), [FromQuery] DateTime? endDate = default(DateTime?))
         {
+            if (targetId == Guid.Empty && string.IsNullOrEmpty(targetType))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
+            }
+
             ResponseWrapper<IEnumerable<TransactionResponse>> response = await _getByTargetIdUseCase.ExecuteAsync(targetType, targetId, startDate, endDate).ConfigureAwait(false);
 
             return (response.IsEmpty) ? NotFound(targetId) : Ok(response.Value);

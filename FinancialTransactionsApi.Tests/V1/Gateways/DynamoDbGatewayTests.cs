@@ -19,14 +19,12 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         private readonly Fixture _fixture = new Fixture();
         private readonly Mock<IDynamoDBContext> _dynamoDb;
         private readonly DynamoDbGateway _gateway;
-        private readonly Mock<IAmazonDynamoDB> _amazonDynamoDb;
         private readonly Mock<IConfiguration> _mockConfig;
         public DynamoDbGatewayTests()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
             _mockConfig = new Mock<IConfiguration>();
-            _amazonDynamoDb = new Mock<IAmazonDynamoDB>();
-            _gateway = new DynamoDbGateway(_amazonDynamoDb.Object, _dynamoDb.Object, _mockConfig.Object);
+            _gateway = new DynamoDbGateway( _dynamoDb.Object, _mockConfig.Object);
         }
 
 
