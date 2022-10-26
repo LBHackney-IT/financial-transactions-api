@@ -24,7 +24,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
             _mockConfig = new Mock<IConfiguration>();
-            _gateway = new DynamoDbGateway( _dynamoDb.Object, _mockConfig.Object);
+            _gateway = new DynamoDbGateway(_dynamoDb.Object, _mockConfig.Object);
         }
 
 
