@@ -10,10 +10,5 @@ namespace FinancialTransactionsApi.V1.Infrastructure
         public DatabaseContext(DbContextOptions options) : base(options) { }
 
         public DbSet<TransactionEntity> Transactions { get; set; }
-
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    base.OnModelCreating(modelBuilder);
-        //}
     }
 }
