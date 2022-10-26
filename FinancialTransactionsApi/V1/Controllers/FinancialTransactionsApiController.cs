@@ -69,9 +69,13 @@ namespace FinancialTransactionsApi.V1.Controllers
         public async Task<IActionResult> Get([FromRoute] Guid id)
         {
 
-            ResponseWrapper<TransactionResponse> transaction = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
+            var transaction = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
+            if (transaction.IsEmpty)
+            {
+                return NotFound($"No transaction exists for this id: {id}");
+            }
 
-            return (transaction.IsEmpty) ? NotFound(id) : Ok(transaction.Value);
+            return Ok(transaction.Value);
         }
 
         /// <summary>

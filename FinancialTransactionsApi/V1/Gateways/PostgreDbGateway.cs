@@ -34,7 +34,11 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task<Transaction> GetTransactionByIdAsync(Guid id)
         {
-            var data = await _databaseContext.TransactionEntities.AsNoTracking().Where(t => t.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
+            var data = await _databaseContext.Transactions
+                                              .AsNoTracking()
+                                              .Where(t => t.Id == id)
+                                              .FirstOrDefaultAsync()
+                                              .ConfigureAwait(false);
             return data?.ToDomain();
         }
 
