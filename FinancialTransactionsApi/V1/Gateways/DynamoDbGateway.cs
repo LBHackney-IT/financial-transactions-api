@@ -232,7 +232,6 @@ namespace FinancialTransactionsApi.V1.Gateways
             {
                 var search = table.Query(queryConfig);
                 paginationToken = search.PaginationToken;
-                //_logger.LogDebug($"Querying {queryConfig.IndexName} index for targetId {query.TargetId}");
                 var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
                 if (resultsSet.Any())
                 {
@@ -357,9 +356,6 @@ namespace FinancialTransactionsApi.V1.Gateways
                     queryConfig.PaginationToken = paginationToken;
                     queryConfig.Limit = 1;
                     search = table.Query(queryConfig);
-                    resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
-                    if (!resultsSet.Any())
-                        paginationToken = null;
                 }
             }
 
