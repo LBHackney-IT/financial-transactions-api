@@ -47,7 +47,7 @@ namespace FinancialTransactionsApi.V1.Gateways
                 transactionEntities = transactionEntities.Where(x => x.TransactionType == query.TransactionType.ToString());
             }
 
-            if(query.StartDate.HasValue)
+            if (query.StartDate.HasValue)
             {
                 query.EndDate ??= DateTime.Now;
                 transactionEntities = transactionEntities.Where(x => x.TransactionDate >= query.StartDate.Value && x.TransactionDate <= query.EndDate.Value);
