@@ -130,7 +130,8 @@ namespace FinancialTransactionsApi
             RegisterFactories(services);
             ConfigureHackneyCoreDi(services);
             ConfigureDbContext(services);
-            services.AddCors(opt => opt.AddPolicy("corsPolicy", builder => builder.AllowAnyOrigin().AllowAnyMethod()));
+            //services.AddCors(opt => opt.AddPolicy("corsPolicy", builder => builder.AllowAnyOrigin().AllowAnyMethod()));
+            services.AddCors();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
