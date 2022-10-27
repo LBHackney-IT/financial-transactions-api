@@ -667,7 +667,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             };
 
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-               .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
+               .ReturnsAsync(new TransactionResponse { IsSuspense = true });
 
             try
             {
@@ -687,7 +687,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         public async Task Update_NonSuspenseTransaction_ThrowBadRequest()
         {
             var response = _fixture.Build<TransactionResponse>()
-              .With(x => x.TargetId, Guid.NewGuid())
+              .With(x => x.IsSuspense, false)
               .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
               .Create();
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
