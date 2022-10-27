@@ -175,7 +175,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             var query = new TransactionQuery()
             {
                 TargetId = Guid.NewGuid(),
-                PageSize = 1,
+                PageSize = 5,
                 Page = 1
             };
 
@@ -187,9 +187,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeOfType<PagedResult<TransactionResponse>>();
+            okResult?.Value.Should().BeOfType<PaginatedResponse<TransactionResponse>>();
 
-            var responses = okResult?.Value as PagedResult<TransactionResponse>;
+            var responses = okResult?.Value as PaginatedResponse<TransactionResponse>;
 
             responses?.Results.Should().HaveCount(5);
 
