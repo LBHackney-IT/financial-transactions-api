@@ -122,6 +122,7 @@ namespace FinancialTransactionsApi
 
             ConfigureLogging(services, Configuration);
 
+            services.AddCors();
             services.ConfigureSns();
             services.AddLocalStack(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
@@ -130,10 +131,6 @@ namespace FinancialTransactionsApi
             RegisterFactories(services);
             ConfigureHackneyCoreDi(services);
             ConfigureDbContext(services);
-            services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
-                                                                builder
-                                                                .AllowAnyOrigin()
-                                                                .AllowAnyMethod()));
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
