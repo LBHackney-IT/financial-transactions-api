@@ -58,6 +58,9 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [Column("housingbenefitamount")]
         public decimal HousingBenefitAmount { get; set; }
 
+        [Column("issuspense")]
+        public bool IsSuspense { get; set; }
+
         [Column("address")]
         public string Address { get; set; }
 

@@ -104,7 +104,7 @@ namespace FinancialTransactionsApi.V1.Boundary
         /// <example>
         /// true
         /// </example>
-        public bool IsSuspense => TargetId == Guid.Empty;
+        public bool IsSuspense { get; set; }
 
         /// <summary>
         /// Total paid amount
