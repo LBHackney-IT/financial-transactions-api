@@ -306,14 +306,14 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            // if (!existTransaction.IsSuspense)
-            // {
-            //     return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
-            // }
+            if (!existTransaction.Value.IsSuspense)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
+            }
 
             var lastUpdatedBy = GetUserName(token);
 
-            // var domainTransaction = existTransaction.ResponseToDomain(transaction, lastUpdatedBy);
+            var domainTransaction = existTransaction.Value.ResponseToDomain(transaction, lastUpdatedBy);
 
 
             var transactionResponse = await _updateUseCase.ExecuteAsync(null).ConfigureAwait(false);
@@ -364,16 +364,14 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            // if (!existTransaction.IsSuspense)
-            // {
-            //     return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
-            // }
+            if (!existTransaction.Value.IsSuspense)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
+            }
 
             var lastUpdatedBy = GetUserName(token);
 
             var domainTransaction = transaction.ToDomain();
-            // domainTransaction.CreatedBy = existTransaction.CreatedBy;
-            // domainTransaction.CreatedAt = existTransaction.CreatedAt;
             domainTransaction.LastUpdatedBy = lastUpdatedBy;
 
             var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
