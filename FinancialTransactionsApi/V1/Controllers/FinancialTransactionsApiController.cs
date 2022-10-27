@@ -306,7 +306,7 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (!existTransaction.Value.IsSuspense)
+            if (!existTransaction.IsEmpty && !existTransaction.Value.IsSuspense)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
             }

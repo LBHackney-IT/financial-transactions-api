@@ -639,6 +639,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             var response = new ResponseWrapper<TransactionResponse>(_fixture.Build<TransactionResponse>()
                 .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
+                .With(x => x.IsSuspense, true)
                 .Create());
 
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
