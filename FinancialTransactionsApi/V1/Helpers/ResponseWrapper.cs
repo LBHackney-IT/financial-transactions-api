@@ -11,11 +11,10 @@ namespace FinancialTransactionsApi.V1.Helpers
         {
             get
             {
-                if (this.Value?.GetType().GetGenericTypeDefinition() == typeof(List<>))
+                if ((this.Value as IEnumerable<object>) != null)
                 {
                     return !(this.Value as IEnumerable<object>).Any();
                 }
-
                 return this.Value is null;
             }
         }

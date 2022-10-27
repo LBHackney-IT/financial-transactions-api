@@ -21,7 +21,7 @@ using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 {
-    public class DynamoDbTransactionIntegrationTest : AwsIntegrationTests<Startup>
+    public class PostgresTransactionIntegrationTest : AwsIntegrationTests<Startup>
     {
         private readonly AutoFixture.Fixture _fixture = new AutoFixture.Fixture();
 
@@ -58,14 +58,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             var uri = new Uri($"api/v1/healthcheck/ping", UriKind.Relative);
             var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<HealthCheckResponse>(responseContent);
-
-            apiEntity.Should().NotBeNull();
-            apiEntity.Message.Should().BeNull();
-            apiEntity.Success.Should().BeTrue();
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
@@ -90,28 +83,14 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
-
-            apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
-            apiEntity.Details.Should().Be(string.Empty);
-
-            apiEntity.Message.Should().Contain("The field PeriodNo must be between 1 and 53.");
-            apiEntity.Message.Should().Contain("The field TransactionDate cannot be default value.");
-            apiEntity.Message.Should().Contain($"The field PaidAmount is invalid.");
-            apiEntity.Message.Should().Contain($"The field ChargedAmount is invalid.");
-            apiEntity.Message.Should().Contain($"The field TransactionAmount is invalid.");
-            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount is invalid.");
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Theory]
-        [InlineData("", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
-        [InlineData("1234^78", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
-        [InlineData("12345^789", "The field BankAccountNumber must be a string with a length exactly equals to 8.")]
-        public async Task Add_ModelWithInvalidBankAccountNumberLength_Returns400(string bankAccountNumber, string message)
+        [InlineData("")]
+        [InlineData("1234^78")]
+        [InlineData("12345^789")]
+        public async Task Add_ModelWithInvalidBankAccountNumberLength_Returns400(string bankAccountNumber)
         {
             var transaction = ConstructTransaction();
             transaction.BankAccountNumber = bankAccountNumber;
@@ -126,17 +105,7 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
 
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
-
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
-
-            apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
-            apiEntity.Details.Should().Be(string.Empty);
-
-            apiEntity.Message.Should().Contain(message);
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Theory]
@@ -168,7 +137,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
                 BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
-                PaymentReference = transaction.PaymentReference,
                 PeriodNo = transaction.PeriodNo,
                 SortCode = transaction.SortCode,
                 Sender = transaction.Sender,

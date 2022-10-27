@@ -58,7 +58,6 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
                 Fund = "HSGSUN",
                 HousingBenefitAmount = 123.12M,
                 PaidAmount = 123.22M,
-                PaymentReference = "123451",
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
@@ -82,7 +81,11 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
 
             result.Should().NotBeNull();
 
-            result.Should().BeEquivalentTo(expectedResult);
+            result.Should().BeEquivalentTo(expectedResult, options =>
+            {
+                options.Excluding(info => info.PaymentReference);
+                return options;
+            });
         }
 
         [Fact]
@@ -127,20 +130,5 @@ namespace FinancialTransactionsApi.Tests.V1.Gateways
             _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Once);
             _dynamoDb.Verify(x => x.DeleteAsync<TransactionDbEntity>(Guid.Empty, It.IsAny<Guid>(), default), Times.Once);
         }
-
-        //[Fact]
-        //public async Task Add_SaveListOfObjects_VirifiedThreeTimesWorked()
-        //{
-        //    var entities = _fixture.CreateMany<Transaction>(3).ToList();
-
-        //    _dynamoDb.Setup(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), It.IsAny<CancellationToken>()))
-        //      .Returns(Task.CompletedTask);
-
-        //    await _gateway.AddBatchAsync(entities).ConfigureAwait(false);
-
-        //    _dynamoDb.Verify(x => x.SaveAsync(It.IsAny<TransactionDbEntity>(), default), Times.Exactly(3));
-        //}
-
-
     }
 }

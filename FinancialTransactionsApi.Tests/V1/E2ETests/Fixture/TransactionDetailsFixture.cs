@@ -104,7 +104,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
                 BankAccountNumber = bankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
-                PaymentReference = transaction.PaymentReference,
                 PeriodNo = transaction.PeriodNo,
                 Sender = transaction.Sender,
                 TargetId = transaction.TargetId,
@@ -127,7 +126,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 HousingBenefitAmount = transaction.HousingBenefitAmount,
                 BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
-                PaymentReference = transaction.PaymentReference,
                 PeriodNo = transaction.PeriodNo,
                 Sender = transaction.Sender,
                 TargetId = transaction.TargetId,
@@ -182,7 +180,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 FinancialMonth = transaction.FinancialMonth,
                 FinancialYear = transaction.FinancialYear,
                 TransactionType = transaction.TransactionType,
-                PaymentReference = "PaymentReference",
                 Fund = "Fund",
                 HousingBenefitAmount = 999.9M,
                 SuspenseResolutionInfo = new SuspenseResolutionInfo

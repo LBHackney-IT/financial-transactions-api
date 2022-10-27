@@ -31,11 +31,10 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 FinancialYear = 2022,
                 HousingBenefitAmount = 123.12M,
                 PaidAmount = 123.22M,
-                PaymentReference = "123451",
                 PeriodNo = 2,
                 TransactionSource = "DD",
-                PostDate = DateTime.Now,
-                RealValue = 2.45M,
+                TransactionDate = DateTime.Now,
+                TransactionAmount = 2.45M,
                 Address = "Address",
                 Fund = "HSGRENT",
                 CreatedAt = DateTime.Now,
@@ -48,6 +47,9 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
             {
                 options.Excluding(info => info.TransactionType);
                 options.Excluding(info => info.TargetType);
+                options.Excluding(info => info.TransactionDate);
+                options.Excluding(info => info.TransactionAmount);
+                options.Excluding(info => info.PaymentReference);
                 return options;
             });
         }
@@ -76,7 +78,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
                 PaidAmount = 123.22M,
-                PaymentReference = "123451",
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
@@ -142,7 +143,11 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
 
             var domain = request.ToDomain();
 
-            domain.Should().BeEquivalentTo(request);
+            domain.Should().BeEquivalentTo(request, options =>
+            {
+                options.Excluding(info => info.PaymentReference);
+                return options;
+            });
         }
 
         [Fact]
@@ -180,7 +185,11 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
 
             var domain = request.ToDomain();
 
-            domain.Should().BeEquivalentTo(request);
+            domain.Should().BeEquivalentTo(request, options =>
+            {
+                options.Excluding(info => info.PaymentReference);
+                return options;
+            });
         }
 
         [Fact]
@@ -236,7 +245,11 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
 
             var domainCollection = requestCollection.ToDomain();
 
-            domainCollection.Should().BeEquivalentTo(requestCollection);
+            domainCollection.Should().BeEquivalentTo(requestCollection, options =>
+            {
+                options.Excluding(info => info.PaymentReference);
+                return options;
+            });
         }
     }
 }

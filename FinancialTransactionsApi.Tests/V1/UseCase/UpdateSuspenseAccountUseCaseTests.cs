@@ -93,7 +93,6 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
                 PaidAmount = 123.22M,
-                PaymentReference = "123451",
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
