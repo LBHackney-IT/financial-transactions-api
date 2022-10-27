@@ -40,9 +40,6 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         [Column("transactionsource")]
         public string TransactionSource { get; set; }
 
-        [Column("transactiondate")]
-        public DateTime TransactionDate { get; set; }
-
         [Column("transactionamount")]
         public decimal TransactionAmount { get; set; }
 

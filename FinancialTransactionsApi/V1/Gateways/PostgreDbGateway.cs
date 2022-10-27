@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using Hackney.Core.DynamoDb;
 using FinancialTransactionsApi.V1.Boundary.Response;
+using Amazon.DynamoDBv2.Model;
+using Amazon.DynamoDBv2;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
@@ -38,14 +40,14 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task<PaginatedResponse<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
         {
-            var transactionEntities = _databaseContext.TransactionEntities.AsQueryable();
+            var transactionEntities = _databaseContext.Transactions.AsQueryable();
 
             if (query.TransactionType.HasValue)
             {
                 transactionEntities = transactionEntities.Where(x => x.TransactionType == query.TransactionType.ToString());
             }
 
-            if (query.StartDate.HasValue)
+            if(query.StartDate.HasValue)
             {
                 query.EndDate ??= DateTime.Now;
                 transactionEntities = transactionEntities.Where(x => x.TransactionDate >= query.StartDate.Value && x.TransactionDate <= query.EndDate.Value);

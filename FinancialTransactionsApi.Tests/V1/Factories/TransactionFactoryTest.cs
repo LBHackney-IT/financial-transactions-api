@@ -33,7 +33,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 PaidAmount = 123.22M,
                 PeriodNo = 2,
                 TransactionSource = "DD",
-                TransactionDate = DateTime.Now,
                 TransactionAmount = 2.45M,
                 Address = "Address",
                 Fund = "HSGRENT",
