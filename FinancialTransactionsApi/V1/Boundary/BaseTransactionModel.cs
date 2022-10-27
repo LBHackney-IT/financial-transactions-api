@@ -162,7 +162,7 @@ namespace FinancialTransactionsApi.V1.Boundary
         public Sender Sender { get; set; }
 
         /// <summary>
-        /// ToDO: No information about this field
+        /// No information about this field
         /// </summary>
         /// <example>
         ///     HSGSUN

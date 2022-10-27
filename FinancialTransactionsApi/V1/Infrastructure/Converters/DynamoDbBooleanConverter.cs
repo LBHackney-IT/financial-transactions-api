@@ -4,8 +4,6 @@ using System;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Converters
 {
-    // TODO: This should go in a common NuGet package...
-
     /// <summary>
     /// Converter for enums where the value stored should be the enum value name (not the numeric value)
     /// </summary>
