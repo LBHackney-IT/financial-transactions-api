@@ -39,7 +39,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         {
             var transactionEntities = _databaseContext.TransactionEntities.AsQueryable();
 
-            if(query.TransactionType != null)
+            if (query.TransactionType.HasValue)
             {
                 transactionEntities = transactionEntities.Where(x => x.TransactionType == query.TransactionType.ToString());
             }
