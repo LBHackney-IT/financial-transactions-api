@@ -49,6 +49,8 @@ namespace FinancialTransactionsApi.V1.Domain
         [GreatAndEqualThan("0.0")]
         public decimal HousingBenefitAmount { get; set; }
 
+        public bool IsSuspense { get; set; }
+
         public string Address { get; set; }
 
         [Required]
