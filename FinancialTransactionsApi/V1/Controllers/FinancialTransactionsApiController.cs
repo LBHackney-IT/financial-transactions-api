@@ -102,7 +102,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         {
             if (targetId == Guid.Empty || string.IsNullOrEmpty(targetType))
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transacton type and target Id cannot be null!"));
             }
 
             ResponseWrapper<IEnumerable<TransactionResponse>> response = await _getByTargetIdUseCase.ExecuteAsync(targetType, targetId, startDate, endDate).ConfigureAwait(false);
