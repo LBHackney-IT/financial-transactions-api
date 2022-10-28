@@ -119,8 +119,6 @@ namespace FinancialTransactionsApi
                     c.IncludeXmlComments(xmlPath);
             });
 
-            ConfigureLogging(services, Configuration);
-
             services.AddCors();
             services.ConfigureSns();
             services.AddLocalStack(Configuration);
@@ -142,26 +140,6 @@ namespace FinancialTransactionsApi
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
             services.AddDbContext<DatabaseContext>(opt => opt.UseNpgsql(connectionString));
-        }
-
-        private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
-        {
-            // We rebuild the logging stack so as to ensure the console logger is not used in production.
-            // See here: https://weblog.west-wind.com/posts/2018/Dec/31/Dont-let-ASPNET-Core-Default-Console-Logging-Slow-your-App-down
-            services.AddLogging(config =>
-            {
-                // clear out default configuration
-                config.ClearProviders();
-
-                config.AddConfiguration(configuration.GetSection("Logging"));
-                config.AddDebug();
-                config.AddEventSourceLogger();
-
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
-                {
-                    config.AddConsole();
-                }
-            });
         }
 
         private static void RegisterGateways(IServiceCollection services)
