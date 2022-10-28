@@ -19,7 +19,7 @@ namespace FinancialTransactionsApi.V1.Domain
 
         public TargetType TargetType { get; set; }
 
-        public Guid AssetId { get; set; }
+        public Guid? AssetId { get; set; }
 
         public string AssetType { get; set; }
 

@@ -23,7 +23,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task<IEnumerable<Transaction>> GetByTargetId(string targetType, Guid targetId, DateTime? startDate, DateTime? endDate)
         {
-            var spec = new GetTransactionByTargetTypeAndTargetId(targetType, targetId, startDate, endDate);
+            var spec = new GetTransactionByTargetTypeAndTargetIdSpecification(targetType, targetId, startDate, endDate);
 
             var response = await _databaseContext.Transactions.Where(spec.Criteria).ToListAsync().ConfigureAwait(false);
 
@@ -48,7 +48,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         {
             getActiveTransactionsRequest.PeriodEndDate = getActiveTransactionsRequest.PeriodEndDate ?? DateTime.UtcNow;
 
-            var spec = new GetTransactionByDate(getActiveTransactionsRequest.PeriodStartDate, getActiveTransactionsRequest.PeriodEndDate);
+            var spec = new GetTransactionByDateSpecification(getActiveTransactionsRequest.PeriodStartDate, getActiveTransactionsRequest.PeriodEndDate);
 
             var count = _databaseContext.Transactions.Where(spec.Criteria).Count();
 

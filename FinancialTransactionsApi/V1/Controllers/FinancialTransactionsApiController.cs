@@ -97,7 +97,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        [Route("{targetType}/{targetId}")]
+        [Route("targettype/{targetType}/{targetId}")]
         public async Task<IActionResult> GetByTargetId([FromRoute] string targetType, [FromRoute] Guid targetId, [FromQuery] DateTime? startDate = default(DateTime?), [FromQuery] DateTime? endDate = default(DateTime?))
         {
             if (targetId == Guid.Empty || string.IsNullOrEmpty(targetType))

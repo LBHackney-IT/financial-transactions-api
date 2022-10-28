@@ -20,7 +20,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Entities
         public string TargetType { get; set; }
 
         [Column("assetid")]
-        public Guid AssetId { get; set; }
+        public Guid? AssetId { get; set; }
 
         [Column("assettype")]
         public string AssetType { get; set; }
