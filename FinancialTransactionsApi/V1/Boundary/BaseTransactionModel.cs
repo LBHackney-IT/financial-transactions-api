@@ -8,7 +8,7 @@ namespace FinancialTransactionsApi.V1.Boundary
 {
     public abstract class BaseTransactionModel
     {
-         public Guid TargetId { get; set; }
+        public Guid TargetId { get; set; }
 
         public Guid? AssetId { get; set; }
 
