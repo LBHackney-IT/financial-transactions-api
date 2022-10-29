@@ -13,13 +13,11 @@ namespace FinancialTransactionsApi.V1.UseCase
 {
     public class AddBatchUseCase : IAddBatchUseCase
     {
-        private readonly ITransactionGateway _gateway;
         private readonly ISnsGateway _snsGateway;
         private readonly ISnsFactory _snsFactory;
 
-        public AddBatchUseCase(ITransactionGateway gateway, ISnsGateway snsGateway, ISnsFactory snsFactory)
+        public AddBatchUseCase(ISnsGateway snsGateway, ISnsFactory snsFactory)
         {
-            _gateway = gateway;
             _snsGateway = snsGateway;
             _snsFactory = snsFactory;
         }
