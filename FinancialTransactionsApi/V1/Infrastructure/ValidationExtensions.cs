@@ -75,8 +75,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 return false;
             }
 
-            if (transaction.SuspenseResolutionInfo.ResolutionDate == null
-                || transaction.SuspenseResolutionInfo.IsResolve == false)
+            if (transaction.SuspenseResolutionInfo.ResolutionDate == null || !transaction.SuspenseResolutionInfo.IsResolve)
             {
                 return false;
             }

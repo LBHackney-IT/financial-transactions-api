@@ -1,8 +1,7 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using System;
-using FinancialTransactionsApi.V1.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 using System.ComponentModel.DataAnnotations;
+using FinancialTransactionsApi.V1.Infrastructure;
 
 namespace FinancialTransactionsApi.V1.Domain
 {

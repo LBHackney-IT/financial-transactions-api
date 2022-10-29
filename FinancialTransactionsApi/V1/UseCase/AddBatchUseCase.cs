@@ -48,8 +48,6 @@ namespace FinancialTransactionsApi.V1.UseCase
                 transactionList.Add(item);
             });
 
-            var response = await _gateway.AddBatchAsync(transactionList).ConfigureAwait(false);
-
             var sentSnsEventsCount = 0;
 
             foreach (var item in transactionList)
