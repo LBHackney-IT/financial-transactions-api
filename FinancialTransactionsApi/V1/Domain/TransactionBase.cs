@@ -1,8 +1,7 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using System;
-using FinancialTransactionsApi.V1.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 using System.ComponentModel.DataAnnotations;
+using FinancialTransactionsApi.V1.Infrastructure;
 
 namespace FinancialTransactionsApi.V1.Domain
 {
@@ -19,7 +18,7 @@ namespace FinancialTransactionsApi.V1.Domain
 
         public TargetType TargetType { get; set; }
 
-        public Guid AssetId { get; set; }
+        public Guid? AssetId { get; set; }
 
         public string AssetType { get; set; }
 
@@ -48,6 +47,8 @@ namespace FinancialTransactionsApi.V1.Domain
 
         [GreatAndEqualThan("0.0")]
         public decimal HousingBenefitAmount { get; set; }
+
+        public bool IsSuspense { get; set; }
 
         public string Address { get; set; }
 

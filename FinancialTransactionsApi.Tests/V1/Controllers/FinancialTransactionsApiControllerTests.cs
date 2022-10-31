@@ -6,6 +6,7 @@ using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Helpers;
+using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using Hackney.Core.DynamoDb;
@@ -31,6 +32,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         private readonly Mock<IAddBatchUseCase> _addBatchUseCase;
         private readonly Mock<IGetSuspenseAccountUseCase> _suspenseAccountUseCase;
         private readonly Mock<IGetByTargetIdUseCase> _getByTargetIdUseCase;
+        private readonly Mock<IGetAllActiveTransactionsUseCase> _getAllActiveTransactionsUseCase;
 
         private readonly Mock<ISuspenseAccountApprovalUseCase> _suspenseAccountApprovalUseCase;
         private readonly Fixture _fixture = new Fixture();
@@ -46,6 +48,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             _suspenseAccountUseCase = new Mock<IGetSuspenseAccountUseCase>();
             _getByTargetIdUseCase = new Mock<IGetByTargetIdUseCase>();
             _suspenseAccountApprovalUseCase = new Mock<ISuspenseAccountApprovalUseCase>();
+            _getAllActiveTransactionsUseCase = new Mock<IGetAllActiveTransactionsUseCase>();
             _controller = new FinancialTransactionsApiController(
                 _getAllUseCase.Object,
                 _getByIdUseCase.Object,
@@ -54,7 +57,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 _addBatchUseCase.Object,
                 _suspenseAccountUseCase.Object,
                 _getByTargetIdUseCase.Object,
-                new Mock<IGetAllActiveTransactionsUseCase>().Object);
+                _getAllActiveTransactionsUseCase.Object);
         }
 
         [Fact]
@@ -64,7 +67,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>())).ReturnsAsync(responseMock);
 
-            var result = await _controller.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
+            var result = await _controller.GetByTargetId("Tenure", Guid.NewGuid(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -82,9 +85,11 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(transactionsList);
 
+            Guid targetId = Guid.NewGuid();
+
             _getByTargetIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>())).ReturnsAsync(responseMock);
 
-            var result = await _controller.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
+            var result = await _controller.GetByTargetId("Tenure", targetId, It.IsAny<DateTime?>(), It.IsAny<DateTime?>()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -92,7 +97,53 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             notFoundResult.Should().NotBeNull();
 
-            notFoundResult?.Value.Should().BeEquivalentTo(default(Guid));
+            notFoundResult?.Value.Should().BeEquivalentTo(targetId);
+        }
+
+        [Fact]
+        public async Task GetAllActive_UseCaseReturnTransactionByDateAndPageSize_ShouldReturns200()
+        {
+            var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(_fixture.Build<TransactionResponse>().CreateMany(5));
+
+            _getAllActiveTransactionsUseCase.Setup(x => x.ExecuteAsync(It.IsAny<GetActiveTransactionsRequest>())).ReturnsAsync(responseMock);
+
+            var result = await _controller.GetAllActiveTransactions(It.IsAny<GetActiveTransactionsRequest>()).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var okResult = result as OkObjectResult;
+
+            okResult.Should().NotBeNull();
+
+            okResult?.Value.Should().BeEquivalentTo(responseMock.Value);
+        }
+
+        [Fact]
+        public async Task GetAllActive_UseCaseReturnTransactionByDateAndPageSize_ShouldReturns404()
+        {
+            IEnumerable<TransactionResponse> transactionsList = null;
+
+            var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(transactionsList);
+
+            _getAllActiveTransactionsUseCase.Setup(x => x.ExecuteAsync(It.IsAny<GetActiveTransactionsRequest>())).ReturnsAsync(responseMock);
+
+            var result = await _controller.GetAllActiveTransactions(It.IsAny<GetActiveTransactionsRequest>()).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var notFoundResult = result as NotFoundObjectResult;
+
+            notFoundResult.Should().NotBeNull();
+
+            var response = notFoundResult?.Value as BaseErrorResponse;
+
+            response.Should().NotBeNull();
+
+            response?.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
+
+            response.Message.Should().BeEquivalentTo("Transaction by provided data cannot be found!");
+
+            response.Details.Should().BeEquivalentTo(string.Empty);
         }
 
         [Fact]
@@ -667,7 +718,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             };
 
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-               .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty });
+               .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty, IsSuspense = true });
 
             try
             {
@@ -687,7 +738,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         public async Task Update_NonSuspenseTransaction_ThrowBadRequest()
         {
             var response = _fixture.Build<TransactionResponse>()
-              .With(x => x.TargetId, Guid.NewGuid())
+              .With(x => x.IsSuspense, false)
               .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
               .Create();
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))

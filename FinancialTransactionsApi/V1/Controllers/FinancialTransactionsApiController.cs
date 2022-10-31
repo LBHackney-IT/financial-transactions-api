@@ -97,9 +97,14 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        [Route("{targetType}/{targetId}")]
+        [Route("targettype/{targetType}/{targetId}")]
         public async Task<IActionResult> GetByTargetId([FromRoute] string targetType, [FromRoute] Guid targetId, [FromQuery] DateTime? startDate = default(DateTime?), [FromQuery] DateTime? endDate = default(DateTime?))
         {
+            if (targetId == Guid.Empty || string.IsNullOrEmpty(targetType))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transacton type and target Id cannot be null!"));
+            }
+
             ResponseWrapper<IEnumerable<TransactionResponse>> response = await _getByTargetIdUseCase.ExecuteAsync(targetType, targetId, startDate, endDate).ConfigureAwait(false);
 
             return (response.IsEmpty) ? NotFound(targetId) : Ok(response.Value);
@@ -132,25 +137,21 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <summary>
         /// Returns ALL non-suspense transactions wthout any filters. Note, that this endpoint has bad performance and will be used only for system needs. For better performance use HousingSearchAPI
         /// </summary>
-        [ProducesResponseType(typeof(PagedResult<TransactionLimitedModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<TransactionResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [Route("active")]
         [HttpGet]
         public async Task<IActionResult> GetAllActiveTransactions([FromQuery] GetActiveTransactionsRequest request)
         {
-            if (request == null)
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Request model cannot be null!"));
-            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
-            var transactions = await _getAllActiveTransactionsUseCase.ExecuteAsync(request).ConfigureAwait(false);
+            ResponseWrapper<IEnumerable<TransactionResponse>> response = await _getAllActiveTransactionsUseCase.ExecuteAsync(request).ConfigureAwait(false);
 
-            return Ok(transactions);
+            return (response.IsEmpty) ? NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Transaction by provided data cannot be found!")) : Ok(response.Value);
         }
 
         /// <summary>

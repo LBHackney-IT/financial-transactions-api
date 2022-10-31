@@ -15,7 +15,6 @@ namespace FinancialTransactionsApi.V1.Domain
         public string BankAccountNumber { get; set; }
         [AllowNull]
         public string SortCode { get; set; }
-        public bool IsSuspense => TargetId == Guid.Empty;
         [AllowNull]
         public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
         [Required]

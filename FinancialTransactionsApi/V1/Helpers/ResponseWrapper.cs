@@ -11,7 +11,7 @@ namespace FinancialTransactionsApi.V1.Helpers
         {
             get
             {
-                if ((this.Value as IEnumerable<object>) != null)
+                if (this.Value is IEnumerable<object>)
                 {
                     return !(this.Value as IEnumerable<object>).Any();
                 }
