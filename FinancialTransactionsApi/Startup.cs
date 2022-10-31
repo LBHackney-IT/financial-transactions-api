@@ -45,7 +45,6 @@ namespace FinancialTransactionsApi
 
         public IConfiguration Configuration { get; }
         private static List<ApiVersionDescription> _apiVersions { get; set; }
-        //TODO update the below to the name of your API
         private const string ApiName = "financial-transactions-api";
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -120,8 +119,6 @@ namespace FinancialTransactionsApi
                     c.IncludeXmlComments(xmlPath);
             });
 
-            ConfigureLogging(services, Configuration);
-
             services.AddCors();
             services.ConfigureSns();
             services.AddLocalStack(Configuration);
@@ -145,26 +142,6 @@ namespace FinancialTransactionsApi
             services.AddDbContext<DatabaseContext>(opt => opt.UseNpgsql(connectionString));
         }
 
-        private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
-        {
-            // We rebuild the logging stack so as to ensure the console logger is not used in production.
-            // See here: https://weblog.west-wind.com/posts/2018/Dec/31/Dont-let-ASPNET-Core-Default-Console-Logging-Slow-your-App-down
-            services.AddLogging(config =>
-            {
-                // clear out default configuration
-                config.ClearProviders();
-
-                config.AddConfiguration(configuration.GetSection("Logging"));
-                config.AddDebug();
-                config.AddEventSourceLogger();
-
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
-                {
-                    config.AddConsole();
-                }
-            });
-        }
-
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<ITransactionGateway, PostgreDbGateway>();
@@ -178,10 +155,6 @@ namespace FinancialTransactionsApi
             services.AddScoped<IUpdateSuspenseAccountUseCase, UpdateSuspenseAccountUseCase>();
             services.AddScoped<IAddBatchUseCase, AddBatchUseCase>();
             services.AddScoped<IPagingHelper, PagingHelper>();
-            services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
-            services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
-            services.AddScoped<IFileGeneratorService, FileGeneratorService>();
-            services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
             services.AddScoped<IGetSuspenseAccountUseCase, GetSuspenseAccountUseCase>();
             services.AddScoped<IGetByTargetIdUseCase, GetByTargetIdUseCase>();
             services.AddScoped<IGetAllActiveTransactionsUseCase, GetAllActiveTransactionsUseCase>();

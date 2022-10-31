@@ -42,6 +42,59 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
+        public static TransactionLimitedModel ToResponse(this TransactionLimitedDbEntity transactionDbEntity)
+        {
+            return transactionDbEntity == null ? null : new TransactionLimitedModel
+            {
+                Id = transactionDbEntity.Id,
+                TargetId = transactionDbEntity.TargetId,
+                TransactionAmount = transactionDbEntity.TransactionAmount,
+                HousingBenefitAmount = transactionDbEntity.HousingBenefitAmount,
+                PaidAmount = transactionDbEntity.PaidAmount,
+                BalanceAmount = transactionDbEntity.BalanceAmount,
+                ChargedAmount = transactionDbEntity.ChargedAmount,
+            };
+        }
+
+        public static Transaction ResponseToDomain(this TransactionResponse transactionRequest, SuspenseConfirmationRequest transaction, string lastUpdatedBy)
+        {
+            return transactionRequest == null ? null : new Transaction
+            {
+                Id = transactionRequest.Id,
+                TargetId = transaction.TargetId,
+                TargetType = transactionRequest.TargetType,
+                BalanceAmount = transactionRequest.BalanceAmount,
+                ChargedAmount = transactionRequest.ChargedAmount,
+                HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
+                PaidAmount = transactionRequest.PaidAmount,
+                BankAccountNumber = transactionRequest.BankAccountNumber,
+                PeriodNo = transactionRequest.PeriodNo,
+                TransactionAmount = transactionRequest.TransactionAmount,
+                TransactionDate = transactionRequest.TransactionDate,
+                TransactionType = EnumHelper.GetValueFromDescription<TransactionType>(transactionRequest.TransactionType),
+                TransactionSource = transactionRequest.TransactionSource,
+                Address = transactionRequest.Address,
+                Sender = transactionRequest.Sender,
+                Fund = transactionRequest.Fund,
+                SortCode = transactionRequest.SortCode,
+                SuspenseResolutionInfo = new SuspenseResolutionInfo
+                {
+                    IsConfirmed = true,
+                    IsApproved = true,
+                    Note = transaction.Note,
+                    ResolutionDate = DateTime.UtcNow
+                },
+                CreatedAt = transactionRequest.CreatedAt,
+                CreatedBy = transactionRequest.CreatedBy,
+                LastUpdatedBy = lastUpdatedBy
+            };
+        }
+
+        public static List<TransactionDbEntity> ToDatabaseList(this List<Transaction> transactions)
+        {
+            return transactions.Select(item => item.ToDatabase()).ToList();
+        }
+
         public static Transaction ToDomain(this TransactionDbEntity transactionDbEntity)
         {
             return transactionDbEntity == null ? null : new Transaction
@@ -70,20 +123,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 CreatedBy = transactionDbEntity.CreatedBy,
                 LastUpdatedAt = transactionDbEntity.LastUpdatedAt,
                 LastUpdatedBy = transactionDbEntity.LastUpdatedBy
-            };
-        }
-
-        public static TransactionLimitedModel ToResponse(this TransactionLimitedDbEntity transactionDbEntity)
-        {
-            return transactionDbEntity == null ? null : new TransactionLimitedModel
-            {
-                Id = transactionDbEntity.Id,
-                TargetId = transactionDbEntity.TargetId,
-                TransactionAmount = transactionDbEntity.TransactionAmount,
-                HousingBenefitAmount = transactionDbEntity.HousingBenefitAmount,
-                PaidAmount = transactionDbEntity.PaidAmount,
-                BalanceAmount = transactionDbEntity.BalanceAmount,
-                ChargedAmount = transactionDbEntity.ChargedAmount,
             };
         }
 
@@ -135,40 +174,6 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
-        public static Transaction ResponseToDomain(this TransactionResponse transactionRequest, SuspenseConfirmationRequest transaction, string lastUpdatedBy)
-        {
-            return transactionRequest == null ? null : new Transaction
-            {
-                Id = transactionRequest.Id,
-                TargetId = transaction.TargetId,
-                TargetType = transactionRequest.TargetType,
-                BalanceAmount = transactionRequest.BalanceAmount,
-                ChargedAmount = transactionRequest.ChargedAmount,
-                HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
-                PaidAmount = transactionRequest.PaidAmount,
-                BankAccountNumber = transactionRequest.BankAccountNumber,
-                PeriodNo = transactionRequest.PeriodNo,
-                TransactionAmount = transactionRequest.TransactionAmount,
-                TransactionDate = transactionRequest.TransactionDate,
-                TransactionType = EnumHelper.GetValueFromDescription<TransactionType>(transactionRequest.TransactionType),
-                TransactionSource = transactionRequest.TransactionSource,
-                Address = transactionRequest.Address,
-                Sender = transactionRequest.Sender,
-                Fund = transactionRequest.Fund,
-                SortCode = transactionRequest.SortCode,
-                SuspenseResolutionInfo = new SuspenseResolutionInfo
-                {
-                    IsConfirmed = true,
-                    IsApproved = true,
-                    Note = transaction.Note,
-                    ResolutionDate = DateTime.UtcNow
-                },
-                CreatedAt = transactionRequest.CreatedAt,
-                CreatedBy = transactionRequest.CreatedBy,
-                LastUpdatedBy = lastUpdatedBy
-            };
-        }
-
         public static List<Transaction> ToDomain(this IEnumerable<TransactionDbEntity> databaseEntity)
         {
             return databaseEntity.Select(p => p.ToDomain())
@@ -180,11 +185,6 @@ namespace FinancialTransactionsApi.V1.Factories
         {
             return transactionRequests == null ?
                 new List<Transaction>() : transactionRequests.Select(t => t.ToDomain());
-        }
-
-        public static List<TransactionDbEntity> ToDatabaseList(this List<Transaction> transactions)
-        {
-            return transactions.Select(item => item.ToDatabase()).ToList();
         }
 
         public static Transaction ToDomain(this TransactionEntity entity)
@@ -215,6 +215,7 @@ namespace FinancialTransactionsApi.V1.Factories
                 CreatedBy = entity.CreatedBy,
             };
         }
+
         public static IEnumerable<Transaction> ToDomain(this IEnumerable<TransactionEntity> databaseEntity)
         {
             return databaseEntity.Select(p => p.ToDomain()).OrderBy(x => x.TransactionDate).ToList();
