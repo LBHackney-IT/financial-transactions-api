@@ -173,7 +173,7 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
-            var transactions = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
+            ResponseWrapper<IEnumerable<TransactionResponse>> transactions = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
 
             return Ok(transactions);
         }
