@@ -9,3 +9,4 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Specs
         public GetTransactionBySuspenseAccountSpecification(bool SearchText) : base(x => x.IsSuspense == SearchText) { }
     }
 }
+
