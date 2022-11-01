@@ -206,6 +206,19 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
         }
 
         [Fact]
+        public void ValidationUpdateTransactionRequest_ResolutionDateAndIsResoled_ShouldBeFalse()
+        {
+            var transactionRequest = _fixture.Create<UpdateTransactionRequest>();
+
+            transactionRequest.SuspenseResolutionInfo.ResolutionDate = null;
+            transactionRequest.SuspenseResolutionInfo.IsConfirmed = transactionRequest.SuspenseResolutionInfo.IsApproved = false;
+
+            var result = transactionRequest.HaveAllFieldsInUpdateTransactionModel();
+
+            result.Should().BeFalse();
+        }
+
+        [Fact]
         public void ValidationUpdateTransaction_TargetId_ShouldBeFalse()
         {
             var transactionRequest = _fixture.Create<Transaction>();
