@@ -32,13 +32,13 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         {
             var responseMock = _fixture.CreateMany<Transaction>(5);
 
-            _mockGateway.Setup(_ => _.GetByTargetId("Tenure", Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow)).ReturnsAsync(responseMock);
+            _mockGateway.Setup(_ => _.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(responseMock);
 
-            var response = await _getByTargetIdUseCase.ExecuteAsync("Tenure", Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow).ConfigureAwait(false);
+            var response = await _getByTargetIdUseCase.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()).ConfigureAwait(false);
 
             var expectedResponse = responseMock.ToResponseWrapper();
 
-            expectedResponse.Value.Should().BeEquivalentTo(expectedResponse.Value);
+            response.Value.Should().BeEquivalentTo(expectedResponse.Value);
         }
     }
 }
