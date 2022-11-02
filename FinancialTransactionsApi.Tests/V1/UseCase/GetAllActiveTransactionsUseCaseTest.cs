@@ -10,6 +10,7 @@ using System;
 using Xunit;
 using FinancialTransactionsApi.V1.Factories;
 using FluentAssertions;
+using System.Linq;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
@@ -42,6 +43,24 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var expectedResponse = transactions.ToResponseWrapper();
 
             response.Value.Should().BeEquivalentTo(expectedResponse.Value);
+        }
+
+        [Fact]
+        public async Task GetAllActiveTransactions_GatewayReturnsEmptyList()
+        {
+            var transactions = Enumerable.Empty<Transaction>();
+
+            var obj = new PagedResult<Transaction>(transactions);
+
+            var transactionRequest = new GetActiveTransactionsRequest() { Page = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
+
+            _mockGateway.Setup(_ => _.GetAllActive(transactionRequest)).ReturnsAsync(obj);
+
+            var response = await _getAllActiveTransactionsUseCase.ExecuteAsync(transactionRequest).ConfigureAwait(false);
+
+            var expectedResponse = transactions.ToResponseWrapper();
+
+            response.Value.Should().BeEmpty();
         }
     }
 }

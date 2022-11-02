@@ -40,5 +40,17 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             response.Value.Should().BeEquivalentTo(expectedResponse.Value);
         }
+
+        [Fact]
+        public async Task GetAllActiveTransactions_GatewayReturnsEmptyList()
+        {
+            var responseMock = Enumerable.Empty<Transaction>();
+
+            _mockGateway.Setup(_ => _.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(responseMock);
+
+            var response = await _getByTargetIdUseCase.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()).ConfigureAwait(false);
+
+            response.Value.Should().BeEmpty();
+        }
     }
 }
