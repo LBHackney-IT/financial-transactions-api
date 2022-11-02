@@ -39,4 +39,6 @@ RUN dotnet build -c debug -o out FinancialTransactionsApi.Tests/FinancialTransac
 
 CMD dotnet test FinancialTransactionsApi.Tests/FinancialTransactionsApi.Tests.csproj  --collect:"XPlat Code Coverage"
 
+reportgenerator "-reports:*\TestResults\*\coverage.cobertura.xml" "-targetdir:sonarqubecoverage" "-reporttypes:SonarQube"
+
 RUN dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
