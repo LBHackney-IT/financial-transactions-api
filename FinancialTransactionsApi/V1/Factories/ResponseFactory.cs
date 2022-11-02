@@ -8,6 +8,17 @@ namespace FinancialTransactionsApi.V1.Factories
 {
     public static class ResponseFactory
     {
+
+        private static Pagination ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
+        => new Pagination
+        {
+            ResultCount = paginatedResult.ResultCount,
+            CurrentPage = paginatedResult.CurrentPage,
+            PageSize = paginatedResult.PageSize,
+            TotalCount = paginatedResult.TotalResultCount,
+            PageCount = paginatedResult.PageCount
+        };
+
         public static TransactionResponse ToResponse(this Transaction domain)
         {
             return domain == null ? null : new TransactionResponse()
