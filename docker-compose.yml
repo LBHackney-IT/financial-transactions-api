@@ -4,8 +4,8 @@ services:
   financial-transactions-api:
     image: financial-transactions-api
     build:
-      context: FinancialTransactionsApi/
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: FinancialTransactionsApi/Dockerfile
       args:
       - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     ports:
@@ -43,7 +43,8 @@ services:
       - dynamodb-database
       - localstack
       - postgres-test-database
- 
+    volumes:
+      - sonarqube:/app/.sonarqube
   postgres-test-database:
     image: postgres:latest
     build:
@@ -78,3 +79,6 @@ services:
     build:
       context: .
       dockerfile: data/pdf/Dockerfile
+
+volumes:
+  sonarqube:
