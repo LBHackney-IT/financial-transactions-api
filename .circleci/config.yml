@@ -239,7 +239,7 @@ workflows:
       - build-and-test:
           context: 
             - api-nuget-token-context
-            - SonarCloud 
+            - sonarcloud
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
