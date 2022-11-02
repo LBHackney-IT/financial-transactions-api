@@ -37,6 +37,6 @@ COPY . .
 RUN dotnet build -c debug -o out FinancialTransactionsApi/FinancialTransactionsApi.csproj
 RUN dotnet build -c debug -o out FinancialTransactionsApi.Tests/FinancialTransactionsApi.Tests.csproj
 
-CMD dotnet test
+RUN dotnet-coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
 
 RUN dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
