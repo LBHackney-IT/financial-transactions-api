@@ -4,6 +4,7 @@ using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Helpers;
+using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using Hackney.Core.DynamoDb;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace FinancialTransactionsApi.V1.UseCase
 
         public async Task<ResponseWrapper<IEnumerable<TransactionResponse>>> ExecuteAsync(GetActiveTransactionsRequest request)
         {
-            PagedResult<Transaction> response = await _transactionGateway.GetAllActive(request).ConfigureAwait(false);
+            Paginated<Transaction> response = await _transactionGateway.GetAllActive(request).ConfigureAwait(false);
 
             return response.Results?.ToResponseWrapper();
         }
