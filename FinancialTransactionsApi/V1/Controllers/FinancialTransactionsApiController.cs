@@ -152,7 +152,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             PaginatedResponse<TransactionResponse> response = await _getAllActiveTransactionsUseCase.ExecuteAsync(request).ConfigureAwait(false);
 
-            return (!response.Results.Any()) ? NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Transaction by provided data cannot be found!")) : Ok(response);
+            return (response.Results == null || !response.Results.Any()) ? NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Transaction by provided data cannot be found!")) : Ok(response);
         }
 
         /// <summary>
