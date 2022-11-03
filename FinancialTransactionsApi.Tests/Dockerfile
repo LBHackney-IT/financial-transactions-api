@@ -18,10 +18,10 @@ WORKDIR /app
 # Enable SonarCloud
 RUN apt-get update && apt-get install -y openjdk-11-jdk
 ## Install sonarscanner
-RUN dotnet tool install --global dotnet-sonarscanner --version 5.3.1
+RUN dotnet tool install --global dotnet-sonarscanner
 
 ## Install report generator
-RUN dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8.12
+RUN dotnet tool install --global dotnet-reportgenerator-globaltool
 
 ENV PATH="$PATH:/root/.dotnet/tools"
 
