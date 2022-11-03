@@ -11,6 +11,7 @@ using FinancialTransactionsApi.V1.Domain;
 using FluentAssertions;
 using FinancialTransactionsApi.V1.Factories;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
@@ -51,6 +52,18 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var response = await _getByTargetIdUseCase.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()).ConfigureAwait(false);
 
             response.Value.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GetAllActiveTransactions_GatewayReturnsNull()
+        {
+            IEnumerable<Transaction> responseMock = null;
+
+            _mockGateway.Setup(_ => _.GetByTargetId(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(responseMock);
+
+            var response = await _getByTargetIdUseCase.ExecuteAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()).ConfigureAwait(false);
+
+            response.Should().BeNull();
         }
     }
 }
