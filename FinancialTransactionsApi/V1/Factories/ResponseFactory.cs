@@ -9,6 +9,19 @@ namespace FinancialTransactionsApi.V1.Factories
 {
     public static class ResponseFactory
     {
+        public static PaginatedResponse<TransactionResponse> ToResponse(this Paginated<Transaction> ptrDomain)
+        {
+            var metadata = new MetadataModel
+            {
+                Pagination = ToPaginationDataResponse(ptrDomain)
+            };
+
+            return new PaginatedResponse<TransactionResponse>
+            {
+                Metadata = metadata,
+                Results = ptrDomain.Results.ToResponse()
+            };
+        }
 
         private static Pagination ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
         => new Pagination

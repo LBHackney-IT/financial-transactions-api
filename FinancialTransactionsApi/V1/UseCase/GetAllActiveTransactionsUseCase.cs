@@ -21,11 +21,10 @@ namespace FinancialTransactionsApi.V1.UseCase
             _transactionGateway = transactionGateway;
         }
 
-        public async Task<ResponseWrapper<IEnumerable<TransactionResponse>>> ExecuteAsync(GetActiveTransactionsRequest request)
+        public async Task<PaginatedResponse<TransactionResponse>> ExecuteAsync(GetActiveTransactionsRequest request)
         {
-            Paginated<Transaction> response = await _transactionGateway.GetAllActive(request).ConfigureAwait(false);
-
-            return response.Results?.ToResponseWrapper();
+            Paginated<Transaction> result = await _transactionGateway.GetAllActive(request).ConfigureAwait(false);
+            return result.ToResponse();
         }
     }
 }
