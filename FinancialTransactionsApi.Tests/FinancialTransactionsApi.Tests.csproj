@@ -12,8 +12,13 @@
     <NoWarn>1701;1702;CA1707;CA1303</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="V1\Gateways\**" />
+    <Content Remove="V1\Gateways\**" />
+    <EmbeddedResource Remove="V1\Gateways\**" />
+    <None Remove="V1\Gateways\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="V1\E2ETests\Steps\GetTransactionSteps.cs" />
-    <Compile Remove="V1\Gateways\ExampleGatewayTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,10 +49,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FinancialTransactionsApi\FinancialTransactionsApi.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="V1\Gateways\" />
   </ItemGroup>
 
 </Project>
