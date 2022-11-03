@@ -9,6 +9,6 @@ namespace FinancialTransactionsApi.V1.Infrastructure
         public DatabaseContext() { }
         public DatabaseContext(DbContextOptions options) : base(options) { }
 
-        public DbSet<TransactionEntity> Transactions { get; set; }
+        public virtual DbSet<TransactionEntity> Transactions { get; set; }
     }
 }
