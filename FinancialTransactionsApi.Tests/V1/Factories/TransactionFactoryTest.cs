@@ -58,6 +58,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
         }
 
         [Fact]
+        public void CanMapADatabaseEntityToADomainEmptyObject()
+        {
+            TransactionEntity dbEntity = null;
+
+            var domain = dbEntity.ToDomain();
+
+            domain.Should().BeNull();
+        }
+
+        [Fact]
         public void CanMapADomainEntityToADatabaseObject()
         {
             var domain = new Transaction()
@@ -119,6 +129,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
         }
 
         [Fact]
+        public void CanMapADatabaseEntityToADatabaseEmptyObject()
+        {
+            Transaction dbEntity = null;
+
+            var domain = dbEntity.ToDatabase();
+
+            domain.Should().BeNull();
+        }
+
+        [Fact]
         public void CanMapAddRequestEntityToADomainObject()
         {
             var request = new AddTransactionRequest()
@@ -151,6 +171,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.PaymentReference);
                 return options;
             });
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityToADomainEmptyObject()
+        {
+            AddTransactionRequest dbEntity = null;
+
+            var domain = dbEntity.ToDomain();
+
+            domain.Should().BeNull();
         }
 
         [Fact]
@@ -193,6 +223,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.PaymentReference);
                 return options;
             });
+        }
+
+        [Fact]
+        public void CanMapUpdateRequestEntityToADomainEmptyObject()
+        {
+            UpdateTransactionRequest dbEntity = null;
+
+            var domain = dbEntity.ToDomain();
+
+            domain.Should().BeNull();
         }
 
         [Fact]
@@ -256,6 +296,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
         }
 
         [Fact]
+        public void CanMapAddRequestEntityCollectionToADomainEmptyObject()
+        {
+            List<AddTransactionRequest> requestCollection = null;
+
+            var domain = requestCollection.ToDomain();
+
+            domain.Should().NotBeNull();
+        }
+
+        [Fact]
         public void CanMapAddRequestEntityCollectionToResponseObjectCollection()
         {
             var transactionLimitedDb = _fixture.Create<TransactionLimitedDbEntity>();
@@ -263,6 +313,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
             var response = transactionLimitedDb.ToResponse();
 
             transactionLimitedDb.Should().BeEquivalentTo(response);
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityCollectionToResponseEmptyObject()
+        {
+            TransactionLimitedDbEntity requestCollection = null;
+
+            var domain = requestCollection.ToResponse();
+
+            domain.Should().BeNull();
         }
 
         [Fact]
@@ -297,6 +357,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.RealValue);
                 return options;
             });
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityCollectionToDomainEmptyObject()
+        {
+            TransactionDbEntity requestCollection = null;
+
+            var domain = requestCollection.ToDomain();
+
+            domain.Should().BeNull();
         }
 
         [Fact]
