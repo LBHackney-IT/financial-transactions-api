@@ -25,7 +25,7 @@ RUN dotnet tool install --global dotnet-reportgenerator-globaltool
 
 ENV PATH="$PATH:/root/.dotnet/tools"
 
-RUN dotnet sonarscanner begin /k:"LBHackney-IT_financial-transactions-api" /o:"lbhackney-it" /d:sonar.host.url=https://sonarcloud.io /d:sonar.login="${SONAR_TOKEN} /d:sonar.coverageReportPaths="coverage/SonarQube.xml""
+RUN dotnet sonarscanner begin /k:"LBHackney-IT_financial-transactions-api" /o:"lbhackney-it" /d:sonar.host.url=https://sonarcloud.io /d:sonar.login="${SONAR_TOKEN}" /d:sonar.coverageReportPaths="coverage/SonarQube.xml"
 
 # Copy csproj and restore as distinct layers
 COPY ./FinancialTransactionsApi.sln ./
