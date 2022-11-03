@@ -22,7 +22,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
         private readonly PostgreDbGateway _postgreDbGateway;
         private readonly Mock<DbSet<TransactionEntity>> _mockSet;
         private readonly Fixture _fixture = new Fixture();
-        
+
         public PostgreDbGatewayTests()
         {
             _mockContext = new Mock<DatabaseContext>();
@@ -44,7 +44,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
             _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.ElementType).Returns(data.ElementType);
             _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
 
-           _mockContext.Setup(c => c.Transactions).Returns(_mockSet.Object);
+            _mockContext.Setup(c => c.Transactions).Returns(_mockSet.Object);
 
             var result = await _postgreDbGateway.GetByTargetId("Tenure", guidId, null, null).ConfigureAwait(false);
 

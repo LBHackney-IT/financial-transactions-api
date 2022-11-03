@@ -14,15 +14,11 @@ namespace FinancialTransactionsApi.V1
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionMiddleware> _logger;
         private readonly IHostEnvironment _env;
 
-        public ExceptionMiddleware(RequestDelegate next,
-            ILogger<ExceptionMiddleware> logger,
-            IHostEnvironment env)
+        public ExceptionMiddleware(RequestDelegate next, IHostEnvironment env)
         {
             _next = next;
-            _logger = logger;
             _env = env;
         }
 
@@ -52,8 +48,6 @@ namespace FinancialTransactionsApi.V1
 
         private async Task HandleExceptionAsync(HttpContext context, Exception ex, HttpStatusCode code)
         {
-            _logger.LogError(ex, ex.StackTrace);
-
             var response = context.Response;
             response.ContentType = "application/json";
             response.StatusCode = (int) code;

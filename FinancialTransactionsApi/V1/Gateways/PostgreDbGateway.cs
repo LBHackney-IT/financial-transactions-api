@@ -27,7 +27,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var response = _databaseContext.Transactions.Where(spec.Criteria);
 
-            return await Task.FromResult(response.ToList().ToDomain()).ConfigureAwait(false);
+            return await Task.FromResult(response.AsEnumerable().ToDomain()).ConfigureAwait(false);
         }
 
         public Task<Transaction> GetTransactionByIdAsync(Guid targetId, Guid id) => throw new NotImplementedException();
@@ -58,7 +58,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var response = _databaseContext.Transactions.Where(spec.Criteria).Skip(itemStart).Take(getActiveTransactionsRequest.PageSize);
 
-            var result = await Task.FromResult(response.ToList()).ConfigureAwait(false);
+            var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
             return new PagedResult<Transaction>(result.Select(x => x.ToDomain()), new PaginationDetails(string.Empty));
         }

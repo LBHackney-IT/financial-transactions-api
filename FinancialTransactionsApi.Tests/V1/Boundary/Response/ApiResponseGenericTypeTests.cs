@@ -21,7 +21,7 @@ namespace FinancialTransactionsApi.Tests.V1.Boundary.Response
 
             var responseWrapperMockObject = new ResponseWrapper<Transaction>(transactionsList);
 
-            ApiResponse<ResponseWrapper<Transaction>> request =  new ApiResponse<ResponseWrapper<Transaction>>(responseWrapperMockObject);
+            ApiResponse<ResponseWrapper<Transaction>> request = new ApiResponse<ResponseWrapper<Transaction>>(responseWrapperMockObject);
 
             request.Results.Should().BeEquivalentTo(responseWrapperMockObject);
         }
