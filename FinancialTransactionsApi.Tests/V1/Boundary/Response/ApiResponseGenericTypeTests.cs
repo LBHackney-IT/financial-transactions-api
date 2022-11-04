@@ -47,5 +47,17 @@ namespace FinancialTransactionsApi.Tests.V1.Boundary.Response
 
             request.Results.Should().BeNull();
         }
+
+        [Fact]
+        public void ApiResponseGenericType_ReturnEmtpyCollection()
+        {
+            var transactionsList = _fixture.Build<Transaction>().CreateMany(0);
+
+            var responseWrapperMockObject = new ResponseWrapper<IEnumerable<Transaction>>(transactionsList);
+
+            ApiResponse<ResponseWrapper<IEnumerable<Transaction>>> request = new ApiResponse<ResponseWrapper<IEnumerable<Transaction>>>(responseWrapperMockObject);
+
+            request.Results.Value.Should().BeEmpty();
+        }
     }
 }
