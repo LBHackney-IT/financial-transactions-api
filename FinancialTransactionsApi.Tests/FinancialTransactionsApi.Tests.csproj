@@ -12,14 +12,24 @@
     <NoWarn>1701;1702;CA1707;CA1303</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="V1\Gateways\**" />
+    <Content Remove="V1\Gateways\**" />
+    <EmbeddedResource Remove="V1\Gateways\**" />
+    <None Remove="V1\Gateways\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="V1\E2ETests\Steps\GetTransactionSteps.cs" />
-    <Compile Remove="V1\Gateways\ExampleGatewayTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.11.0" />
     <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.2.7" />
     <PackageReference Include="AWSSDK.SQS" Version="3.7.1.13" />
+    <PackageReference Include="coverlet.collector" Version="3.2.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Docker.DotNet" Version="3.125.4" />
     <PackageReference Include="Hackney.Core.Authorization" Version="1.64.0" />
@@ -30,6 +40,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="Bogus" Version="25.0.4" />
     <PackageReference Include="Moq" Version="4.10.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
     <PackageReference Include="TestStack.BDDfy" Version="4.3.2" />
     <PackageReference Include="xunit" Version="2.4.1" />
@@ -38,10 +50,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FinancialTransactionsApi\FinancialTransactionsApi.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="V1\Gateways\" />
   </ItemGroup>
 
 </Project>
