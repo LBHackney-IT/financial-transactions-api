@@ -54,9 +54,11 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var itemStart = query.Page == 1 ? 0 : page * query.PageSize;
 
-            var response = await _databaseContext.Transactions.Where(spec.Criteria).Skip(itemStart).Take(query.PageSize).ToListAsync().ConfigureAwait(false);
+            var response = _databaseContext.Transactions.Where(spec.Criteria).Skip(itemStart).Take(query.PageSize);
 
-            return new PagedResult<Transaction>(response.Select(x => x.ToDomain()), new PaginationDetails(string.Empty));
+            var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
+
+            return new PagedResult<Transaction>(result.Select(x => x.ToDomain()), new PaginationDetails(string.Empty));
 
         }
 
