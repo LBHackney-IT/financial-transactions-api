@@ -148,12 +148,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetById_UseCaseReturnTransactionByValidId_ShouldReturns200()
         {
-            var transactionResponse = _fixture.Create<TransactionResponse>();
 
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            var transactionResponse = new ResponseWrapper<TransactionResponse>(_fixture.Create<TransactionResponse>());
+
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(transactionResponse);
 
-            var result = await _controller.Get("", transactionResponse.Id, transactionResponse.TargetId).ConfigureAwait(false);
+            var result = await _controller.Get(It.IsAny<Guid>()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -165,43 +166,40 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             transaction.Should().NotBeNull();
 
-            transaction.Should().BeEquivalentTo(transactionResponse);
+            transaction.Should().BeEquivalentTo(transactionResponse.Value);
         }
 
         [Fact]
         public async Task GetById_UseCaseReturnNullWithInvalidId_ShouldReturns404()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                .ReturnsAsync((TransactionResponse) null);
-            var result = await _controller.Get("", Guid.NewGuid(), Guid.NewGuid()).ConfigureAwait(false);
+
+            TransactionResponse transaction = null;
+
+            var responseMock = new ResponseWrapper<TransactionResponse>(transaction);
+
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(responseMock);
+
+
+            var result = await _controller.Get(Guid.NewGuid()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
             var notFoundResult = result as NotFoundObjectResult;
 
             notFoundResult.Should().NotBeNull();
-
-            var response = notFoundResult?.Value as BaseErrorResponse;
-
-            response.Should().NotBeNull();
-
-            response?.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
-
-            response.Message.Should().BeEquivalentTo("No transaction by provided Id cannot be found!");
-
-            response.Details.Should().BeEquivalentTo(string.Empty);
         }
 
         [Fact]
         public async Task GetById_UseCaseThrownException_ShouldRethrow()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
             try
             {
 
-                var result = await _controller.Get("", new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"), Guid.NewGuid())
+                var result = await _controller.Get(new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }
@@ -573,15 +571,14 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 TargetId = Guid.NewGuid(),
                 Note = "Test"
             };
-            var response = _fixture.Build<TransactionResponse>()
-                .With(x => x.TargetId, Guid.Empty)
+            var response = new ResponseWrapper<TransactionResponse>(_fixture.Build<TransactionResponse>()
                 .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
-                .Create();
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), Guid.Empty))
+                .Create());
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(response);
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>()))
-                .ReturnsAsync(response.ResponseToDomain(request, "Unit Test").ToResponse());
+                .ReturnsAsync(new TransactionResponse());
 
             var result = await _controller.SuspenseAccountConfirmation(Token, guid, request).ConfigureAwait(false);
 
@@ -593,8 +590,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             okResult.Should().NotBeNull();
 
             okResult?.Value.Should().BeOfType(typeof(TransactionResponse));
-            var responseObject = okResult.Value as TransactionResponse;
-            responseObject.TargetId.Should().Be(request.TargetId);
         }
 
         [Fact]
@@ -649,13 +644,15 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Update_NotFoundEntityWithProvidedId_Returns404()
         {
+            ResponseWrapper<TransactionResponse> responseMock = null;
             var request = new SuspenseConfirmationRequest()
             {
                 TargetId = Guid.NewGuid(),
                 Note = "Test"
             };
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                .ReturnsAsync((TransactionResponse) null);
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(responseMock);
+
 
             var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), request).ConfigureAwait(false);
 
@@ -664,26 +661,38 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             var notFoundResult = result as NotFoundObjectResult;
 
             notFoundResult.Should().NotBeNull();
-
-            var response = notFoundResult?.Value as BaseErrorResponse;
-
-            response.Should().NotBeNull();
-
-            response?.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
-
-            response?.Message.Should().BeEquivalentTo("No transaction by provided Id cannot be found!");
-
-            response?.Details.Should().BeEquivalentTo(string.Empty);
         }
 
         [Fact]
         public async Task Update_UseCaseThrownException_ShouldRethrow()
         {
-            var response = _fixture.Build<TransactionResponse>()
-                .With(x => x.TargetId, Guid.Empty)
+
+            var transactionResponse = new ResponseWrapper<TransactionResponse>(_fixture.Create<TransactionResponse>());
+
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(transactionResponse);
+
+            var result = await _controller.Get(It.IsAny<Guid>()).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var okResult = result as OkObjectResult;
+
+            okResult.Should().NotBeNull();
+
+            var transaction = okResult?.Value as TransactionResponse;
+
+            transaction.Should().NotBeNull();
+
+            transaction.Should().BeEquivalentTo(transactionResponse.Value);
+
+
+            var response = new ResponseWrapper<TransactionResponse>(_fixture.Build<TransactionResponse>()
                 .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
-                .Create();
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .With(x => x.IsSuspense, true)
+                .Create());
+
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(response);
 
             _updateUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>()))
@@ -696,7 +705,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                     TargetId = Guid.NewGuid(),
                     Note = "Test"
                 };
-                var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), request)
+                var resultMock = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), request)
                     .ConfigureAwait(false);
                 AssertExtensions.Fail();
             }
@@ -710,14 +719,16 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task Update_TokenIsNull_ShouldThrowArgumentNullException()
         {
+
+            TransactionResponse transaction = null;
+            var responseMock = new ResponseWrapper<TransactionResponse>(transaction);
             var request = new SuspenseConfirmationRequest()
             {
                 TargetId = Guid.NewGuid(),
-                Note = "Test"
             };
 
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-               .ReturnsAsync(new TransactionResponse { TargetId = Guid.Empty, IsSuspense = true });
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+               .ReturnsAsync(responseMock);
 
             try
             {
@@ -731,25 +742,19 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 ex.GetType().Should().Be(typeof(ArgumentNullException));
                 ex.Message.Should().Be("Value cannot be null. (Parameter 'token')");
             }
+
         }
 
         [Fact]
         public async Task Update_NonSuspenseTransaction_ThrowBadRequest()
         {
-            var response = _fixture.Build<TransactionResponse>()
-              .With(x => x.IsSuspense, false)
+            var response = new ResponseWrapper<TransactionResponse>(_fixture.Build<TransactionResponse>()
               .With(x => x.TransactionType, TransactionType.ChequePayments.GetDescription())
-              .Create();
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                .ReturnsAsync(response);
+              .Create());
 
-            var request = _fixture.Build<SuspenseConfirmationRequest>()
-                .With(s => s.TargetId, Guid.NewGuid()).Create();
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>())).ReturnsAsync(response);
 
-            var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), request)
-                .ConfigureAwait(false);
-
-            _updateUseCase.Verify(_ => _.ExecuteAsync(It.IsAny<Transaction>()), Times.Never);
+            var result = await _controller.SuspenseAccountConfirmation(Token, Guid.NewGuid(), null).ConfigureAwait(false);
 
             result.Should().BeOfType<BadRequestObjectResult>();
 

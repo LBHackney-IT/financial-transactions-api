@@ -71,6 +71,11 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
+        public static ResponseWrapper<TransactionResponse> ToResponseWrapper(this Transaction domainList)
+        {
+            return new ResponseWrapper<TransactionResponse>(domainList.ToResponse());
+        }
+
         public static List<TransactionResponse> ToResponse(this IEnumerable<Transaction> domainList)
         {
             return domainList == null ?
@@ -82,5 +87,6 @@ namespace FinancialTransactionsApi.V1.Factories
         {
             return new ResponseWrapper<IEnumerable<TransactionResponse>>(domainList.Select(domain => domain.ToResponse()));
         }
+
     }
 }

@@ -31,7 +31,12 @@ namespace FinancialTransactionsApi.V1.Gateways
             return await Task.FromResult(response.AsEnumerable().ToDomain()).ConfigureAwait(false);
         }
 
-        public Task<Transaction> GetTransactionByIdAsync(Guid targetId, Guid id) => throw new NotImplementedException();
+        public async Task<Transaction> GetTransactionByIdAsync(Guid id)
+        {
+            var response = _databaseContext.Transactions.AsNoTracking().Where(t => t.Id == id);
+
+            return await Task.FromResult(response.FirstOrDefault()?.ToDomain()).ConfigureAwait(false);
+        }
 
         public Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query) => throw new NotImplementedException();
 

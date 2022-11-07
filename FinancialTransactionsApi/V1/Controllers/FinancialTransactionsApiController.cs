@@ -56,9 +56,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <summary>
         /// Get transaction by provided id
         /// </summary>
-        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="id">The value by which we are looking for a transaction</param>
-        ///<param name="targetId">The value by which we are looking for a transaction</param>
         /// <response code="200">Success. Transaction model was received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">Transaction by provided id cannot be found</response>
@@ -69,16 +67,16 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get([FromHeader(Name = "x-correlation-id")] string correlationId, [FromRoute] Guid id, [FromQuery] Guid targetId)
+        public async Task<IActionResult> Get([FromRoute] Guid id)
         {
-            var transaction = await _getByIdUseCase.ExecuteAsync(id, targetId).ConfigureAwait(false);
 
-            if (transaction == null)
+            var transaction = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
+            if (transaction.IsEmpty)
             {
-                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
+                return NotFound($"No transaction exists for this id: {id}");
             }
 
-            return Ok(transaction);
+            return Ok(transaction.Value);
         }
 
         /// <summary>
@@ -303,24 +301,24 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "SuspenseConfirmationRequest model don't have all information in fields!"));
             }
 
-            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, Guid.Empty).ConfigureAwait(false);
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId).ConfigureAwait(false);
 
             if (existTransaction == null)
             {
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (!existTransaction.IsSuspense)
+            if (!existTransaction.IsEmpty && !existTransaction.Value.IsSuspense)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
             }
 
             var lastUpdatedBy = GetUserName(token);
 
-            var domainTransaction = existTransaction.ResponseToDomain(transaction, lastUpdatedBy);
+            var domainTransaction = existTransaction.Value.ResponseToDomain(transaction, lastUpdatedBy);
 
 
-            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
+            var transactionResponse = await _updateUseCase.ExecuteAsync(null).ConfigureAwait(false);
 
             return Ok(transactionResponse);
         }
@@ -361,14 +359,14 @@ namespace FinancialTransactionsApi.V1.Controllers
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
             }
-            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, Guid.Empty).ConfigureAwait(false);
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId).ConfigureAwait(false);
 
             if (existTransaction == null)
             {
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (!existTransaction.IsSuspense)
+            if (!existTransaction.Value.IsSuspense)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
             }
@@ -376,8 +374,6 @@ namespace FinancialTransactionsApi.V1.Controllers
             var lastUpdatedBy = GetUserName(token);
 
             var domainTransaction = transaction.ToDomain();
-            domainTransaction.CreatedBy = existTransaction.CreatedBy;
-            domainTransaction.CreatedAt = existTransaction.CreatedAt;
             domainTransaction.LastUpdatedBy = lastUpdatedBy;
 
             var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
