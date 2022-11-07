@@ -6,6 +6,7 @@ using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Helpers;
+using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
@@ -103,7 +104,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllActive_UseCaseReturnTransactionByDateAndPageSize_ShouldReturns200()
         {
-            var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(_fixture.Build<TransactionResponse>().CreateMany(5));
+            var responseMock = new PaginatedResponse<TransactionResponse>() { Results = _fixture.Build<TransactionResponse>().CreateMany(5) };
 
             _getAllActiveTransactionsUseCase.Setup(x => x.ExecuteAsync(It.IsAny<GetActiveTransactionsRequest>())).ReturnsAsync(responseMock);
 
@@ -115,15 +116,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeEquivalentTo(responseMock.Value);
+            okResult?.Value.Should().BeEquivalentTo(responseMock);
         }
 
         [Fact]
         public async Task GetAllActive_UseCaseReturnTransactionByDateAndPageSize_ShouldReturns404()
         {
-            IEnumerable<TransactionResponse> transactionsList = null;
-
-            var responseMock = new ResponseWrapper<IEnumerable<TransactionResponse>>(transactionsList);
+            var responseMock = new PaginatedResponse<TransactionResponse>() { Results = null };
 
             _getAllActiveTransactionsUseCase.Setup(x => x.ExecuteAsync(It.IsAny<GetActiveTransactionsRequest>())).ReturnsAsync(responseMock);
 
