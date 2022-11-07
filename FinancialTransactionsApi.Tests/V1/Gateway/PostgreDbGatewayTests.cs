@@ -31,6 +31,27 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
         }
 
         [Fact]
+        public async Task GetById_Gateway_ReturnCollectionOfTransaction_NotNully()
+        {
+            var Id = Guid.NewGuid();
+
+            var data = _fixture.CreateMany<TransactionEntity>(1).AsQueryable();
+
+            data.ToList().ForEach(item => { item.Id = Id; item.TargetType = TargetType.Tenure.ToString(); });
+
+            _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.Provider).Returns(data.Provider);
+            _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.Expression).Returns(data.Expression);
+            _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
+
+            _mockContext.Setup(c => c.Transactions).Returns(_mockSet.Object);
+
+            var result = await _postgreDbGateway.GetTransactionByIdAsync(Id).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+        }
+
+        [Fact]
         public async Task GetByTargetId_Gateway_ReturnCollectionOfTransaction_NotEmpty()
         {
             var guidId = Guid.NewGuid();
