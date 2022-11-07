@@ -1,5 +1,6 @@
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Infrastructure;
+using GenFu.ValueGenerators.Geospatial;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -17,9 +18,7 @@ namespace FinancialTransactionsApi.V1
         private readonly ILogger<ExceptionMiddleware> _logger;
         private readonly IHostEnvironment _env;
 
-        public ExceptionMiddleware(RequestDelegate next,
-            ILogger<ExceptionMiddleware> logger,
-            IHostEnvironment env)
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
         {
             _next = next;
             _logger = logger;
@@ -52,7 +51,7 @@ namespace FinancialTransactionsApi.V1
 
         private async Task HandleExceptionAsync(HttpContext context, Exception ex, HttpStatusCode code)
         {
-            _logger.LogError(ex, ex.StackTrace);
+            _logger.LogError(ex, "call stack {StackTrace}", ex.StackTrace);
 
             var response = context.Response;
             response.ContentType = "application/json";
