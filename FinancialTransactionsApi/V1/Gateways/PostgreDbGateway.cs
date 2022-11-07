@@ -26,9 +26,9 @@ namespace FinancialTransactionsApi.V1.Gateways
         {
             var spec = new GetTransactionByTargetTypeAndTargetIdSpecification(targetType, targetId, startDate, endDate);
 
-            var response = await _databaseContext.Transactions.Where(spec.Criteria).ToListAsync().ConfigureAwait(false);
+            var response = _databaseContext.Transactions.Where(spec.Criteria);
 
-            return response?.ToDomain();
+            return await Task.FromResult(response.AsEnumerable().ToDomain()).ConfigureAwait(false);
         }
 
         public Task<Transaction> GetTransactionByIdAsync(Guid targetId, Guid id) => throw new NotImplementedException();
@@ -40,8 +40,6 @@ namespace FinancialTransactionsApi.V1.Gateways
         public Task<bool> AddBatchAsync(List<Transaction> transactions) => throw new NotImplementedException();
 
         public Task UpdateSuspenseAccountAsync(Transaction transaction) => throw new NotImplementedException();
-
-        public Task<IEnumerable<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate) => throw new NotImplementedException();
 
         public Task<PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query) => throw new NotImplementedException();
 
@@ -59,15 +57,11 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var itemStart = getActiveTransactionsRequest.PageNumber == 1 ? 0 : page * getActiveTransactionsRequest.PageSize;
 
-            var response = await _databaseContext.Transactions.Where(spec.Criteria).Skip(itemStart).Take(getActiveTransactionsRequest.PageSize).ToListAsync().ConfigureAwait(false);
+            var response = _databaseContext.Transactions.Where(spec.Criteria).Skip(itemStart).Take(getActiveTransactionsRequest.PageSize);
 
-            return new Paginated<Transaction>()
-            {
-                Results = response.Select(x => x.ToDomain()),
-                CurrentPage = page,
-                PageSize = getActiveTransactionsRequest.PageSize,
-                TotalResultCount = count
-            };
+            var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
+
+            return new PagedResult<Transaction>(result.Select(x => x.ToDomain()), new PaginationDetails(string.Empty));
         }
 
         public Task<PagedResult<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query) => throw new NotImplementedException();

@@ -1,17 +1,21 @@
+using AutoFixture;
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace FinancialTransactionsApi.Tests.V1.Factories
 {
     public class TransactionFactoryTest
     {
+        private readonly Fixture _fixture = new Fixture();
+
         [Fact]
         public void CanMapADatabaseEntityToADomainObject()
         {
@@ -51,6 +55,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.PaymentReference);
                 return options;
             });
+        }
+
+        [Fact]
+        public void CanMapADatabaseEntityToADomainEmptyObject()
+        {
+            TransactionEntity dbEntity = null;
+
+            var domain = dbEntity.ToDomain();
+
+            domain.Should().BeNull();
         }
 
         [Fact]
@@ -115,6 +129,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
         }
 
         [Fact]
+        public void CanMapADatabaseEntityToADatabaseEmptyObject()
+        {
+            Transaction dbEntity = null;
+
+            var domain = dbEntity.ToDatabase();
+
+            domain.Should().BeNull();
+        }
+
+        [Fact]
         public void CanMapAddRequestEntityToADomainObject()
         {
             var request = new AddTransactionRequest()
@@ -147,6 +171,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.PaymentReference);
                 return options;
             });
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityToADomainEmptyObject()
+        {
+            AddTransactionRequest dbEntity = null;
+
+            var domain = dbEntity.ToDomain();
+
+            domain.Should().BeNull();
         }
 
         [Fact]
@@ -189,6 +223,16 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.PaymentReference);
                 return options;
             });
+        }
+
+        [Fact]
+        public void CanMapUpdateRequestEntityToADomainEmptyObject()
+        {
+            UpdateTransactionRequest dbEntity = null;
+
+            var domain = dbEntity.ToDomain();
+
+            domain.Should().BeNull();
         }
 
         [Fact]
@@ -249,6 +293,111 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.PaymentReference);
                 return options;
             });
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityCollectionToADomainEmptyObject()
+        {
+            List<AddTransactionRequest> requestCollection = null;
+
+            var domain = requestCollection.ToDomain();
+
+            domain.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityCollectionToResponseObjectCollection()
+        {
+            var transactionLimitedDb = _fixture.Create<TransactionLimitedDbEntity>();
+
+            var response = transactionLimitedDb.ToResponse();
+
+            transactionLimitedDb.Should().BeEquivalentTo(response);
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityCollectionToResponseEmptyObject()
+        {
+            TransactionLimitedDbEntity requestCollection = null;
+
+            var domain = requestCollection.ToResponse();
+
+            domain.Should().BeNull();
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityCollectionToDatabaseList()
+        {
+            var transactionLimitedDb = _fixture.CreateMany<Transaction>(5).ToList();
+
+            var response = transactionLimitedDb.ToDatabaseList();
+
+            transactionLimitedDb.Should().BeEquivalentTo(response, options =>
+            {
+                options.Excluding(info => info.PaymentReference);
+                options.Excluding(info => info.IsSuspense);
+                return options;
+            });
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityCollectionToDomainObject()
+        {
+            var transactionLimitedDb = _fixture.Create<TransactionDbEntity>();
+
+            var response = transactionLimitedDb.ToDomain();
+
+            transactionLimitedDb.Should().BeEquivalentTo(response, options =>
+            {
+                options.Excluding(info => info.AssetId);
+                options.Excluding(info => info.AssetType);
+                options.Excluding(info => info.TenancyAgreementRef);
+                options.Excluding(info => info.PropertyRef);
+                options.Excluding(info => info.PostDate);
+                options.Excluding(info => info.RealValue);
+                return options;
+            });
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityCollectionToDomainEmptyObject()
+        {
+            TransactionDbEntity requestCollection = null;
+
+            var domain = requestCollection.ToDomain();
+
+            domain.Should().BeNull();
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityCollectionToDomain()
+        {
+            var transactionLimitedDb = _fixture.CreateMany<TransactionDbEntity>(5).ToList();
+
+            var response = transactionLimitedDb.ToDomain();
+
+            transactionLimitedDb.Should().BeEquivalentTo(response, options =>
+            {
+                options.Excluding(info => info.AssetId);
+                options.Excluding(info => info.AssetType);
+                options.Excluding(info => info.TenancyAgreementRef);
+                options.Excluding(info => info.PropertyRef);
+                options.Excluding(info => info.PostDate);
+                options.Excluding(info => info.RealValue);
+                return options;
+            });
+        }
+
+        [Fact]
+        public void CanMapAddRequestEntityEnumerableToDomain()
+        {
+            var transactionLimitedDb = _fixture.CreateMany<TransactionEntity>(5);
+
+            transactionLimitedDb.ToList().ForEach(item => item.TargetType = TargetType.Tenure.ToString());
+
+            var response = transactionLimitedDb.ToDomain();
+
+            response.Should().BeEquivalentTo(response);
         }
     }
 }
