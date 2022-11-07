@@ -69,12 +69,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
         }
 
         [Fact]
-        public void GetById_Gateway_ReturnCollectionOfTransaction_ExpectedException()
-        {
-            Assert.Throws<NotImplementedException>(delegate { _postgreDbGateway.GetTransactionByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>()); });
-        }
 
-        [Fact]
         public void GetPaged_Gateway_ReturnCollectionOfTransaction_ExpectedException()
         {
             Assert.Throws<NotImplementedException>(delegate { _postgreDbGateway.GetPagedTransactionsAsync(It.IsAny<TransactionQuery>()); });
