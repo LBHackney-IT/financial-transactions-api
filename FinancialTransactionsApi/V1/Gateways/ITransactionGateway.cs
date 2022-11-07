@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 using Hackney.Core.DynamoDb;
 
 namespace FinancialTransactionsApi.V1.Gateways
@@ -17,7 +18,7 @@ namespace FinancialTransactionsApi.V1.Gateways
         public Task<bool> AddBatchAsync(List<Transaction> transactions);
         public Task UpdateSuspenseAccountAsync(Transaction transaction);
         public Task<PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query);
-        public Task<PagedResult<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest);
+        public Task<Paginated<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest);
         public Task<PagedResult<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query);
     }
 }
