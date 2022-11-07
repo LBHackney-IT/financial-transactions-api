@@ -3,11 +3,36 @@ using FinancialTransactionsApi.V1.Domain;
 using System.Collections.Generic;
 using System.Linq;
 using FinancialTransactionsApi.V1.Helpers;
+using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
 namespace FinancialTransactionsApi.V1.Factories
 {
     public static class ResponseFactory
     {
+        public static PaginatedResponse<TransactionResponse> ToResponse(this Paginated<Transaction> ptrDomain)
+        {
+            var metadata = new MetadataModel
+            {
+                Pagination = ToPaginationDataResponse(ptrDomain)
+            };
+
+            return new PaginatedResponse<TransactionResponse>
+            {
+                Metadata = metadata,
+                Results = ptrDomain.Results.ToResponse()
+            };
+        }
+
+        private static Pagination ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
+        => new Pagination
+        {
+            ResultCount = paginatedResult.ResultCount,
+            CurrentPage = paginatedResult.CurrentPage,
+            PageSize = paginatedResult.PageSize,
+            TotalCount = paginatedResult.TotalResultCount,
+            PageCount = paginatedResult.PageCount
+        };
+
         public static TransactionResponse ToResponse(this Transaction domain)
         {
             return domain == null ? null : new TransactionResponse()
@@ -46,6 +71,11 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
+        public static ResponseWrapper<TransactionResponse> ToResponseWrapper(this Transaction domainList)
+        {
+            return new ResponseWrapper<TransactionResponse>(domainList.ToResponse());
+        }
+
         public static List<TransactionResponse> ToResponse(this IEnumerable<Transaction> domainList)
         {
             return domainList == null ?
@@ -57,5 +87,6 @@ namespace FinancialTransactionsApi.V1.Factories
         {
             return new ResponseWrapper<IEnumerable<TransactionResponse>>(domainList.Select(domain => domain.ToResponse()));
         }
+
     }
 }

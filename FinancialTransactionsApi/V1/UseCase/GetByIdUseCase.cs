@@ -5,6 +5,7 @@ using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using System;
 using System.Threading.Tasks;
+using FinancialTransactionsApi.V1.Helpers;
 
 namespace FinancialTransactionsApi.V1.UseCase
 {
@@ -17,11 +18,11 @@ namespace FinancialTransactionsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task<TransactionResponse> ExecuteAsync(Guid id, Guid targetId)
+        public async Task<ResponseWrapper<TransactionResponse>> ExecuteAsync(Guid id)
         {
-            var data = await _gateway.GetTransactionByIdAsync(targetId, id).ConfigureAwait(false);
+            var data = await _gateway.GetTransactionByIdAsync(id).ConfigureAwait(false);
 
-            return data?.ToResponse();
+            return data?.ToResponseWrapper();
         }
     }
 }
