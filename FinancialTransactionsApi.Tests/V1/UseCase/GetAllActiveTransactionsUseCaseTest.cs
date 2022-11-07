@@ -13,6 +13,7 @@ using FluentAssertions;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
@@ -32,19 +33,22 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task GetAllActiveTransactions_GatewayReturnsList()
         {
-            var transactions = _fixture.CreateMany<Transaction>();
+            var transactions = _fixture.CreateMany<Transaction>(10);
 
-            var obj = new PagedResult<Transaction>(transactions);
+            var obj = new Paginated<Transaction>()
+            {
+                Results = transactions
+            };
 
-            var transactionRequest = new GetActiveTransactionsRequest() { Page = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
+            var transactionRequest = new GetActiveTransactionsRequest() { PageNumber = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
 
-            _mockGateway.Setup(_ => _.GetAllActive(transactionRequest)).ReturnsAsync(obj);
+            _mockGateway.Setup(x => x.GetAllActive(transactionRequest)).ReturnsAsync(obj);
 
             var response = await _getAllActiveTransactionsUseCase.ExecuteAsync(transactionRequest).ConfigureAwait(false);
 
-            var expectedResponse = transactions.ToResponseWrapper();
+            var expectedResponse = obj.ToResponse();
 
-            response.Value.Should().BeEquivalentTo(expectedResponse.Value);
+            response.Should().BeEquivalentTo(expectedResponse);
         }
 
         [Fact]
@@ -52,35 +56,20 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         {
             var transactions = Enumerable.Empty<Transaction>();
 
-            var obj = new PagedResult<Transaction>(transactions);
+            var obj = new Paginated<Transaction>()
+            {
+                Results = transactions
+            };
 
-            var transactionRequest = new GetActiveTransactionsRequest() { Page = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
-
-            _mockGateway.Setup(_ => _.GetAllActive(transactionRequest)).ReturnsAsync(obj);
-
-            var response = await _getAllActiveTransactionsUseCase.ExecuteAsync(transactionRequest).ConfigureAwait(false);
-
-            var expectedResponse = transactions.ToResponseWrapper();
-
-            response.Value.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task GetAllActiveTransactions_GatewayReturnsNull()
-        {
-            var transactions = default(IEnumerable<Transaction>);
-
-            var obj = new PagedResult<Transaction>(transactions);
-
-            obj.Results = null;
-
-            var transactionRequest = new GetActiveTransactionsRequest() { Page = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
+            var transactionRequest = new GetActiveTransactionsRequest() { PageNumber = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
 
             _mockGateway.Setup(_ => _.GetAllActive(transactionRequest)).ReturnsAsync(obj);
 
             var response = await _getAllActiveTransactionsUseCase.ExecuteAsync(transactionRequest).ConfigureAwait(false);
 
-            response.Should().BeNull();
+            var expectedResponse = obj.ToResponse();
+
+            response.Should().BeEquivalentTo(expectedResponse);
         }
     }
 }

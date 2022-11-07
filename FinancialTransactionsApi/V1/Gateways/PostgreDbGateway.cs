@@ -61,7 +61,13 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
-            return new PagedResult<Transaction>(result.Select(x => x.ToDomain()), new PaginationDetails(string.Empty));
+            return new Paginated<Transaction>()
+            {
+                Results = response.Select(x => x.ToDomain()),
+                CurrentPage = page,
+                PageSize = getActiveTransactionsRequest.PageSize,
+                TotalResultCount = count
+            };
         }
 
         public Task<PagedResult<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query) => throw new NotImplementedException();

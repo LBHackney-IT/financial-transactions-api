@@ -118,7 +118,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
 
             _mockContext.Setup(c => c.Transactions).Returns(_mockSet.Object);
 
-            var request = new GetActiveTransactionsRequest() { Page = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow.AddDays(-1), PeriodEndDate = DateTime.UtcNow.AddDays(1) };
+            var request = new GetActiveTransactionsRequest() { PageNumber = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow.AddDays(-1), PeriodEndDate = DateTime.UtcNow.AddDays(1) };
 
             var result = await _postgreDbGateway.GetAllActive(request).ConfigureAwait(false);
 
@@ -139,7 +139,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
 
             _mockContext.Setup(c => c.Transactions).Returns(_mockSet.Object);
 
-            var request = new GetActiveTransactionsRequest() { Page = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow.AddDays(-1), PeriodEndDate = DateTime.UtcNow.AddDays(1) };
+            var request = new GetActiveTransactionsRequest() { PageNumber = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow.AddDays(-1), PeriodEndDate = DateTime.UtcNow.AddDays(1) };
 
             var result = await _postgreDbGateway.GetAllActive(request).ConfigureAwait(false);
 
