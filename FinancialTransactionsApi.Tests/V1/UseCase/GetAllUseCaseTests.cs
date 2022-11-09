@@ -3,6 +3,7 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 using FinancialTransactionsApi.V1.UseCase;
 using FluentAssertions;
 using Hackney.Core.DynamoDb;
@@ -30,14 +31,13 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         public async Task GetAll_GatewayReturnsList_ReturnsList()
         {
             var transactions = _fixture.CreateMany<Transaction>();
-            var obj = new PagedResult<Transaction>(transactions);
+            var obj = new Paginated<Transaction>() { Results = transactions };
             var transactionQuery = new TransactionQuery()
             {
                 TargetId = Guid.NewGuid(),
                 TransactionType = TransactionType.ArrangementInterest,
                 EndDate = DateTime.Now,
                 StartDate = DateTime.UtcNow,
-                PaginationToken = null
             };
 
             _mockGateway.Setup(_ => _.GetPagedTransactionsAsync(transactionQuery)).ReturnsAsync(obj);
