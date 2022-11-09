@@ -1,19 +1,16 @@
+using Moq;
+using System;
+using Xunit;
 using AutoFixture;
+using FluentAssertions;
+using System.Linq;
+using System.Threading.Tasks;
+using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase;
-using Hackney.Core.DynamoDb;
-using Moq;
-using System.Threading.Tasks;
-using System;
-using Xunit;
 using FinancialTransactionsApi.V1.Factories;
-using FluentAssertions;
-using System.Linq;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
 {

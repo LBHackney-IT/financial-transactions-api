@@ -9,7 +9,6 @@ using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
 using Hackney.Core.Authorization;
-using Hackney.Core.DynamoDb;
 using Hackney.Core.Http;
 using Hackney.Core.JWT;
 using Hackney.Core.Sns;

@@ -1,14 +1,12 @@
-using System.Threading.Tasks;
-using FinancialTransactionsApi.V1.Infrastructure;
-using FinancialTransactionsApi.V1.Domain;
 using System;
-using FinancialTransactionsApi.V1.Factories;
-using System.Collections.Generic;
-using FinancialTransactionsApi.V1.Boundary.Request;
-using Hackney.Core.DynamoDb;
-using FinancialTransactionsApi.V1.Boundary.Response;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Infrastructure.Specs;
 using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
@@ -38,7 +36,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             return await Task.FromResult(response.FirstOrDefault()?.ToDomain()).ConfigureAwait(false);
         }
 
-        public Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query) => throw new NotImplementedException();
+        public Task<Paginated<Transaction>> GetPagedTransactionsAsync(TransactionQuery query) => throw new NotImplementedException();
 
         public Task AddAsync(Transaction transaction) => throw new NotImplementedException();
 
@@ -46,7 +44,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public Task UpdateSuspenseAccountAsync(Transaction transaction) => throw new NotImplementedException();
 
-        public Task<PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query) => throw new NotImplementedException();
+        public Task<Paginated<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query) => throw new NotImplementedException();
 
         public async Task<Paginated<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)
         {
@@ -75,6 +73,6 @@ namespace FinancialTransactionsApi.V1.Gateways
             };
         }
 
-        public Task<PagedResult<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query) => throw new NotImplementedException();
+        public Task<Paginated<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query) => throw new NotImplementedException();
     }
 }

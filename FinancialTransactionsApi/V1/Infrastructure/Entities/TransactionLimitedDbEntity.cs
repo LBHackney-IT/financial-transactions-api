@@ -1,32 +1,30 @@
-using Amazon.DynamoDBv2.DataModel;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 {
-    [DynamoDBTable("Transactions", LowerCamelCaseProperties = true)]
+    [Table("Transactions")]
     public class TransactionLimitedDbEntity
     {
-        [DynamoDBRangeKey]
-        [DynamoDBProperty(AttributeName = "id")]
+        [Column("id")]
         public Guid Id { get; set; }
 
-        [DynamoDBHashKey]
-        [DynamoDBProperty(AttributeName = "target_id")]
+        [Column("target_id")]
         public Guid TargetId { get; set; }
 
-        [DynamoDBProperty(AttributeName = "transaction_amount")]
+        [Column("transaction_amount")]
         public decimal TransactionAmount { get; set; }
 
-        [DynamoDBProperty(AttributeName = "paid_amount")]
+        [Column("paid_amount")]
         public decimal PaidAmount { get; set; }
 
-        [DynamoDBProperty(AttributeName = "charged_amount")]
+        [Column("charged_amount")]
         public decimal ChargedAmount { get; set; }
 
-        [DynamoDBProperty(AttributeName = "balance_amount")]
+        [Column("balance_amount")]
         public decimal BalanceAmount { get; set; }
 
-        [DynamoDBProperty(AttributeName = "housing_benefit_amount")]
+        [Column("housing_benefit_amount")]
         public decimal HousingBenefitAmount { get; set; }
     }
 }

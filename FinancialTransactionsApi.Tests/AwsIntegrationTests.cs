@@ -1,7 +1,4 @@
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.SimpleNotificationService;
-using Amazon.SimpleNotificationService.Model;
 using FinancialTransactionsApi.V1.Domain;
 using System;
 using System.Collections.Generic;
@@ -17,8 +14,7 @@ namespace FinancialTransactionsApi.Tests
 
         public HttpClient Client { get; private set; }
         public readonly AwsMockWebApplicationFactory<TStartup> Factory;
-        public IDynamoDBContext DynamoDbContext => Factory?.DynamoDbContext;
-        public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
+         public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
         {

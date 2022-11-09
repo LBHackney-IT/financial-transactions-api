@@ -1,10 +1,8 @@
 using AutoFixture;
-using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Helpers;
 using FluentAssertions;
-using Hackney.Core.DynamoDb;
 using System.Collections.Generic;
 using Xunit;
 

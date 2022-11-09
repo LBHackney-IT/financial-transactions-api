@@ -1,11 +1,6 @@
 using Amazon;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
 using Amazon.SimpleNotificationService;
 using Amazon.SQS;
-using Amazon.XRay.Recorder.Core;
-using Amazon.XRay.Recorder.Core.Strategies;
 using Hackney.Core.DynamoDb;
 using Hackney.Core.Sns;
 using Microsoft.AspNetCore.Hosting;
@@ -24,8 +19,6 @@ namespace FinancialTransactionsApi.Tests
         private readonly List<TableDef> _tables;
 
         private IConfiguration _configuration;
-        public IAmazonDynamoDB DynamoDb { get; set; }
-        public IDynamoDBContext DynamoDbContext { get; private set; }
         public IAmazonSimpleNotificationService SimpleNotificationService { get; private set; }
         public IAmazonSQS AmazonSqs { get; private set; }
 
@@ -48,8 +41,6 @@ namespace FinancialTransactionsApi.Tests
                 services.ConfigureSns();
                 var serviceProvider = services.BuildServiceProvider();
                 AWSConfigs.AWSRegion = "eu-west-2";
-                DynamoDb = serviceProvider.GetRequiredService<IAmazonDynamoDB>();
-                DynamoDbContext = serviceProvider.GetRequiredService<IDynamoDBContext>();
 
                 var localstackUrl = Environment.GetEnvironmentVariable("Localstack_SnsServiceUrl");
                 AmazonSqs = new AmazonSQSClient(new AmazonSQSConfig() { ServiceURL = localstackUrl });

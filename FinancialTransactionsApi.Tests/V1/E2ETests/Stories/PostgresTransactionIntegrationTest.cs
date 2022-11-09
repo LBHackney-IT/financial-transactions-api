@@ -1,18 +1,11 @@
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
-using FluentAssertions.Common;
-using Hackney.Core.DynamoDb;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -119,22 +112,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("false")]
-        [InlineData("true")]
-        public void ConfigureDynamoDbTestNoLocalModeEnvVarUsesAwsService(string localModeEnvVar)
-        {
-            Environment.SetEnvironmentVariable("DynamoDb_LocalMode", localModeEnvVar);
-
-            ServiceCollection services = new ServiceCollection();
-            services.ConfigureDynamoDB();
-
-            services.Any(x => x.ServiceType == typeof(IAmazonDynamoDB)).Should().BeTrue();
-            services.Any(x => x.ServiceType == typeof(IDynamoDBContext)).Should().BeTrue();
-
-            Environment.SetEnvironmentVariable("DynamoDb_LocalMode", null);
-        }
 
         private async Task<Guid> CreateTransactionAndValidateResponse(Transaction transaction)
         {
@@ -170,8 +147,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
             response.StatusCode.Should().Be(HttpStatusCode.Created, responseContent);
 
             var apiEntity = JsonConvert.DeserializeObject<TransactionResponse>(responseContent);
-
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<TransactionDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 

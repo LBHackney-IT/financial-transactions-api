@@ -4,19 +4,14 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Helpers.GeneralModels;
-using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
-using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -215,10 +210,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
-            var obj1 = new PagedResult<TransactionResponse>(transactionsList);
+            var obj1 = new PaginatedResponse<TransactionResponse>() { Results = transactionsList };
 
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>()))
-                .ReturnsAsync(obj1);
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>())).ReturnsAsync(obj1);
 
             var query = new TransactionQuery()
             {
@@ -233,9 +227,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeOfType<PagedResult<TransactionResponse>>();
+            okResult?.Value.Should().BeOfType<PaginatedResponse<TransactionResponse>>();
 
-            var responses = okResult?.Value as PagedResult<TransactionResponse>;
+            var responses = okResult?.Value as PaginatedResponse<TransactionResponse>;
 
             responses?.Results.Should().HaveCount(5);
 
@@ -246,10 +240,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
-            var obj1 = new PagedResult<TransactionResponse>(transactionsList);
+            var obj1 = new PaginatedResponse<TransactionResponse>() { Results = transactionsList };
 
-            _suspenseAccountUseCase.Setup(x => x.ExecuteAsync(It.IsAny<SuspenseAccountQuery>()))
-                .ReturnsAsync(obj1);
+            _suspenseAccountUseCase.Setup(x => x.ExecuteAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(obj1);
 
             var query = new SuspenseAccountQuery();
 
@@ -261,37 +254,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeOfType<PagedResult<TransactionResponse>>();
+            okResult?.Value.Should().BeOfType<PaginatedResponse<TransactionResponse>>();
 
-            var responses = okResult?.Value as PagedResult<TransactionResponse>;
+            var responses = okResult?.Value as PaginatedResponse<TransactionResponse>;
 
             responses?.Results.Should().HaveCount(5);
 
         }
-
-        //[Fact]
-        //public async Task Process_Batch_UseCaseReturnList_Returns200()
-        //{
-        //    //var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
-        //    //var request = new List<AddTransactionRequest>();
-
-        //    //_addBatchUseCase.Setup(x => x.ExecuteAsync(It.IsAny<IEnumerable<Transaction>>()))
-        //    //    .ReturnsAsync(3);
-
-        //    //var query = new TransactionQuery()
-        //    //{
-        //    //    TargetId = Guid.NewGuid()
-        //    //};
-
-        //    //var result = await _controller.AddBatch("","", request).ConfigureAwait(false);
-
-        //    //result.Should().NotBeNull();
-
-        //    //var okResult = result as OkObjectResult;
-
-        //    //okResult.Should().NotBeNull();
-
-        //}
 
         [Fact]
         public async Task GetAll_UseCaseThrownException_ShouldRethrow()

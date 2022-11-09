@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FinancialTransactionsApi.V1.Boundary.Request;
+using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
-using Hackney.Core.DynamoDb;
 
 namespace FinancialTransactionsApi.V1.UseCase
 {
@@ -17,9 +17,12 @@ namespace FinancialTransactionsApi.V1.UseCase
         {
             _gateway = gateway;
         }
-        public async Task<PagedResult<Transaction>> ExecuteAsync(TransactionByTargetIdsQuery targetIdsQuery)
+        public async Task<PaginatedResponse<TransactionResponse>> ExecuteAsync(TransactionByTargetIdsQuery targetIdsQuery)
         {
-            return await _gateway.GetPagedTransactionsByTargetIdsAsync(targetIdsQuery).ConfigureAwait(false);
+
+            Paginated<Transaction> result = await _gateway.GetPagedTransactionsByTargetIdsAsync(targetIdsQuery).ConfigureAwait(false);
+
+            return result.ToResponse();
         }
     }
 }
