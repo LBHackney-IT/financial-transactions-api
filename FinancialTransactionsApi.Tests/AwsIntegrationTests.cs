@@ -14,7 +14,7 @@ namespace FinancialTransactionsApi.Tests
 
         public HttpClient Client { get; private set; }
         public readonly AwsMockWebApplicationFactory<TStartup> Factory;
-         public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
+        public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
         {
