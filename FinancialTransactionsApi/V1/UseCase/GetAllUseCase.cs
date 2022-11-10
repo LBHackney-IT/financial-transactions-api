@@ -20,10 +20,8 @@ namespace FinancialTransactionsApi.V1.UseCase
 
         public async Task<PaginatedResponse<TransactionResponse>> ExecuteAsync(TransactionQuery query)
         {
-            Paginated<Transaction> result = await _gateway.GetPagedTransactionsAsync(query).ConfigureAwait(false);
-
-            return result.ToResponse();
-
+            var transactions = await _gateway.GetPagedTransactionsAsync(query).ConfigureAwait(false);
+            return transactions.ToResponse();
         }
     }
 }
