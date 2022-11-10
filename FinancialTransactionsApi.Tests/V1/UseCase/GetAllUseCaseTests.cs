@@ -31,7 +31,6 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         public async Task GetAll_GatewayReturnsList_ReturnsList()
         {
             var transactions = _fixture.CreateMany<Transaction>();
-            var obj = new Paginated<Transaction>() { Results = transactions };
             var transactionQuery = new TransactionQuery()
             {
                 TargetId = Guid.NewGuid(),
@@ -40,7 +39,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 StartDate = DateTime.UtcNow,
             };
 
-            _mockGateway.Setup(_ => _.GetPagedTransactionsAsync(transactionQuery)).ReturnsAsync(obj);
+            _mockGateway.Setup(_ => _.GetPagedTransactionsAsync(transactionQuery)).ReturnsAsync(transactions);
             var response = await _getAllUseCase.ExecuteAsync(transactionQuery).ConfigureAwait(false);
 
             var expectedResponse = transactions.ToResponse();

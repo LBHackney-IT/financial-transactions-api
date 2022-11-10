@@ -38,7 +38,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             return await Task.FromResult(response.FirstOrDefault()?.ToDomain()).ConfigureAwait(false);
         }
 
-        public async Task<Paginated<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
+        public async Task<IEnumerable<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
         {
             var spec = new GetTransactionByDateSpecification(query.StartDate ??= new DateTime(), query.EndDate ??= DateTime.Now);
 
@@ -49,19 +49,7 @@ namespace FinancialTransactionsApi.V1.Gateways
                 response = response.Where(x => x.TransactionType == query.TransactionType.ToString());
             }
 
-            var page = query.Page > 1 ? query.Page : 0;
-
-            var filteredResponse = response.Skip(page * query.PageSize).Take(query.PageSize).Select(x => x.ToDomain());
-
-            var result = await Task.FromResult(filteredResponse.AsEnumerable()).ConfigureAwait(false);
-
-            return new Paginated<Transaction>()
-            {
-                Results = result,
-                CurrentPage = page,
-                PageSize = query.PageSize,
-                TotalResultCount = response.Count(),
-            };
+            return await Task.FromResult(response.AsEnumerable().ToDomain()).ConfigureAwait(false);
         }
 
         public Task AddAsync(Transaction transaction) => throw new NotImplementedException();
