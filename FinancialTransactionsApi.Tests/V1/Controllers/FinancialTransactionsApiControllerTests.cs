@@ -244,16 +244,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetSuspenseAccount_UseCaseReturnList_Returns200()
         {
-            var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
-            var obj1 = new PagedResult<TransactionResponse>(transactionsList);
+            var transactionsList = new ResponseWrapper<IEnumerable<TransactionResponse>>(_fixture.Build<TransactionResponse>().CreateMany(5));
 
             _suspenseAccountUseCase.Setup(x => x.ExecuteAsync(It.IsAny<SuspenseAccountQuery>()))
-                .ReturnsAsync(obj1);
+                .ReturnsAsync(transactionsList);
 
-            var query = new SuspenseAccountQuery();
-
-            var result = await _controller.GetSuspenseAccount(query).ConfigureAwait(false);
+            var result = await _controller.GetSuspenseAccount(It.IsAny<SuspenseAccountQuery>()).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -261,7 +258,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeOfType<PagedResult<TransactionResponse>>();
+            okResult?.Value.Should().BeOfType<ResponseWrapper<IEnumerable<TransactionResponse>>>();
 
             var responses = okResult?.Value as PagedResult<TransactionResponse>;
 
