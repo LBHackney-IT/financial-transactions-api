@@ -110,9 +110,24 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
 
         [Fact]
 
-        public void GetPaged_Gateway_ReturnCollectionOfTransaction_ExpectedException()
+        public async Task GetPaged_Gateway_ReturnCollectionOfTransaction_ExpectedException()
         {
-            Assert.Throws<NotImplementedException>(delegate { _postgreDbGateway.GetPagedTransactionsAsync(It.IsAny<TransactionQuery>()); });
+            var data = _fixture.CreateMany<TransactionEntity>(5).AsQueryable();
+
+            data.ToList().ForEach(item => { item.TargetType = TargetType.Tenure.ToString(); item.TransactionDate = DateTime.UtcNow; });
+
+            _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.Provider).Returns(data.Provider);
+            _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.Expression).Returns(data.Expression);
+            _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
+
+            _mockContext.Setup(c => c.Transactions).Returns(_mockSet.Object);
+
+            var request = new TransactionQuery() { Page = 1, PageSize = 11 };
+
+            var result = await _postgreDbGateway.GetPagedTransactionsAsync(request).ConfigureAwait(false);
+
+            result.Should().NotBeEmpty();
         }
 
         [Fact]

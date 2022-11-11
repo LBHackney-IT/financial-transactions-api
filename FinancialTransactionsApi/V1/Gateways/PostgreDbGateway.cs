@@ -38,7 +38,19 @@ namespace FinancialTransactionsApi.V1.Gateways
             return await Task.FromResult(response.FirstOrDefault()?.ToDomain()).ConfigureAwait(false);
         }
 
-        public Task<PagedResult<Transaction>> GetPagedTransactionsAsync(TransactionQuery query) => throw new NotImplementedException();
+        public async Task<IEnumerable<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
+        {
+            var spec = new GetTransactionByDateSpecification(query.StartDate ??= new DateTime(), query.EndDate ??= DateTime.Now);
+
+            var response = _databaseContext.Transactions.Where(spec.Criteria);
+
+            if (query.TransactionType.HasValue)
+            {
+                response = response.Where(x => x.TransactionType == query.TransactionType.ToString());
+            }
+
+            return await Task.FromResult(response.AsEnumerable().ToDomain()).ConfigureAwait(false);
+        }
 
         public Task AddAsync(Transaction transaction) => throw new NotImplementedException();
 

@@ -215,10 +215,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
-            var obj1 = new PagedResult<TransactionResponse>(transactionsList);
+            var obj1 = new PaginatedResponse<TransactionResponse>() { Results = transactionsList };
 
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>()))
-                .ReturnsAsync(obj1);
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionQuery>())).ReturnsAsync(obj1);
 
             var query = new TransactionQuery()
             {
@@ -233,9 +232,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeOfType<PagedResult<TransactionResponse>>();
+            okResult?.Value.Should().BeOfType<PaginatedResponse<TransactionResponse>>();
 
-            var responses = okResult?.Value as PagedResult<TransactionResponse>;
+            var responses = okResult?.Value as PaginatedResponse<TransactionResponse>;
 
             responses?.Results.Should().HaveCount(5);
 
