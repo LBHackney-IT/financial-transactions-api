@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -729,5 +730,34 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
         }
 
+        [Fact]
+        public async Task AddBatch_ThrowBadRequest()
+        {
+            var result = await _controller.AddBatch(It.IsAny<string>(), Token, null).ConfigureAwait(false);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
+        public async Task AddBatch_Returns200()
+        {
+            var transactionsRequest = _fixture.CreateMany<AddTransactionRequest>(5);
+
+            var transactions = _fixture.CreateMany<Transaction>(5);
+
+            _addBatchUseCase.Setup(x => x.ExecuteAsync(transactions)).ReturnsAsync(transactions.Count());
+
+            var result = await _controller.AddBatch(It.IsAny<string>(), Token, transactionsRequest).ConfigureAwait(false);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
+        public async Task SuspenseAccountApproval_ThrowBadRequest()
+        {
+            var result = await _controller.SuspenseAccountApproval(Token, It.IsAny<Guid>(), null).ConfigureAwait(false);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
     }
 }
