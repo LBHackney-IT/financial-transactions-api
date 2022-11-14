@@ -55,7 +55,7 @@ namespace FinancialTransactionsApi.V1.Gateways
                 response = response.Where(x => x.TransactionType == query.TransactionType.ToString());
             }
 
-            var result  = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
+            var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
             return new Paginated<Transaction>()
             {
