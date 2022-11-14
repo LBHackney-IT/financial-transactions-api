@@ -38,7 +38,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task<Paginated<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
         {
-            var spec = new GetTransactionByDateSpecification(query.StartDate ??= new DateTime(), query.EndDate ??= DateTime.Now);
+            var spec = new GetTransactionByDateSpecification(query.StartDate ?? new DateTime(), query.EndDate ?? DateTime.Now);
 
             var count = _databaseContext.Transactions.Where(spec.Criteria).Count();
 
