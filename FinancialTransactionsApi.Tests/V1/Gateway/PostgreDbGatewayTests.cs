@@ -127,7 +127,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
 
             var result = await _postgreDbGateway.GetPagedTransactionsAsync(request).ConfigureAwait(false);
 
-            result.Should().NotBeEmpty();
+            result.Results.Should().NotBeEmpty();
         }
 
         [Fact]

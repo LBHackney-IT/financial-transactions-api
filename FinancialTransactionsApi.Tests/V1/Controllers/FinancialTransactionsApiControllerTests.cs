@@ -239,6 +239,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetSuspenseAccount_UseCaseReturnList_Returns200()
         {
+            var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
             var obj1 = new PaginatedResponse<TransactionResponse>() { Results = transactionsList };
 
