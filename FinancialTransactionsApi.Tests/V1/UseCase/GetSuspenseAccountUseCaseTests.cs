@@ -8,6 +8,7 @@ using FinancialTransactionsApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -17,12 +18,14 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
     {
         private readonly Mock<ITransactionGateway> _mockGateway;
         private readonly GetAllUseCase _getAllUseCase;
+        private readonly GetSuspenseAccountUseCase _getSuspenseAccountUseCase;
         private readonly Fixture _fixture;
 
         public GetSuspenseAccountUseCaseTests()
         {
             _mockGateway = new Mock<ITransactionGateway>();
             _getAllUseCase = new GetAllUseCase(_mockGateway.Object);
+            _getSuspenseAccountUseCase = new GetSuspenseAccountUseCase(_mockGateway.Object);
             _fixture = new Fixture();
         }
 
@@ -46,6 +49,34 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var expectedResponse = transactions.ToResponse();
 
             response.Results.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Fact]
+        public async Task GetSuspenseAccount_GatewayReturnTransactionResponse_ReturnTransactionResponse()
+        {
+            var transactionsList = _fixture.Build<Transaction>().CreateMany(5);
+
+            var responseMock = new Paginated<Transaction>() { Results = transactionsList };
+
+            _mockGateway.Setup(x => x.GetPagedSuspenseAccountTransactionsAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(responseMock);
+
+            var response = await _getSuspenseAccountUseCase.ExecuteAsync(It.IsAny<SuspenseAccountQuery>()).ConfigureAwait(false);
+
+            response.Should().BeEquivalentTo(responseMock.ToResponse());
+        }
+
+        [Fact]
+        public async Task GetSuspenseAccount_GatewayReturnEmptyTransactionResponse_ReturnEmptyTransactionResponse()
+        {
+            var transactionsList = Enumerable.Empty<Transaction>();
+
+            var responseMock = new Paginated<Transaction>() { Results = transactionsList };
+
+            _mockGateway.Setup(x => x.GetPagedSuspenseAccountTransactionsAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(responseMock);
+
+            var response = await _getSuspenseAccountUseCase.ExecuteAsync(It.IsAny<SuspenseAccountQuery>()).ConfigureAwait(false);
+
+            response.Should().BeEquivalentTo(responseMock.ToResponse());
         }
     }
 }
