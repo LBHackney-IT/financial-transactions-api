@@ -23,7 +23,6 @@ namespace FinancialTransactionsApi.V1.UseCase
             Paginated<Transaction> result = await _gateway.GetPagedTransactionsAsync(query).ConfigureAwait(false);
 
             return result.ToResponse();
-
         }
     }
 }
