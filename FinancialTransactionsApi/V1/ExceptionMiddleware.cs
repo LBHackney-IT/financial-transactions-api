@@ -7,11 +7,13 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace FinancialTransactionsApi.V1
 {
+    [ExcludeFromCodeCoverage]
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
