@@ -313,9 +313,6 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             var lastUpdatedBy = GetUserName(token);
 
-            var domainTransaction = existTransaction.Value.ResponseToDomain(transaction, lastUpdatedBy);
-
-
             var transactionResponse = await _updateUseCase.ExecuteAsync(null).ConfigureAwait(false);
 
             return Ok(transactionResponse);

@@ -66,7 +66,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             return new Paginated<Transaction>()
             {
-                Results = response.Select(x => x.ToDomain()),
+                Results = result.Select(x => x.ToDomain()),
                 CurrentPage = page,
                 PageSize = getActiveTransactionsRequest.PageSize,
                 TotalResultCount = count
