@@ -49,7 +49,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         {
             var transactionsList = Enumerable.Empty<Transaction>();
 
-            var responseMock = new Paginated<Transaction>(){ Results = transactionsList };
+            var responseMock = new Paginated<Transaction>() { Results = transactionsList };
 
             _mockGateway.Setup(x => x.GetPagedTransactionsByTargetIdsAsync(It.IsAny<TransactionByTargetIdsQuery>())).ReturnsAsync(responseMock);
 
