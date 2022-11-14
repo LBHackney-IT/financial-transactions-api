@@ -2,7 +2,6 @@ using AutoFixture;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Newtonsoft.Json;
 using System;

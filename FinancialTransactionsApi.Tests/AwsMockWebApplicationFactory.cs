@@ -1,7 +1,6 @@
 using Amazon;
 using Amazon.SimpleNotificationService;
 using Amazon.SQS;
-using Hackney.Core.DynamoDb;
 using Hackney.Core.Sns;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -37,7 +36,6 @@ namespace FinancialTransactionsApi.Tests
                 .UseStartup<Startup>();
             builder.ConfigureServices(services =>
             {
-                services.ConfigureDynamoDB();
                 services.ConfigureSns();
                 var serviceProvider = services.BuildServiceProvider();
                 AWSConfigs.AWSRegion = "eu-west-2";
