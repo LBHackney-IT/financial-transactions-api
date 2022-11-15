@@ -40,7 +40,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 PaginationToken = null
             };
 
-            _mockGateway.Setup(_ => _.GetPagedTransactionsAsync(transactionQuery)).ReturnsAsync(obj);
+            _mockGateway.Setup(_ => _.GetPagedTransactionsAsync(transactionQuery)).ReturnsAsync(transactions);
             var response = await _getAllUseCase.ExecuteAsync(transactionQuery).ConfigureAwait(false);
 
             var expectedResponse = transactions.ToResponse();
