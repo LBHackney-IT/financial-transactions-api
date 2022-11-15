@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
@@ -20,9 +21,15 @@ namespace FinancialTransactionsApi.V1.UseCase
         public async Task<PaginatedResponse<TransactionResponse>> ExecuteAsync(TransactionByTargetIdsQuery targetIdsQuery)
         {
 
-            Paginated<Transaction> result = await _gateway.GetPagedTransactionsByTargetIdsAsync(targetIdsQuery).ConfigureAwait(false);
+            IEnumerable<Transaction> result = await _gateway.GetPagedTransactionsByTargetIdsAsync(targetIdsQuery).ConfigureAwait(false);
 
-            return result.ToResponse();
+            var paginated = new Paginated<Transaction>()
+            {
+                Results = result,
+                TotalResultCount = result.ToResponse().Count
+            };
+
+            return paginated.ToResponse();
         }
     }
 }

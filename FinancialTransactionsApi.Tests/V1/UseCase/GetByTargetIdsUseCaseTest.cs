@@ -33,31 +33,25 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task GetByTargetIds_GatewayReturnTransactionResponse_ReturnTransactionResponse()
         {
-            var transactionsList = _fixture.Build<Transaction>().CreateMany(5);
-
-            var responseMock = new Paginated<Transaction>() { Results = transactionsList };
+            var responseMock = _fixture.Build<Transaction>().CreateMany(5);
 
             _mockGateway.Setup(x => x.GetPagedTransactionsByTargetIdsAsync(It.IsAny<TransactionByTargetIdsQuery>())).ReturnsAsync(responseMock);
 
             var response = await _getByTargetIdsUseCase.ExecuteAsync(It.IsAny<TransactionByTargetIdsQuery>()).ConfigureAwait(false);
 
-            response.Should().BeEquivalentTo(responseMock.ToResponse());
+            response.Results.Should().NotBeEmpty();
         }
 
         [Fact]
         public async Task GetByTargetIds_GatewayReturnEmptyTransactionResponse_ReturnEmptyTransactionResponse()
         {
-            var transactionsList = Enumerable.Empty<Transaction>();
-
-            var responseMock = new Paginated<Transaction>() { Results = transactionsList };
+            var responseMock = Enumerable.Empty<Transaction>();
 
             _mockGateway.Setup(x => x.GetPagedTransactionsByTargetIdsAsync(It.IsAny<TransactionByTargetIdsQuery>())).ReturnsAsync(responseMock);
 
             var response = await _getByTargetIdsUseCase.ExecuteAsync(It.IsAny<TransactionByTargetIdsQuery>()).ConfigureAwait(false);
 
-            var expectedResponse = responseMock.ToResponse();
-
-            response.Should().BeEquivalentTo(expectedResponse);
+            response.Results.Should().BeEmpty();
         }
     }
 }

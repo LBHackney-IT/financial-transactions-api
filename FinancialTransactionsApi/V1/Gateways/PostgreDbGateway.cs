@@ -81,7 +81,7 @@ namespace FinancialTransactionsApi.V1.Gateways
             return await Task.FromResult(response.AsEnumerable().ToDomain()).ConfigureAwait(false);
         }
 
-        public async Task<Paginated<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)
+        public async Task<IEnumerable<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)
         {
             getActiveTransactionsRequest.PeriodEndDate = getActiveTransactionsRequest.PeriodEndDate ?? DateTime.UtcNow;
 
@@ -99,15 +99,9 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
-            return new Paginated<Transaction>()
-            {
-                Results = result.Select(x => x.ToDomain()),
-                CurrentPage = page,
-                PageSize = getActiveTransactionsRequest.PageSize,
-                TotalResultCount = count
-            };
+            return result.ToDomain();
         }
 
-        public Task<Paginated<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query) => throw new NotImplementedException();
+        public Task<IEnumerable<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query) => throw new NotImplementedException();
     }
 }

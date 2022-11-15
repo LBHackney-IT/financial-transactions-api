@@ -34,12 +34,15 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             var obj = new Paginated<Transaction>()
             {
-                Results = transactions
+                Results = transactions,
+                CurrentPage = 1,
+                PageSize = 11,
+                TotalResultCount = transactions.Count(),
             };
 
             var transactionRequest = new GetActiveTransactionsRequest() { PageNumber = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
 
-            _mockGateway.Setup(x => x.GetAllActive(transactionRequest)).ReturnsAsync(obj);
+            _mockGateway.Setup(x => x.GetAllActive(transactionRequest)).ReturnsAsync(transactions);
 
             var response = await _getAllActiveTransactionsUseCase.ExecuteAsync(transactionRequest).ConfigureAwait(false);
 
@@ -55,12 +58,15 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             var obj = new Paginated<Transaction>()
             {
-                Results = transactions
+                Results = transactions,
+                CurrentPage= 1,
+                PageSize = 11,
+                TotalResultCount= 0,
             };
 
             var transactionRequest = new GetActiveTransactionsRequest() { PageNumber = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
 
-            _mockGateway.Setup(_ => _.GetAllActive(transactionRequest)).ReturnsAsync(obj);
+            _mockGateway.Setup(_ => _.GetAllActive(transactionRequest)).ReturnsAsync(transactions);
 
             var response = await _getAllActiveTransactionsUseCase.ExecuteAsync(transactionRequest).ConfigureAwait(false);
 
