@@ -58,14 +58,6 @@ namespace FinancialTransactionsApi.V1.Gateways
             var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
             return result.ToDomain();
-
-            //return new Paginated<Transaction>()
-            //{
-            //    Results = result.Select(x => x.ToDomain()),
-            //    CurrentPage = query.Page,
-            //    PageSize = query.PageSize,
-            //    TotalResultCount = count
-            //};
         }
 
         public Task AddAsync(Transaction transaction) => throw new NotImplementedException();
