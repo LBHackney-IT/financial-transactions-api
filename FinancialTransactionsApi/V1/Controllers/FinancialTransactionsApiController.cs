@@ -170,9 +170,9 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
-            PaginatedResponse<TransactionResponse> response = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
+            ResponseWrapper<IEnumerable<TransactionResponse>> response = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
 
-            return (response.Results == null || !response.Results.Any()) ? NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Transaction by provided data cannot be found!")) : Ok(response);
+            return (response.IsEmpty) ? NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Transaction by provided data cannot be found!")) : Ok(response.Value);
         }
 
 

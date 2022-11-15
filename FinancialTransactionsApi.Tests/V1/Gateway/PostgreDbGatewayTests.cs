@@ -167,7 +167,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
 
             var result = await _postgreDbGateway.GetPagedSuspenseAccountTransactionsAsync(request).ConfigureAwait(false);
 
-            result.Results.Should().NotBeEmpty();
+            result.Should().NotBeEmpty();
         }
 
         [Fact]
@@ -190,7 +190,7 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
 
             var result = await _postgreDbGateway.GetPagedSuspenseAccountTransactionsAsync(request).ConfigureAwait(false);
 
-            result.Results.Should().BeEmpty();
+            result.Should().BeEmpty();
 
         }
 

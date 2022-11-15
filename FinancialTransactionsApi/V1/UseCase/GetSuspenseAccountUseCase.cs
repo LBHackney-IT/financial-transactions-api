@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
+using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 
@@ -18,11 +20,11 @@ namespace FinancialTransactionsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task<PaginatedResponse<TransactionResponse>> ExecuteAsync(SuspenseAccountQuery query)
+        public async Task<ResponseWrapper<IEnumerable<TransactionResponse>>> ExecuteAsync(SuspenseAccountQuery query)
         {
-            Paginated<Transaction> result = await _gateway.GetPagedSuspenseAccountTransactionsAsync(query).ConfigureAwait(false);
+            var result = await _gateway.GetPagedSuspenseAccountTransactionsAsync(query).ConfigureAwait(false);
 
-            return result.ToResponse();
+            return result?.ToResponseWrapper();
 
         }
     }

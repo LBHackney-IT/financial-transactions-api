@@ -241,7 +241,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         {
             var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
-            var obj1 = new PaginatedResponse<TransactionResponse>() { Results = transactionsList };
+            var obj1 = new ResponseWrapper<IEnumerable<TransactionResponse>>(transactionsList);
 
             _suspenseAccountUseCase.Setup(x => x.ExecuteAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(obj1);
 
@@ -255,11 +255,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeOfType<PaginatedResponse<TransactionResponse>>();
+            var responses = okResult?.Value as IEnumerable<TransactionResponse>;
 
-            var responses = okResult?.Value as PaginatedResponse<TransactionResponse>;
-
-            responses?.Results.Should().HaveCount(5);
+            responses.Should().HaveCount(5);
 
         }
 

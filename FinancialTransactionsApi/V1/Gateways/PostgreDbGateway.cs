@@ -72,30 +72,13 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public Task UpdateSuspenseAccountAsync(Transaction transaction) => throw new NotImplementedException();
 
-        public async Task<Paginated<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
+        public async Task<IEnumerable<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
         {
             var spec = new GetTransactionBySuspenseAccountSpecification(query.SearchText);
 
-            var count = _databaseContext.Transactions.Where(spec.Criteria).Count();
+            var response = _databaseContext.Transactions.Where(spec.Criteria);
 
-            var lastPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(count) / query.PageSize));
-
-            var page = query.Page <= lastPage ? query.Page : lastPage;
-
-            var itemStart = query.Page == 1 ? 0 : page * query.PageSize;
-
-            var response = _databaseContext.Transactions.Where(spec.Criteria).Skip(itemStart).Take(query.PageSize);
-
-            var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
-
-            return new Paginated<Transaction>()
-            {
-                Results = result.Select(x => x.ToDomain()),
-                CurrentPage = page,
-                PageSize = query.PageSize,
-                TotalResultCount = count
-            };
-
+            return await Task.FromResult(response.AsEnumerable().ToDomain()).ConfigureAwait(false);
         }
 
         public async Task<Paginated<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)
