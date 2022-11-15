@@ -59,9 +59,9 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
             var obj = new Paginated<Transaction>()
             {
                 Results = transactions,
-                CurrentPage= 1,
+                CurrentPage = 1,
                 PageSize = 11,
-                TotalResultCount= 0,
+                TotalResultCount = 0,
             };
 
             var transactionRequest = new GetActiveTransactionsRequest() { PageNumber = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
