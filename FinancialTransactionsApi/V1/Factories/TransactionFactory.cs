@@ -95,7 +95,7 @@ namespace FinancialTransactionsApi.V1.Factories
             FinancialYear = transactionDbEntity.FinancialYear,
             HousingBenefitAmount = transactionDbEntity.HousingBenefitAmount,
             PaidAmount = transactionDbEntity.PaidAmount,
-            PaymentReference= transactionDbEntity.PaymentReference,
+            PaymentReference = transactionDbEntity.PaymentReference,
             BankAccountNumber = transactionDbEntity.BankAccountNumber,
             SuspenseResolutionInfo = transactionDbEntity.SuspenseResolutionInfo,
             PeriodNo = transactionDbEntity.PeriodNo,

@@ -1,7 +1,7 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using FinancialTransactionsApi.V1.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinancialTransactionsApi.V1.Domain
 {
@@ -9,6 +9,7 @@ namespace FinancialTransactionsApi.V1.Domain
     {
         [RequiredDateTime]
         public DateTime TransactionDate { get; set; }
+        [Precision(18, 2)]
         [GreatAndEqualThan("0.0")]
         public decimal TransactionAmount { get; set; }
         [AllowNull]
