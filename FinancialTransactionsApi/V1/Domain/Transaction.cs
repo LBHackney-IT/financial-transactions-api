@@ -17,8 +17,6 @@ namespace FinancialTransactionsApi.V1.Domain
         public string SortCode { get; set; }
         [AllowNull]
         public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
-        [Required]
-        public Sender Sender { get; set; }
         public string LastUpdatedBy { get; set; }
         public DateTime LastUpdatedAt { get; set; }
     }

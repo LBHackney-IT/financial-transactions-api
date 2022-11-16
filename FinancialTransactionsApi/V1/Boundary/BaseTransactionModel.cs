@@ -59,8 +59,6 @@ namespace FinancialTransactionsApi.V1.Boundary
 
         public string Address { get; set; }
 
-        public Sender Sender { get; set; }
-
         public string Fund { get; set; }
 
         public short FinancialYear { get; set; }

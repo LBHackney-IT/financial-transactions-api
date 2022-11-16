@@ -30,7 +30,6 @@ namespace FinancialTransactionsApi.V1.Factories
             TransactionType = transaction.TransactionType,
             TransactionSource = transaction.TransactionSource,
             Address = transaction.Address,
-            Sender = transaction.Sender,
             Fund = transaction.Fund,
             SortCode = transaction.SortCode,
             CreatedAt = transaction.CreatedAt,
@@ -66,7 +65,6 @@ namespace FinancialTransactionsApi.V1.Factories
             TransactionType = EnumHelper.GetValueFromDescription<TransactionType>(transactionRequest.TransactionType),
             TransactionSource = transactionRequest.TransactionSource,
             Address = transactionRequest.Address,
-            Sender = transactionRequest.Sender,
             Fund = transactionRequest.Fund,
             SortCode = transactionRequest.SortCode,
             SuspenseResolutionInfo = new SuspenseResolutionInfo
@@ -105,7 +103,6 @@ namespace FinancialTransactionsApi.V1.Factories
             TransactionType = transactionDbEntity.TransactionType,
             TransactionSource = transactionDbEntity.TransactionSource,
             Address = transactionDbEntity.Address,
-            Sender = transactionDbEntity.Sender,
             Fund = transactionDbEntity.Fund,
             SortCode = transactionDbEntity.SortCode,
             CreatedAt = transactionDbEntity.CreatedAt,
@@ -130,7 +127,6 @@ namespace FinancialTransactionsApi.V1.Factories
             TransactionType = transactionRequest.TransactionType,
             TransactionSource = transactionRequest.TransactionSource,
             Address = transactionRequest.Address,
-            Sender = transactionRequest.Sender,
             Fund = transactionRequest.Fund,
             SortCode = transactionRequest.SortCode
         };
@@ -151,7 +147,6 @@ namespace FinancialTransactionsApi.V1.Factories
             TransactionType = transactionRequest.TransactionType,
             TransactionSource = transactionRequest.TransactionSource,
             Address = transactionRequest.Address,
-            Sender = transactionRequest.Sender,
             Fund = transactionRequest.Fund,
             SortCode = transactionRequest.SortCode
         };

@@ -150,7 +150,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Stories
                 PaidAmount = transaction.PaidAmount,
                 PeriodNo = transaction.PeriodNo,
                 SortCode = transaction.SortCode,
-                Sender = transaction.Sender,
                 TargetId = transaction.TargetId,
                 TransactionAmount = transaction.TransactionAmount,
                 TransactionSource = transaction.TransactionSource,

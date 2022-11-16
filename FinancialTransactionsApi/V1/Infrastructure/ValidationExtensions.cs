@@ -18,17 +18,6 @@ namespace FinancialTransactionsApi.V1.Infrastructure
                 return false;
             }
 
-            if (transaction.Sender == null)
-            {
-                return false;
-            }
-
-            if (transaction.Sender.Id == Guid.Empty
-                || string.IsNullOrWhiteSpace(transaction.Sender.FullName))
-            {
-                return false;
-            }
-
             if (transaction.Fund == null)
             {
                 return false;
@@ -50,17 +39,6 @@ namespace FinancialTransactionsApi.V1.Infrastructure
             }
 
             if (transaction.PaymentReference == null)
-            {
-                return false;
-            }
-
-            if (transaction.Sender == null)
-            {
-                return false;
-            }
-
-            if (transaction.Sender.Id == Guid.Empty
-                || string.IsNullOrWhiteSpace(transaction.Sender.FullName))
             {
                 return false;
             }

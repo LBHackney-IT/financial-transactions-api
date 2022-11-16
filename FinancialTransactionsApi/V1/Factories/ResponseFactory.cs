@@ -62,7 +62,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 TransactionSource = domain.TransactionSource,
                 IsSuspense = domain.IsSuspense,
                 Address = domain.Address,
-                Sender = domain.Sender,
                 Fund = domain.Fund,
                 CreatedAt = domain.CreatedAt,
                 CreatedBy = domain.CreatedBy,
