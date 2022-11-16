@@ -62,7 +62,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task<PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
         {
-            var spec = new GetTransactionBySuspenseAccountSpecification(query.SearchText);
+            var spec = new GetTransactionBySuspenseAccountSpecification();
 
             var count = _databaseContext.Transactions.Where(spec.Criteria).Count();
 
@@ -77,7 +77,6 @@ namespace FinancialTransactionsApi.V1.Gateways
             var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
             return new PagedResult<Transaction>(result.Select(x => x.ToDomain()), new PaginationDetails(string.Empty));
-
         }
 
         public async Task<Paginated<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)

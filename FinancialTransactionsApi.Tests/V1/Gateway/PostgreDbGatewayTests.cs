@@ -148,13 +148,30 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
             Assert.Throws<NotImplementedException>(delegate { _postgreDbGateway.UpdateSuspenseAccountAsync(It.IsAny<Transaction>()); });
         }
 
+        #region Get Suspense Transactions
         [Fact]
-        public async Task GetPagedSuspenseAccount_Gateway_Transaction_NotEmpty()
+        public async Task GetPagedSuspenseAccountTransactionsGatewayMethodReturnsOnlyTheSuspenseTransactions()
         {
 
-            var data = _fixture.CreateMany<TransactionEntity>(5).AsQueryable();
+            var expectedData = _fixture
+                .Build<TransactionEntity>()
+                .With(t => t.TargetType, TargetType.Tenure.ToString())
+                .With(t => t.TransactionDate, DateTime.UtcNow)
+                .With(t => t.IsSuspense, true)
+                .CreateMany(5)
+                .AsQueryable();
 
-            data.ToList().ForEach(item => { item.TargetType = TargetType.Tenure.ToString(); item.TransactionDate = DateTime.UtcNow; });
+
+            var controlData = _fixture
+                .Build<TransactionEntity>()
+                .With(t => t.TargetType, TargetType.Tenure.ToString())
+                .With(t => t.TransactionDate, DateTime.UtcNow)
+                .With(t => t.IsSuspense, false)
+                .CreateMany(5)
+                .AsQueryable();
+
+            var data = expectedData.Concat(controlData);
+
 
             _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.Provider).Returns(data.Provider);
             _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.Expression).Returns(data.Expression);
@@ -163,22 +180,21 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
 
             _mockContext.Setup(c => c.Transactions).Returns(_mockSet.Object);
 
-            var request = new SuspenseAccountQuery() { Page = 1, PageSize = 11, SearchText = true };
+            var request = new SuspenseAccountQuery() { Page = 1, PageSize = 11 };
 
             var result = await _postgreDbGateway.GetPagedSuspenseAccountTransactionsAsync(request).ConfigureAwait(false);
 
-            result.Results.Should().NotBeEmpty();
+            result.Results.Should().HaveSameCount(expectedData);
+            result.Results.Should().OnlyContain(t => t.IsSuspense == true);
         }
 
         [Fact]
 
-        public async Task GetPagedSuspenseAccount_Gateway_Transaction_Empty()
+        public async Task GetPagedSuspenseAccountTransactionsGatewayMethodReturnsNoTransactionsWhenNoArePresent()
         {
 
             var data = _fixture.CreateMany<TransactionEntity>(0).AsQueryable();
 
-            data.ToList().ForEach(item => { item.TargetType = TargetType.Tenure.ToString(); item.TransactionDate = DateTime.UtcNow.AddDays(3); });
-
             _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.Provider).Returns(data.Provider);
             _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.Expression).Returns(data.Expression);
             _mockSet.As<IQueryable<TransactionEntity>>().Setup(m => m.ElementType).Returns(data.ElementType);
@@ -186,13 +202,13 @@ namespace FinancialTransactionsApi.Tests.V1.Gateway
 
             _mockContext.Setup(c => c.Transactions).Returns(_mockSet.Object);
 
-            var request = new SuspenseAccountQuery() { Page = 1, PageSize = 11, SearchText = true };
+            var request = new SuspenseAccountQuery() { Page = 1, PageSize = 11 };
 
             var result = await _postgreDbGateway.GetPagedSuspenseAccountTransactionsAsync(request).ConfigureAwait(false);
 
             result.Results.Should().BeEmpty();
-
         }
+        #endregion
 
         [Fact]
         public async Task GetAllActive_Gateway_ReturnCollectionOfTransaction_NotEmpty()
