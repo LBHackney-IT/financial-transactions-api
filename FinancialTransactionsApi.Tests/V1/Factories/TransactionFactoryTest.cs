@@ -79,7 +79,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 TenancyAgreementRef = "061646/01",
                 PropertyRef = "00039884",
                 PostDate = DateTime.Now,
-                RealValue = 2.45M,
                 TransactionDate = DateTime.UtcNow,
                 Address = "Address",
                 BalanceAmount = 145.23M,
@@ -117,7 +116,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.TenancyAgreementRef);
                 options.Excluding(info => info.PropertyRef);
                 options.Excluding(info => info.PostDate);
-                options.Excluding(info => info.RealValue);
 
                 return options;
             });
@@ -330,7 +328,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.TenancyAgreementRef);
                 options.Excluding(info => info.PropertyRef);
                 options.Excluding(info => info.PostDate);
-                options.Excluding(info => info.RealValue);
                 return options;
             });
         }
@@ -359,7 +356,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.TenancyAgreementRef);
                 options.Excluding(info => info.PropertyRef);
                 options.Excluding(info => info.PostDate);
-                options.Excluding(info => info.RealValue);
                 return options;
             });
         }

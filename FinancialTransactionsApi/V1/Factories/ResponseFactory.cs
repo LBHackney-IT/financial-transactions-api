@@ -44,7 +44,6 @@ namespace FinancialTransactionsApi.V1.Factories
                 TenancyAgreementRef = domain.TenancyAgreementRef,
                 PropertyRef = domain.PropertyRef,
                 PostDate = domain.PostDate,
-                RealValue = domain.RealValue,
                 TargetType = domain.TargetType,
                 BalanceAmount = domain.BalanceAmount,
                 ChargedAmount = domain.ChargedAmount,

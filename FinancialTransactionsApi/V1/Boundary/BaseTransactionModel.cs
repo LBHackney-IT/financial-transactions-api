@@ -20,8 +20,6 @@ namespace FinancialTransactionsApi.V1.Boundary
 
         public DateTime PostDate { get; set; }
 
-        public decimal RealValue { get; set; }
-
         public TargetType TargetType { get; set; }
 
         [Range(1, 53)]
