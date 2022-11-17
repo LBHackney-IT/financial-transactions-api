@@ -79,7 +79,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 TenancyAgreementRef = "061646/01",
                 PropertyRef = "00039884",
                 PostDate = DateTime.Now,
-                RealValue = 2.45M,
                 TransactionDate = DateTime.UtcNow,
                 Address = "Address",
                 BalanceAmount = 145.23M,
@@ -95,11 +94,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                },
                 SuspenseResolutionInfo = new SuspenseResolutionInfo()
                 {
                     ResolutionDate = new DateTime(2021, 8, 1),
@@ -122,7 +116,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.TenancyAgreementRef);
                 options.Excluding(info => info.PropertyRef);
                 options.Excluding(info => info.PostDate);
-                options.Excluding(info => info.RealValue);
 
                 return options;
             });
@@ -156,12 +149,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                }
+                TransactionType = TransactionType.ArrangementInterest
             };
 
             var domain = request.ToDomain();
@@ -202,11 +190,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                },
                 SuspenseResolutionInfo = new SuspenseResolutionInfo()
                 {
                     ResolutionDate = new DateTime(2021, 8, 1),
@@ -255,12 +238,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                     PeriodNo = 2,
                     TransactionAmount = 126.83M,
                     TransactionSource = "DD",
-                    TransactionType = TransactionType.ArrangementInterest,
-                    Sender = new Sender()
-                    {
-                        Id = Guid.NewGuid(),
-                        FullName = "Kain Hyawrd"
-                    }
+                    TransactionType = TransactionType.ArrangementInterest
                 },
                 new AddTransactionRequest()
                 {
@@ -277,12 +255,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                     PeriodNo = 2,
                     TransactionAmount = 126.83M,
                     TransactionSource = "DD",
-                    TransactionType = TransactionType.ArrangementInterest,
-                    Sender = new Sender()
-                    {
-                        Id = Guid.NewGuid(),
-                        FullName = "Andrew Hyawrd"
-                    }
+                    TransactionType = TransactionType.ArrangementInterest
                 },
             };
 
@@ -336,6 +309,7 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
             {
                 options.Excluding(info => info.PaymentReference);
                 options.Excluding(info => info.IsSuspense);
+                options.Excluding(info => info.Sender);
                 return options;
             });
         }
@@ -354,7 +328,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.TenancyAgreementRef);
                 options.Excluding(info => info.PropertyRef);
                 options.Excluding(info => info.PostDate);
-                options.Excluding(info => info.RealValue);
                 return options;
             });
         }
@@ -383,7 +356,6 @@ namespace FinancialTransactionsApi.Tests.V1.Factories
                 options.Excluding(info => info.TenancyAgreementRef);
                 options.Excluding(info => info.PropertyRef);
                 options.Excluding(info => info.PostDate);
-                options.Excluding(info => info.RealValue);
                 return options;
             });
         }

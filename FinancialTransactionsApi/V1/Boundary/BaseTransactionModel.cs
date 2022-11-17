@@ -20,8 +20,6 @@ namespace FinancialTransactionsApi.V1.Boundary
 
         public DateTime PostDate { get; set; }
 
-        public decimal RealValue { get; set; }
-
         public TargetType TargetType { get; set; }
 
         [Range(1, 53)]
@@ -58,8 +56,6 @@ namespace FinancialTransactionsApi.V1.Boundary
         public decimal HousingBenefitAmount { get; set; }
 
         public string Address { get; set; }
-
-        public Sender Sender { get; set; }
 
         public string Fund { get; set; }
 

@@ -48,31 +48,6 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
         }
 
         [Fact]
-        public void ValidationAddTransactionRequest_Sender_ShouldBeNull()
-        {
-            var transactionRequest = _fixture.Create<AddTransactionRequest>();
-
-            transactionRequest.Sender = null;
-
-            var result = transactionRequest.HaveAllFieldsInAddTransactionModel();
-
-            result.Should().BeFalse();
-        }
-
-        [Fact]
-        public void ValidationAddTransactionRequest_SenderIdAndFullName_ShouldBeNull()
-        {
-            var transactionRequest = _fixture.Create<AddTransactionRequest>();
-
-            transactionRequest.Sender.Id = It.IsAny<Guid>();
-            transactionRequest.Sender.FullName = It.IsAny<string>();
-
-            var result = transactionRequest.HaveAllFieldsInAddTransactionModel();
-
-            result.Should().BeFalse();
-        }
-
-        [Fact]
         public void ValidationAddTransactionRequest_Fund_ShouldBeNull()
         {
             var transactionRequest = _fixture.Create<AddTransactionRequest>();
@@ -137,8 +112,6 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
         {
             var transactionRequest = _fixture.Create<UpdateTransactionRequest>();
 
-            transactionRequest.Sender = null;
-
             var result = transactionRequest.HaveAllFieldsInUpdateTransactionModel();
 
             result.Should().BeFalse();
@@ -148,9 +121,6 @@ namespace FinancialTransactionsApi.Tests.V1.Infrastructure
         public void ValidationUpdateTransactionRequest_SenderIdAndFullName_ShouldBeEmpty()
         {
             var transactionRequest = _fixture.Create<UpdateTransactionRequest>();
-
-            transactionRequest.Sender.Id = It.IsAny<Guid>();
-            transactionRequest.Sender.FullName = It.IsAny<string>();
 
             var result = transactionRequest.HaveAllFieldsInUpdateTransactionModel();
 
