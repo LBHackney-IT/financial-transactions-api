@@ -45,6 +45,27 @@ services:
       - postgres-test-database
     volumes:
       - sonarqube:/app/.sonarqube
+
+  financial-transactions-local-tests:
+    image: financial-transactions-local-test-run
+    build:
+      context: .
+      dockerfile: FinancialTransactionsApi.Tests/Dockerfile.local
+      args:
+      - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
+    environment:
+      - CONNECTION_STRING=Host=postgres-test-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
+      - DynamoDb_LocalMode=true
+      - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
+      - AWS_REGION=eu-west-2
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
+      - Localstack_SnsServiceUrl=http://localstack:4566
+    links:
+      - dynamodb-database
+      - localstack
+      - postgres-test-database
+
   postgres-test-database:
     image: postgres:latest
     build:
@@ -54,7 +75,7 @@ services:
       - "6000:5432"
     env_file:
       - database.env
-      
+
   dynamodb-database:
     image: amazon/dynamodb-local
     ports:

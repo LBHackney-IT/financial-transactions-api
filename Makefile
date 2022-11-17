@@ -14,9 +14,15 @@ serve:
 shell:
 	docker-compose run financial-transactions-api bash
 
+.PHONY: clean
+clean:
+	-docker rm $$(docker ps -a --filter "status=exited" | grep  financial-transactions-local-test-run | grep -oE "^[[:xdigit:]]+")
+	docker rmi $$(docker images --filter "dangling=true" -q)
+
 .PHONY: test
 test:
-	docker-compose up dynamodb-database & docker-compose build financial-transactions-api-test && docker-compose up financial-transactions-api-test
+	-docker-compose run financial-transactions-local-tests
+	-make clean
 
 .PHONY: lint
 lint:
