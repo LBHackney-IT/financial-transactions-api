@@ -9,20 +9,6 @@ namespace FinancialTransactionsApi.V1.Factories
 {
     public static class ResponseFactory
     {
-        public static PaginatedResponse<TransactionResponse> ToResponse(this Paginated<Transaction> ptrDomain)
-        {
-            var metadata = new MetadataModel
-            {
-                Pagination = ToPaginationDataResponse(ptrDomain)
-            };
-
-            return new PaginatedResponse<TransactionResponse>
-            {
-                Metadata = metadata,
-                Results = ptrDomain.Results.ToResponse()
-            };
-        }
-
         private static Pagination ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
         => new Pagination
         {
@@ -70,16 +56,30 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
-        public static ResponseWrapper<TransactionResponse> ToResponseWrapper(this Transaction domainList)
-        {
-            return new ResponseWrapper<TransactionResponse>(domainList.ToResponse());
-        }
-
         public static List<TransactionResponse> ToResponse(this IEnumerable<Transaction> domainList)
         {
             return domainList == null ?
                 new List<TransactionResponse>() :
                 domainList.Select(domain => domain.ToResponse()).ToList();
+        }
+
+        public static PaginatedResponse<TransactionResponse> ToResponse(this Paginated<Transaction> ptrDomain)
+        {
+            var metadata = new MetadataModel
+            {
+                Pagination = ToPaginationDataResponse(ptrDomain)
+            };
+
+            return new PaginatedResponse<TransactionResponse>
+            {
+                Metadata = metadata,
+                Results = ptrDomain.Results.ToResponse()
+            };
+        }
+
+        public static ResponseWrapper<TransactionResponse> ToResponseWrapper(this Transaction domainList)
+        {
+            return new ResponseWrapper<TransactionResponse>(domainList.ToResponse());
         }
 
         public static ResponseWrapper<IEnumerable<TransactionResponse>> ToResponseWrapper(this IEnumerable<Transaction> domainList)

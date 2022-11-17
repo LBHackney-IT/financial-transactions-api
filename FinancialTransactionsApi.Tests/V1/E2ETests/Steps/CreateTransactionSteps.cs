@@ -1,4 +1,3 @@
-using FinancialTransactionsApi.Tests.V1.E2ETests.Fixture;
 using FinancialTransactionsApi.Tests.V1.E2ETests.Steps.Base;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
@@ -115,45 +114,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Steps
             var errorProperties = await GetResponseErrorProperties().ConfigureAwait(false);
 
             errorProperties.Should().NotContain(fieldName);
-        }
-
-        public async Task ThenTheTransactionDetailsAreSavedAndReturned(TransactionDetailsFixture fixture)
-        {
-            var expected = fixture.TransactionRequestObject;
-            var apiEntity = await ExtractResultFromHttpResponse(_lastResponse).ConfigureAwait(false);
-
-            var resultAsDb = ResponseToDatabase(apiEntity);
-            fixture.Transactions.Add(resultAsDb);
-            apiEntity.Should().NotBeNull();
-
-            expected.Should().BeEquivalentTo(apiEntity, options => options
-                .Excluding(a => a.Id)
-                .Excluding(a => a.SuspenseResolutionInfo)
-                .Excluding(a => a.FinancialYear)
-                .Excluding(a => a.FinancialMonth)
-                .Excluding(a => a.CreatedAt)
-                .Excluding(a => a.CreatedBy)
-                .Excluding(a => a.LastUpdatedAt)
-                .Excluding(a => a.LastUpdatedBy)
-                .Excluding(x => x.TransactionType));
-
-            apiEntity.SuspenseResolutionInfo.Should().BeNull();
-            apiEntity.FinancialMonth.Should().Be(8);
-            apiEntity.FinancialYear.Should().Be(2021);
-        }
-
-        public async Task ThenTheTransactionSuspensesAccountDetailsAreUpdatedAndReturned(TransactionDetailsFixture fixture)
-        {
-            var expected = fixture.Transaction;
-            var responseContent = await _lastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var updateApiEntity = JsonSerializer.Deserialize<TransactionResponse>(responseContent, _jsonOptions);
-
-            _lastResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            updateApiEntity.Should().NotBeNull();
-            updateApiEntity.TargetId.Should().Equals(Guid.Empty);
-            updateApiEntity.SuspenseResolutionInfo.IsConfirmed.Should().BeTrue();
-            updateApiEntity?.LastUpdatedBy.Should().Be("testing");
         }
 
         public async Task ThenTheResponseIncludesValidationErrors()

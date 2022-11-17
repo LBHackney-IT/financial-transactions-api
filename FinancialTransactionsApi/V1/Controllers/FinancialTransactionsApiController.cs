@@ -1,12 +1,10 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
-using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
-using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -113,7 +111,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <response code="200">Success. Transaction models were received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(PagedResult<TransactionResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResponse<TransactionResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
@@ -156,7 +154,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <response code="200">Success. Transaction models were received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(PagedResult<TransactionResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResponse<TransactionResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [Route("suspense-account")]
@@ -168,9 +166,9 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
-            ResponseWrapper<IEnumerable<TransactionResponse>> transactions = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
+            ResponseWrapper<IEnumerable<TransactionResponse>> response = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
 
-            return Ok(transactions);
+            return (response.IsEmpty) ? NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Transaction by provided data cannot be found!")) : Ok(response.Value);
         }
 
 
@@ -310,9 +308,6 @@ namespace FinancialTransactionsApi.V1.Controllers
             }
 
             var lastUpdatedBy = GetUserName(token);
-
-            var domainTransaction = existTransaction.Value.ResponseToDomain(transaction, lastUpdatedBy);
-
 
             var transactionResponse = await _updateUseCase.ExecuteAsync(null).ConfigureAwait(false);
 

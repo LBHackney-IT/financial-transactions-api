@@ -1,7 +1,3 @@
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.SimpleNotificationService;
-using Amazon.SimpleNotificationService.Model;
 using FinancialTransactionsApi.V1.Domain;
 using System;
 using System.Collections.Generic;
@@ -17,12 +13,11 @@ namespace FinancialTransactionsApi.Tests
 
         public HttpClient Client { get; private set; }
         public readonly AwsMockWebApplicationFactory<TStartup> Factory;
-        public IDynamoDBContext DynamoDbContext => Factory?.DynamoDbContext;
         public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-            new TableDef { Name = "Transactions", KeyName = "target_id", RangeName="id", KeyType = KeyType.HASH,RangeType = KeyType.RANGE,  KeyScalarType= ScalarAttributeType.S}
+            new TableDef { Name = "Transactions", KeyName = "target_id", RangeName="id" }
         };
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
@@ -35,10 +30,6 @@ namespace FinancialTransactionsApi.Tests
 
         public AwsIntegrationTests()
         {
-            EnsureEnvVarConfigured("DynamoDb_LocalMode", "true");
-            EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
-            EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "o4fejrd");
-            EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "ez1lwb");
             EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
             EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:9911");
 
@@ -84,9 +75,6 @@ namespace FinancialTransactionsApi.Tests
         public string Name { get; set; }
         public string KeyName { get; set; }
         public string RangeName { get; set; }
-        public KeyType KeyType { get; set; }
-        public KeyType RangeType { get; set; }
-        public ScalarAttributeType KeyScalarType { get; set; }
     }
 
     [CollectionDefinition("Aws collection", DisableParallelization = true)]

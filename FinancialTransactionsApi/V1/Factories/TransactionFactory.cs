@@ -49,36 +49,6 @@ namespace FinancialTransactionsApi.V1.Factories
             ChargedAmount = transactionDbEntity.ChargedAmount,
         };
 
-        public static Transaction ResponseToDomain(this TransactionResponse transactionRequest, SuspenseConfirmationRequest transaction, string lastUpdatedBy) => transactionRequest == null ? null : new Transaction
-        {
-            Id = transactionRequest.Id,
-            TargetId = transaction.TargetId,
-            TargetType = transactionRequest.TargetType,
-            BalanceAmount = transactionRequest.BalanceAmount,
-            ChargedAmount = transactionRequest.ChargedAmount,
-            HousingBenefitAmount = transactionRequest.HousingBenefitAmount,
-            PaidAmount = transactionRequest.PaidAmount,
-            BankAccountNumber = transactionRequest.BankAccountNumber,
-            PeriodNo = transactionRequest.PeriodNo,
-            TransactionAmount = transactionRequest.TransactionAmount,
-            TransactionDate = transactionRequest.TransactionDate,
-            TransactionType = EnumHelper.GetValueFromDescription<TransactionType>(transactionRequest.TransactionType),
-            TransactionSource = transactionRequest.TransactionSource,
-            Address = transactionRequest.Address,
-            Fund = transactionRequest.Fund,
-            SortCode = transactionRequest.SortCode,
-            SuspenseResolutionInfo = new SuspenseResolutionInfo
-            {
-                IsConfirmed = true,
-                IsApproved = true,
-                Note = transaction.Note,
-                ResolutionDate = DateTime.UtcNow
-            },
-            CreatedAt = transactionRequest.CreatedAt,
-            CreatedBy = transactionRequest.CreatedBy,
-            LastUpdatedBy = lastUpdatedBy
-        };
-
         public static List<TransactionDbEntity> ToDatabaseList(this List<Transaction> transactions)
         {
             return transactions.Select(item => item.ToDatabase()).ToList();

@@ -1,14 +1,12 @@
-using System.Threading.Tasks;
-using FinancialTransactionsApi.V1.Infrastructure;
-using FinancialTransactionsApi.V1.Domain;
 using System;
-using FinancialTransactionsApi.V1.Factories;
-using System.Collections.Generic;
-using FinancialTransactionsApi.V1.Boundary.Request;
-using Hackney.Core.DynamoDb;
-using FinancialTransactionsApi.V1.Boundary.Response;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using FinancialTransactionsApi.V1.Domain;
+using FinancialTransactionsApi.V1.Infrastructure;
+using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Infrastructure.Specs;
 using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
@@ -40,29 +38,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public async Task<IEnumerable<Transaction>> GetPagedTransactionsAsync(TransactionQuery query)
         {
-            var spec = new GetTransactionByDateSpecification(query.StartDate ??= new DateTime(), query.EndDate ??= DateTime.Now);
-
-            var response = _databaseContext.Transactions.Where(spec.Criteria);
-
-            if (query.TransactionType.HasValue)
-            {
-                response = response.Where(x => x.TransactionType == query.TransactionType.ToString());
-            }
-
-            return await Task.FromResult(response.AsEnumerable().ToDomain()).ConfigureAwait(false);
-        }
-
-        public Task AddAsync(Transaction transaction) => throw new NotImplementedException();
-
-        public Task<bool> AddBatchAsync(List<Transaction> transactions) => throw new NotImplementedException();
-
-        public Task UpdateSuspenseAccountAsync(Transaction transaction) => throw new NotImplementedException();
-
-        public Task<IEnumerable<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate) => throw new NotImplementedException();
-
-        public async Task<PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
-        {
-            var spec = new GetTransactionBySuspenseAccountSpecification(query.SearchText);
+            var spec = new GetTransactionByDateSpecification(query.StartDate ?? new DateTime(), query.EndDate ?? DateTime.Now);
 
             var count = _databaseContext.Transactions.Where(spec.Criteria).Count();
 
@@ -74,13 +50,32 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var response = _databaseContext.Transactions.Where(spec.Criteria).Skip(itemStart).Take(query.PageSize);
 
+            if (query.TransactionType.HasValue)
+            {
+                response = response.Where(x => x.TransactionType == query.TransactionType.ToString());
+            }
+
             var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
-            return new PagedResult<Transaction>(result.Select(x => x.ToDomain()), new PaginationDetails(string.Empty));
-
+            return result.ToDomain();
         }
 
-        public async Task<Paginated<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)
+        public Task AddAsync(Transaction transaction) => throw new NotImplementedException();
+
+        public Task<bool> AddBatchAsync(List<Transaction> transactions) => throw new NotImplementedException();
+
+        public Task UpdateSuspenseAccountAsync(Transaction transaction) => throw new NotImplementedException();
+
+        public async Task<IEnumerable<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
+        {
+            var spec = new GetTransactionBySuspenseAccountSpecification(query.SearchText);
+
+            var response = _databaseContext.Transactions.Where(spec.Criteria);
+
+            return await Task.FromResult(response.AsEnumerable().ToDomain()).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)
         {
             getActiveTransactionsRequest.PeriodEndDate = getActiveTransactionsRequest.PeriodEndDate ?? DateTime.UtcNow;
 
@@ -98,15 +93,9 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
-            return new Paginated<Transaction>()
-            {
-                Results = response.Select(x => x.ToDomain()),
-                CurrentPage = page,
-                PageSize = getActiveTransactionsRequest.PageSize,
-                TotalResultCount = count
-            };
+            return result.ToDomain();
         }
 
-        public Task<PagedResult<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query) => throw new NotImplementedException();
+        public Task<IEnumerable<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query) => throw new NotImplementedException();
     }
 }

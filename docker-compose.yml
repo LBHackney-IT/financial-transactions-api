@@ -12,16 +12,10 @@ services:
       - 3000:3000
     environment:
       - Sns_LocalMode=true
-      - DynamoDb_LocalMode=true
-      - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
       - AWS_REGION=eu-west-2
       - AWS_ACCESS_KEY_ID=local
       - AWS_SECRET_ACCESS_KEY=local
       - REQUIRED_GOOGL_GROUPS=e2e-testing-development
-    links:
-      - dynamodb-database
-    depends_on:
-     - pdf-generator
 
   financial-transactions-api-test:
     image: financial-transactions-api-test
@@ -33,18 +27,14 @@ services:
       - SONAR_TOKEN=${SONAR_TOKEN}
     environment:
       - CONNECTION_STRING=Host=postgres-test-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
-      - DynamoDb_LocalMode=true
-      - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
       - AWS_REGION=eu-west-2
       - AWS_ACCESS_KEY_ID=local
       - AWS_SECRET_ACCESS_KEY=local
       - Localstack_SnsServiceUrl=http://localstack:4566
     links:
-      - dynamodb-database
       - localstack
       - postgres-test-database
-    volumes:
-      - sonarqube:/app/.sonarqube
+ 
   postgres-test-database:
     image: postgres:latest
     build:
@@ -55,11 +45,6 @@ services:
     env_file:
       - database.env
       
-  dynamodb-database:
-    image: amazon/dynamodb-local
-    ports:
-      - 8000:8000
-
   localstack:
     image: localstack/localstack
     hostname: awslocal    
@@ -73,12 +58,3 @@ services:
     volumes:
       - "./.localstack:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-  pdf-generator:
-    image: pdf-api-generator
-    container_name: pdf-api-generator
-    build:
-      context: .
-      dockerfile: data/pdf/Dockerfile
-
-volumes:
-  sonarqube:

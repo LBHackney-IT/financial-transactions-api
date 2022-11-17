@@ -1,19 +1,16 @@
+using Moq;
+using System;
+using Xunit;
 using AutoFixture;
+using FluentAssertions;
+using System.Linq;
+using System.Threading.Tasks;
+using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.UseCase;
-using Hackney.Core.DynamoDb;
-using Moq;
-using System.Threading.Tasks;
-using System;
-using Xunit;
 using FinancialTransactionsApi.V1.Factories;
-using FluentAssertions;
-using System.Linq;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
@@ -37,12 +34,15 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             var obj = new Paginated<Transaction>()
             {
-                Results = transactions
+                Results = transactions,
+                CurrentPage = 1,
+                PageSize = 11,
+                TotalResultCount = transactions.Count(),
             };
 
             var transactionRequest = new GetActiveTransactionsRequest() { PageNumber = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
 
-            _mockGateway.Setup(x => x.GetAllActive(transactionRequest)).ReturnsAsync(obj);
+            _mockGateway.Setup(x => x.GetAllActive(transactionRequest)).ReturnsAsync(transactions);
 
             var response = await _getAllActiveTransactionsUseCase.ExecuteAsync(transactionRequest).ConfigureAwait(false);
 
@@ -58,12 +58,15 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             var obj = new Paginated<Transaction>()
             {
-                Results = transactions
+                Results = transactions,
+                CurrentPage = 1,
+                PageSize = 11,
+                TotalResultCount = 0,
             };
 
             var transactionRequest = new GetActiveTransactionsRequest() { PageNumber = 1, PageSize = 11, PeriodStartDate = DateTime.UtcNow, PeriodEndDate = DateTime.UtcNow };
 
-            _mockGateway.Setup(_ => _.GetAllActive(transactionRequest)).ReturnsAsync(obj);
+            _mockGateway.Setup(_ => _.GetAllActive(transactionRequest)).ReturnsAsync(transactions);
 
             var response = await _getAllActiveTransactionsUseCase.ExecuteAsync(transactionRequest).ConfigureAwait(false);
 

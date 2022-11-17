@@ -4,16 +4,12 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Helpers.GeneralModels;
-using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
-using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -243,11 +239,13 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetSuspenseAccount_UseCaseReturnList_Returns200()
         {
+            var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
-            var transactionsList = new ResponseWrapper<IEnumerable<TransactionResponse>>(_fixture.Build<TransactionResponse>().CreateMany(5));
+            var obj1 = new ResponseWrapper<IEnumerable<TransactionResponse>>(transactionsList);
 
-            _suspenseAccountUseCase.Setup(x => x.ExecuteAsync(It.IsAny<SuspenseAccountQuery>()))
-                .ReturnsAsync(transactionsList);
+            _suspenseAccountUseCase.Setup(x => x.ExecuteAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(obj1);
+
+            var query = new SuspenseAccountQuery();
 
             var result = await _controller.GetSuspenseAccount(It.IsAny<SuspenseAccountQuery>()).ConfigureAwait(false);
 
@@ -257,37 +255,11 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            okResult?.Value.Should().BeOfType<ResponseWrapper<IEnumerable<TransactionResponse>>>();
+            var responses = okResult?.Value as IEnumerable<TransactionResponse>;
 
-            var responses = okResult?.Value as PagedResult<TransactionResponse>;
-
-            responses?.Results.Should().HaveCount(5);
+            responses.Should().HaveCount(5);
 
         }
-
-        //[Fact]
-        //public async Task Process_Batch_UseCaseReturnList_Returns200()
-        //{
-        //    //var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
-        //    //var request = new List<AddTransactionRequest>();
-
-        //    //_addBatchUseCase.Setup(x => x.ExecuteAsync(It.IsAny<IEnumerable<Transaction>>()))
-        //    //    .ReturnsAsync(3);
-
-        //    //var query = new TransactionQuery()
-        //    //{
-        //    //    TargetId = Guid.NewGuid()
-        //    //};
-
-        //    //var result = await _controller.AddBatch("","", request).ConfigureAwait(false);
-
-        //    //result.Should().NotBeNull();
-
-        //    //var okResult = result as OkObjectResult;
-
-        //    //okResult.Should().NotBeNull();
-
-        //}
 
         [Fact]
         public async Task GetAll_UseCaseThrownException_ShouldRethrow()
@@ -731,5 +703,68 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
         }
 
+        [Fact]
+        public async Task AddBatch_ThrowBadRequest()
+        {
+            var result = await _controller.AddBatch(It.IsAny<string>(), Token, null).ConfigureAwait(false);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
+        public async Task AddBatch_Returns200()
+        {
+            var transactionsRequest = _fixture.CreateMany<AddTransactionRequest>(5);
+
+            var transactions = _fixture.CreateMany<Transaction>(5);
+
+            _addBatchUseCase.Setup(x => x.ExecuteAsync(transactions)).ReturnsAsync(transactions.Count());
+
+            var result = await _controller.AddBatch(It.IsAny<string>(), Token, transactionsRequest).ConfigureAwait(false);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
+        public async Task SuspenseAccountApproval_ThrowBadRequest()
+        {
+            var result = await _controller.SuspenseAccountApproval(Token, It.IsAny<Guid>(), null).ConfigureAwait(false);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
+        public async Task SuspenseAccountApproval_Returns404()
+        {
+            var transactionsRequest = _fixture.Create<UpdateTransactionRequest>();
+
+            var transactions = _fixture.Create<Transaction>();
+
+            _updateUseCase.Setup(x => x.ExecuteAsync(transactions)).ReturnsAsync(_fixture.Create<TransactionResponse>());
+
+            var result = await _controller.SuspenseAccountApproval(Token, It.IsAny<Guid>(), transactionsRequest).ConfigureAwait(false);
+
+            result.Should().BeOfType<NotFoundObjectResult>();
+        }
+
+        [Fact]
+        public async Task SuspenseAccountApproval_Returns200()
+        {
+            var transactionsRequest = _fixture.Create<UpdateTransactionRequest>();
+
+            var transactions = _fixture.Create<Transaction>();
+
+            _updateUseCase.Setup(x => x.ExecuteAsync(transactions)).ReturnsAsync(_fixture.Create<TransactionResponse>());
+
+            var responseMock = new ResponseWrapper<TransactionResponse>(_fixture.Build<TransactionResponse>().Create());
+
+            responseMock.Value.IsSuspense = true;
+
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>())).ReturnsAsync(responseMock);
+
+            var result = await _controller.SuspenseAccountApproval(Token, It.IsAny<Guid>(), transactionsRequest).ConfigureAwait(false);
+
+            result.Should().BeOfType<OkObjectResult>();
+        }
     }
 }

@@ -20,9 +20,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DynamoDb_LocalMode": "true",
-        "Sns_LocalMode": "true",
-        "DynamoDb_LocalServiceUrl": "http://localhost:8000"
+        "Sns_LocalMode": "true"
       },
 
       "applicationUrl": "https://localhost:5001;http://localhost:5000"

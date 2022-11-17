@@ -1,20 +1,16 @@
 using AutoFixture;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Controllers;
-using FinancialTransactionsApi.V1.Helpers;
-using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
 using Xunit;
 using FinancialTransactionsApi.V1.Boundary.Request;
-using Hackney.Core.DynamoDb;
-using FinancialTransactionsApi.V1.Domain;
 using FluentAssertions;
 using System.Linq;
+using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
 namespace FinancialTransactionsApi.Tests.V1.Controllers
 {
@@ -34,9 +30,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetByTargetId_UseCaseReturnTransactionByTargetId_ShouldReturns200()
         {
-            var transactionsList = _fixture.Build<Transaction>().CreateMany(5);
+            var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
 
-            var responseMock = new PagedResult<Transaction>(transactionsList);
+            var responseMock = new PaginatedResponse<TransactionResponse>() { Results = transactionsList };
 
             _getByTargetIdsUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionByTargetIdsQuery>())).ReturnsAsync(responseMock);
 
@@ -48,9 +44,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            var transaction = okResult?.Value as PagedResult<Transaction>;
+            var transaction = okResult?.Value as PaginatedResponse<TransactionResponse>;
 
-            transaction.Should().NotBeNull();
+            transaction.Results.Should().NotBeNull();
 
             transaction.Results.Should().BeEquivalentTo(transactionsList);
         }
@@ -58,9 +54,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         [Fact]
         public async Task GetByTargetId_UseCaseReturnTransactionByTargetId_ShouldReturns404()
         {
-            IEnumerable<Transaction> transactionsList = Enumerable.Empty<Transaction>();
+            IEnumerable<TransactionResponse> transactionsList = Enumerable.Empty<TransactionResponse>();
 
-            var responseMock = new PagedResult<Transaction>(transactionsList);
+            var responseMock = new PaginatedResponse<TransactionResponse>() { Results = transactionsList };
 
             _getByTargetIdsUseCase.Setup(x => x.ExecuteAsync(It.IsAny<TransactionByTargetIdsQuery>())).ReturnsAsync(responseMock);
 
@@ -72,9 +68,9 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            var transaction = okResult?.Value as PagedResult<Transaction>;
+            var transaction = okResult?.Value as PaginatedResponse<TransactionResponse>;
 
-            transaction.Should().NotBeNull();
+            transaction.Results.Should().NotBeNull();
 
             transaction.Results.Should().BeEmpty();
         }
