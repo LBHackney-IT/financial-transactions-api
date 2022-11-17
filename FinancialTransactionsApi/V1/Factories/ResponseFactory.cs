@@ -3,12 +3,17 @@ using FinancialTransactionsApi.V1.Domain;
 using System.Collections.Generic;
 using System.Linq;
 using FinancialTransactionsApi.V1.Helpers;
-using FinancialTransactionsApi.V1.Helpers.GeneralModels;
+using FTHelpers = FinancialTransactionsApi.V1.Helpers;
+using Hackney.Shared.Finance.Pagination;
+using Hackney.Shared.Finance.Boundary.Response;
+using FTHGeneralModels = FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
 namespace FinancialTransactionsApi.V1.Factories
 {
     public static class ResponseFactory
     {
+        #region NugetPackageClasses
+
         public static PaginatedResponse<TransactionResponse> ToResponse(this Paginated<Transaction> ptrDomain)
         {
             var metadata = new MetadataModel
@@ -23,8 +28,8 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
-        private static PaginationDetails ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
-        => new PaginationDetails
+        private static PagingDetails ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
+        => new PagingDetails
         {
             ResultCount = paginatedResult.ResultCount,
             CurrentPage = paginatedResult.CurrentPage,
@@ -33,6 +38,35 @@ namespace FinancialTransactionsApi.V1.Factories
             PageCount = paginatedResult.PageCount
         };
 
+        #endregion
+
+        #region OldClasses
+
+        public static FTHGeneralModels.PaginatedResponse<TransactionResponse> ToResponse(this FTHGeneralModels.Paginated<Transaction> ptrDomain)
+        {
+            var metadata = new MetadataModel
+            {
+                Pagination = ToPaginationDataResponse(ptrDomain)
+            };
+
+            return new FTHGeneralModels.PaginatedResponse<TransactionResponse>
+            {
+                Metadata = metadata,
+                Results = ptrDomain.Results.ToResponse()
+            };
+        }
+
+        private static PagingDetails ToPaginationDataResponse<TItem>(FTHGeneralModels.Paginated<TItem> paginatedResult) where TItem : class
+            => new PagingDetails
+            {
+                ResultCount = paginatedResult.ResultCount,
+                CurrentPage = paginatedResult.CurrentPage,
+                PageSize = paginatedResult.PageSize,
+                TotalCount = paginatedResult.TotalResultCount,
+                PageCount = paginatedResult.PageCount
+            };
+
+        #endregion
         public static TransactionResponse ToResponse(this Transaction domain)
         {
             return domain == null ? null : new TransactionResponse()
@@ -71,9 +105,9 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
-        public static ResponseWrapper<TransactionResponse> ToResponseWrapper(this Transaction domainList)
+        public static FTHelpers.ResponseWrapper<TransactionResponse> ToResponseWrapper(this Transaction domainList)
         {
-            return new ResponseWrapper<TransactionResponse>(domainList.ToResponse());
+            return new FTHelpers.ResponseWrapper<TransactionResponse>(domainList.ToResponse());
         }
 
         public static List<TransactionResponse> ToResponse(this IEnumerable<Transaction> domainList)
@@ -83,9 +117,9 @@ namespace FinancialTransactionsApi.V1.Factories
                 domainList.Select(domain => domain.ToResponse()).ToList();
         }
 
-        public static ResponseWrapper<IEnumerable<TransactionResponse>> ToResponseWrapper(this IEnumerable<Transaction> domainList)
+        public static FTHelpers.ResponseWrapper<IEnumerable<TransactionResponse>> ToResponseWrapper(this IEnumerable<Transaction> domainList)
         {
-            return new ResponseWrapper<IEnumerable<TransactionResponse>>(domainList.Select(domain => domain.ToResponse()));
+            return new FTHelpers.ResponseWrapper<IEnumerable<TransactionResponse>>(domainList.Select(domain => domain.ToResponse()));
         }
 
     }

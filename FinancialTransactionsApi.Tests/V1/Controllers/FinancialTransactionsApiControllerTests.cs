@@ -4,22 +4,19 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.Domain;
-using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Helpers.GeneralModels;
-using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
+using HSFPagination = Hackney.Shared.Finance.Pagination;
 
 namespace FinancialTransactionsApi.Tests.V1.Controllers
 {
@@ -244,7 +241,8 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         public async Task GetSuspenseAccount_UseCaseReturnList_Returns200()
         {
 
-            var transactionsList = new ResponseWrapper<IEnumerable<TransactionResponse>>(_fixture.Build<TransactionResponse>().CreateMany(5));
+            var transactionsList = new HSFPagination.Paginated<Transaction>();
+            transactionsList.Results = _fixture.Build<Transaction>().CreateMany(5);
 
             _suspenseAccountUseCase.Setup(x => x.ExecuteAsync(It.IsAny<SuspenseAccountQuery>()))
                 .ReturnsAsync(transactionsList);
@@ -256,8 +254,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
             var okResult = result as OkObjectResult;
 
             okResult.Should().NotBeNull();
-
-            okResult?.Value.Should().BeOfType<ResponseWrapper<IEnumerable<TransactionResponse>>>();
 
             var responses = okResult?.Value as PagedResult<TransactionResponse>;
 

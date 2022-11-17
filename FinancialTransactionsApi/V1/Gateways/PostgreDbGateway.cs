@@ -9,7 +9,8 @@ using HCD = Hackney.Core.DynamoDb;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using FinancialTransactionsApi.V1.Infrastructure.Specs;
-using FinancialTransactionsApi.V1.Helpers.GeneralModels;
+using Hackney.Shared.Finance.Pagination;
+using HGM = FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -59,7 +60,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public Task<IEnumerable<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate) => throw new NotImplementedException();
 
-        public async Task<HCD.PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
+        public async Task<Paginated<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
         {
             var spec = new GetTransactionBySuspenseAccountSpecification();
 
@@ -75,10 +76,16 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
-            return new HCD.PagedResult<Transaction>(result.Select(x => x.ToDomain()), new HCD.PaginationDetails(string.Empty));
+            return new Paginated<Transaction>
+            {
+                Results = result.Select(x => x.ToDomain()),
+                TotalResultCount = count,
+                PageSize = query.PageSize,
+                CurrentPage = query.Page
+            };
         }
 
-        public async Task<Paginated<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)
+        public async Task<HGM.Paginated<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)
         {
             getActiveTransactionsRequest.PeriodEndDate = getActiveTransactionsRequest.PeriodEndDate ?? DateTime.UtcNow;
 
@@ -96,7 +103,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
-            return new Paginated<Transaction>()
+            return new HGM.Paginated<Transaction>()
             {
                 Results = response.Select(x => x.ToDomain()),
                 CurrentPage = page,
