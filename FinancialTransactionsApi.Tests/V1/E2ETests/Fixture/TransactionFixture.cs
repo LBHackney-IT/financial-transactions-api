@@ -37,7 +37,6 @@ namespace FinancialTransactionsApi.Tests.V1.E2ETests.Fixture
                 BankAccountNumber = transaction.BankAccountNumber,
                 PaidAmount = transaction.PaidAmount,
                 PeriodNo = transaction.PeriodNo,
-                Sender = transaction.Sender,
                 TargetId = transaction.TargetId,
                 TransactionAmount = transaction.TransactionAmount,
                 TransactionSource = transaction.TransactionSource,

@@ -312,12 +312,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                }
+                TransactionType = TransactionType.ArrangementInterest
             };
 
             var expectedResponse = new TransactionResponse()
@@ -339,11 +334,6 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest.GetDescription(),
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                },
                 CreatedAt = DateTime.UtcNow,
                 LastUpdatedAt = DateTime.UtcNow,
                 LastUpdatedBy = "testing",
@@ -417,12 +407,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                     PeriodNo = 2,
                     TransactionAmount = 126.83M,
                     TransactionSource = "DD",
-                    TransactionType = TransactionType.ArrangementInterest,
-                    Sender = new Sender()
-                    {
-                        Id = Guid.NewGuid(),
-                        FullName = "Kain Hyawrd"
-                    }
+                    TransactionType = TransactionType.ArrangementInterest
                 };
                 var result = await _controller.Add("", Token, request).ConfigureAwait(false);
 
@@ -466,12 +451,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                }
+                TransactionType = TransactionType.ArrangementInterest
             };
             _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Transaction>()))
                 .ThrowsAsync(new Exception("Test exception"));
@@ -507,12 +487,7 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
-                TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                }
+                TransactionType = TransactionType.ArrangementInterest
             };
 
             try

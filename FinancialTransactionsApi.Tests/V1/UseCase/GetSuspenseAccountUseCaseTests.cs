@@ -39,8 +39,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 TargetId = Guid.NewGuid(),
                 TransactionType = TransactionType.ArrangementInterest,
                 EndDate = DateTime.Now,
-                StartDate = DateTime.UtcNow,
-                PaginationToken = null
+                StartDate = DateTime.UtcNow
             };
 
             _mockGateway.Setup(_ => _.GetPagedTransactionsAsync(transactionQuery)).ReturnsAsync(transactions);

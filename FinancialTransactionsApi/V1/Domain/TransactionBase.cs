@@ -34,10 +34,10 @@ namespace FinancialTransactionsApi.V1.Domain
 
         public DateTime PostDate { get; set; }
 
-        public decimal RealValue { get; set; }
-
         [GreatAndEqualThan("0.0")]
         public decimal PaidAmount { get; set; }
+
+        public string PaymentReference { get; set; }
 
         [GreatAndEqualThan("0.0")]
         public decimal ChargedAmount { get; set; }
