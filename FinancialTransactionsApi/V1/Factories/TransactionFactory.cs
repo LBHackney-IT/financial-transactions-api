@@ -182,6 +182,7 @@ namespace FinancialTransactionsApi.V1.Factories
             TransactionSource = entity.TransactionSource,
             PostDate = entity.TransactionDate,
             TransactionAmount = entity.TransactionAmount,
+            TransactionDate = entity.TransactionDate,
             IsSuspense = entity.IsSuspense,
             Address = entity.Address,
             Fund = entity.Fund ?? string.Empty,
