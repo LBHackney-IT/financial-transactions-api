@@ -23,8 +23,8 @@ namespace FinancialTransactionsApi.V1.Factories
             };
         }
 
-        private static Pagination ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
-        => new Pagination
+        private static PaginationDetails ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
+        => new PaginationDetails
         {
             ResultCount = paginatedResult.ResultCount,
             CurrentPage = paginatedResult.CurrentPage,

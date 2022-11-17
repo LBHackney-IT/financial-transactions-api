@@ -1,6 +1,6 @@
 namespace FinancialTransactionsApi.V1.Boundary.Response
 {
-    public class Pagination
+    public class PaginationDetails
     {
         public int ResultCount { get; set; }
         public int CurrentPage { get; set; }

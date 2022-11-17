@@ -5,8 +5,7 @@ using System;
 using FinancialTransactionsApi.V1.Factories;
 using System.Collections.Generic;
 using FinancialTransactionsApi.V1.Boundary.Request;
-using Hackney.Core.DynamoDb;
-using FinancialTransactionsApi.V1.Boundary.Response;
+using HCD = Hackney.Core.DynamoDb;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using FinancialTransactionsApi.V1.Infrastructure.Specs;
@@ -60,7 +59,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public Task<IEnumerable<Transaction>> GetTransactionsAsync(Guid targetId, string transactionType, DateTime? startDate, DateTime? endDate) => throw new NotImplementedException();
 
-        public async Task<PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
+        public async Task<HCD.PagedResult<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
         {
             var spec = new GetTransactionBySuspenseAccountSpecification();
 
@@ -76,7 +75,7 @@ namespace FinancialTransactionsApi.V1.Gateways
 
             var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
 
-            return new PagedResult<Transaction>(result.Select(x => x.ToDomain()), new PaginationDetails(string.Empty));
+            return new HCD.PagedResult<Transaction>(result.Select(x => x.ToDomain()), new HCD.PaginationDetails(string.Empty));
         }
 
         public async Task<Paginated<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)
@@ -106,6 +105,6 @@ namespace FinancialTransactionsApi.V1.Gateways
             };
         }
 
-        public Task<PagedResult<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query) => throw new NotImplementedException();
+        public Task<HCD.PagedResult<Transaction>> GetPagedTransactionsByTargetIdsAsync(TransactionByTargetIdsQuery query) => throw new NotImplementedException();
     }
 }
