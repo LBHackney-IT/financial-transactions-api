@@ -4,13 +4,44 @@ using System.Collections.Generic;
 using System.Linq;
 using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Helpers.GeneralModels;
+using HSFPagination = Hackney.Shared.Finance.Pagination;
+using HSFBResponse = Hackney.Shared.Finance.Boundary.Response;
 
 namespace FinancialTransactionsApi.V1.Factories
 {
     public static class ResponseFactory
     {
-        private static Pagination ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
-        => new Pagination
+        
+    #region NugetPackageClasses
+
+        public static HSFPagination.PaginatedResponse<TransactionResponse> ToResponse(this HSFPagination.Paginated<Transaction> ptrDomain)
+        {
+            var metadata = new HSFBResponse.MetadataModel
+            {
+                Pagination = ToPaginationDataResponse(ptrDomain)
+            };
+
+            return new HSFPagination.PaginatedResponse<TransactionResponse>
+            {
+                Metadata = metadata,
+                Results = ptrDomain.Results.ToResponse()
+            };
+        }
+
+        private static HSFPagination.PagingDetails ToPaginationDataResponse<TItem>(HSFPagination.Paginated<TItem> paginatedResult) where TItem : class
+        => new HSFPagination.PagingDetails
+        {
+            ResultCount = paginatedResult.ResultCount,
+            CurrentPage = paginatedResult.CurrentPage,
+            PageSize = paginatedResult.PageSize,
+            TotalCount = paginatedResult.TotalResultCount,
+            PageCount = paginatedResult.PageCount
+        };
+
+    #endregion
+
+        private static HSFPagination.PagingDetails ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
+        => new HSFPagination.PagingDetails
         {
             ResultCount = paginatedResult.ResultCount,
             CurrentPage = paginatedResult.CurrentPage,
@@ -65,7 +96,7 @@ namespace FinancialTransactionsApi.V1.Factories
 
         public static PaginatedResponse<TransactionResponse> ToResponse(this Paginated<Transaction> ptrDomain)
         {
-            var metadata = new MetadataModel
+            var metadata = new HSFBResponse.MetadataModel
             {
                 Pagination = ToPaginationDataResponse(ptrDomain)
             };

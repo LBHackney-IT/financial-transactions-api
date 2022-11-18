@@ -1,0 +1,21 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0
+
+# disable microsoft telematry
+ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'
+
+ARG LBHPACKAGESTOKEN
+
+ENV DynamoDb_LocalMode='true'
+ENV Sns_LocalMode='true'
+
+WORKDIR /app
+
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copy everything and build
+COPY . .
+
+RUN dotnet build
+
+## Run dotnet test setting the output on the /coverage folder
+CMD dotnet test

@@ -6,7 +6,7 @@ namespace FinancialTransactionsApi.V1.Infrastructure.Specs
 {
     public sealed class GetTransactionBySuspenseAccountSpecification : Specification<TransactionEntity>
     {
-        public GetTransactionBySuspenseAccountSpecification(bool SearchText) : base(x => x.IsSuspense == SearchText) { }
+        public GetTransactionBySuspenseAccountSpecification() : base(x => x.IsSuspense) { }
     }
 }
 

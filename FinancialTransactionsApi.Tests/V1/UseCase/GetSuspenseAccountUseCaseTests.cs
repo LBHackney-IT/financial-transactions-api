@@ -11,6 +11,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using HSFPagination = Hackney.Shared.Finance.Pagination;
 
 namespace FinancialTransactionsApi.Tests.V1.UseCase
 {
@@ -53,25 +54,29 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task GetSuspenseAccount_GatewayReturnTransactionResponse_ReturnTransactionResponse()
         {
-            var responseMock = _fixture.Build<Transaction>().CreateMany(5);
+            
+            var paginatedTransaction = new HSFPagination.Paginated<Transaction>();
 
-            _mockGateway.Setup(x => x.GetPagedSuspenseAccountTransactionsAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(responseMock);
+            paginatedTransaction.Results = _fixture.Build<Transaction>().CreateMany(5);
+
+            _mockGateway.Setup(g => g.GetPagedSuspenseAccountTransactionsAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(paginatedTransaction);
 
             var response = await _getSuspenseAccountUseCase.ExecuteAsync(It.IsAny<SuspenseAccountQuery>()).ConfigureAwait(false);
 
-            response.Value.Should().BeEquivalentTo(responseMock.ToResponse());
+            response.Results.Should().BeEquivalentTo(paginatedTransaction.Results);
         }
 
         [Fact]
         public async Task GetSuspenseAccount_GatewayReturnEmptyTransactionResponse_ReturnEmptyTransactionResponse()
         {
-            var responseMock = Enumerable.Empty<Transaction>();
+            var paginatedTransaction = new HSFPagination.Paginated<Transaction>();
+            paginatedTransaction.Results = Enumerable.Empty<Transaction>();
 
-            _mockGateway.Setup(x => x.GetPagedSuspenseAccountTransactionsAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(responseMock);
+            _mockGateway.Setup(x => x.GetPagedSuspenseAccountTransactionsAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(paginatedTransaction);
 
             var response = await _getSuspenseAccountUseCase.ExecuteAsync(It.IsAny<SuspenseAccountQuery>()).ConfigureAwait(false);
 
-            response.Value.Should().BeEquivalentTo(responseMock.ToResponse());
+            response.Results.Should().BeEquivalentTo(paginatedTransaction.Results);
         }
     }
 }

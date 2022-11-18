@@ -2,7 +2,6 @@ using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Helpers;
-using FinancialTransactionsApi.V1.Helpers.GeneralModels;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +12,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Hackney.Shared.Finance.Pagination;
+using FTHGeneralModels = FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
 namespace FinancialTransactionsApi.V1.Controllers
 {
@@ -130,7 +131,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <summary>
         /// Returns ALL non-suspense transactions wthout any filters. Note, that this endpoint has bad performance and will be used only for system needs. For better performance use HousingSearchAPI
         /// </summary>
-        [ProducesResponseType(typeof(PaginatedResponse<TransactionResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FTHGeneralModels.PaginatedResponse<TransactionResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [Route("active")]
@@ -142,7 +143,7 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
-            PaginatedResponse<TransactionResponse> response = await _getAllActiveTransactionsUseCase.ExecuteAsync(request).ConfigureAwait(false);
+            var response = await _getAllActiveTransactionsUseCase.ExecuteAsync(request).ConfigureAwait(false);
 
             return (response.Results == null || !response.Results.Any()) ? NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Transaction by provided data cannot be found!")) : Ok(response);
         }
@@ -166,9 +167,9 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
-            ResponseWrapper<IEnumerable<TransactionResponse>> response = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
+            var transactions = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
 
-            return (response.IsEmpty) ? NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Transaction by provided data cannot be found!")) : Ok(response.Value);
+            return Ok(transactions.ToResponse());
         }
 
 
