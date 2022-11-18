@@ -11,9 +11,7 @@ namespace FinancialTransactionsApi.V1.Factories
 {
     public static class ResponseFactory
     {
-        
-    #region NugetPackageClasses
-
+        #region NugetPackageClasses
         public static HSFPagination.PaginatedResponse<TransactionResponse> ToResponse(this HSFPagination.Paginated<Transaction> ptrDomain)
         {
             var metadata = new HSFBResponse.MetadataModel
@@ -38,8 +36,7 @@ namespace FinancialTransactionsApi.V1.Factories
             PageCount = paginatedResult.PageCount
         };
 
-    #endregion
-
+        #endregion
         private static HSFPagination.PagingDetails ToPaginationDataResponse<TItem>(Paginated<TItem> paginatedResult) where TItem : class
         => new HSFPagination.PagingDetails
         {

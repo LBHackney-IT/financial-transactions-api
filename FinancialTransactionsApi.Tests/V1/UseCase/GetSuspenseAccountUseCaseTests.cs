@@ -54,7 +54,7 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
         [Fact]
         public async Task GetSuspenseAccount_GatewayReturnTransactionResponse_ReturnTransactionResponse()
         {
-            
+
             var paginatedTransaction = new HSFPagination.Paginated<Transaction>();
 
             paginatedTransaction.Results = _fixture.Build<Transaction>().CreateMany(5);
