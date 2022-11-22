@@ -58,7 +58,7 @@ When running locally the appropriate database conneciton details are still neede
 ##### Postgres
 For Postgres an approprate `CONNECTION_STRING` environment variable is needed,
 and if you want to use a local Postgres instance then that will of course need to be installed and running.
-##### DynamoDb
+##### DynamoDb [In Deprecation]
 To use a local instance of DynamoDb, this will need to be installed. This is most easily done using [Docker](https://www.docker.com/products/docker-desktop).
 Run the following command, specifying the local path where you want the container's shared volume to be stored.
 ```
@@ -76,9 +76,13 @@ $ aws configure
 ```sh
 $ aws ecr get-login --no-include-email
 ```
-3. Build and serve the application. It will be available in the port 3000.
+3. Copy the environment sample file and populate its environment files.
 ```sh
-$ make build && make serve
+$ cp .env.sample .env
+```
+4. Build and serve the application. It will be available in the port 3000.
+```sh
+$ make serve
 ```
 
 ### Release process
@@ -123,7 +127,7 @@ Documentation on how to do this can be found [here](https://docs.microsoft.com/e
 $ make test
 ```
 
-To run database tests locally (e.g. via Visual Studio) and you are using Postgres the `CONNECTION_STRING` environment variable will need to be populated with:
+To run database tests locally, but outside docker container (e.g. via Visual Studio) and you are using Postgres the `CONNECTION_STRING` environment variable will need to be populated with:
 
 `Host=localhost;Database=testdb;Username=postgres;Password=mypassword"`
 

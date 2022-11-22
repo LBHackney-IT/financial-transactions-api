@@ -14,10 +14,5 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         [FromQuery]
         [Range(1, Int32.MaxValue)]
         public int Page { get; set; }
-
-        [Required]
-        [FromQuery]
-        public bool SearchText { get; set; }
-
     }
 }

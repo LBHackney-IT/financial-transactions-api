@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using FinancialTransactionsApi.V1.Boundary.Response;
+using Hackney.Shared.Finance.Boundary.Response;
 
 namespace FinancialTransactionsApi.V1.Helpers.GeneralModels
 {

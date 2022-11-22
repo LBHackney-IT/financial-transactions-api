@@ -1,14 +1,14 @@
 using System;
+using FinancialTransactionsApi.V1.Factories;
+using System.Collections.Generic;
+using FinancialTransactionsApi.V1.Boundary.Request;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using FinancialTransactionsApi.V1.Domain;
 using FinancialTransactionsApi.V1.Infrastructure;
-using FinancialTransactionsApi.V1.Factories;
-using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Infrastructure.Specs;
-using FinancialTransactionsApi.V1.Helpers.GeneralModels;
+using Hackney.Shared.Finance.Pagination;
 
 namespace FinancialTransactionsApi.V1.Gateways
 {
@@ -66,13 +66,29 @@ namespace FinancialTransactionsApi.V1.Gateways
 
         public Task UpdateSuspenseAccountAsync(Transaction transaction) => throw new NotImplementedException();
 
-        public async Task<IEnumerable<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
+        public async Task<Paginated<Transaction>> GetPagedSuspenseAccountTransactionsAsync(SuspenseAccountQuery query)
         {
-            var spec = new GetTransactionBySuspenseAccountSpecification(query.SearchText);
+            var spec = new GetTransactionBySuspenseAccountSpecification();
 
-            var response = _databaseContext.Transactions.Where(spec.Criteria);
+            var count = _databaseContext.Transactions.Where(spec.Criteria).Count();
 
-            return await Task.FromResult(response.AsEnumerable().ToDomain()).ConfigureAwait(false);
+            var lastPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(count) / query.PageSize));
+
+            var page = query.Page <= lastPage ? query.Page : lastPage;
+
+            var itemStart = query.Page == 1 ? 0 : page * query.PageSize;
+
+            var response = _databaseContext.Transactions.Where(spec.Criteria).Skip(itemStart).Take(query.PageSize);
+
+            var result = await Task.FromResult(response.AsEnumerable()).ConfigureAwait(false);
+
+            return new Paginated<Transaction>
+            {
+                Results = result.Select(x => x.ToDomain()),
+                TotalResultCount = count,
+                PageSize = query.PageSize,
+                CurrentPage = query.Page
+            };
         }
 
         public async Task<IEnumerable<Transaction>> GetAllActive(GetActiveTransactionsRequest getActiveTransactionsRequest)

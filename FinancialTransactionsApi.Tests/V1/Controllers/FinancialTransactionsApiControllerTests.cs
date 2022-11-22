@@ -12,10 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
+using HSFPagination = Hackney.Shared.Finance.Pagination;
+using System.Linq;
 
 namespace FinancialTransactionsApi.Tests.V1.Controllers
 {
@@ -237,15 +238,12 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
         }
 
         [Fact]
-        public async Task GetSuspenseAccount_UseCaseReturnList_Returns200()
+        public async Task GetSuspenseAccount_UseCaseReturnList_Returns200_AndHasData()
         {
-            var transactionsList = _fixture.Build<TransactionResponse>().CreateMany(5);
+            var pagedTransactions = new HSFPagination.Paginated<Transaction>();
+            pagedTransactions.Results = _fixture.Build<Transaction>().CreateMany(5);
 
-            var obj1 = new ResponseWrapper<IEnumerable<TransactionResponse>>(transactionsList);
-
-            _suspenseAccountUseCase.Setup(x => x.ExecuteAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(obj1);
-
-            var query = new SuspenseAccountQuery();
+            _suspenseAccountUseCase.Setup(x => x.ExecuteAsync(It.IsAny<SuspenseAccountQuery>())).ReturnsAsync(pagedTransactions);
 
             var result = await _controller.GetSuspenseAccount(It.IsAny<SuspenseAccountQuery>()).ConfigureAwait(false);
 
@@ -255,10 +253,10 @@ namespace FinancialTransactionsApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            var responses = okResult?.Value as IEnumerable<TransactionResponse>;
+            var responses = okResult?.Value as HSFPagination.PaginatedResponse<TransactionResponse>;
 
-            responses.Should().HaveCount(5);
-
+            responses.Results.Should().NotBeNull();
+            responses.Results.Should().HaveCount(5);
         }
 
         [Fact]

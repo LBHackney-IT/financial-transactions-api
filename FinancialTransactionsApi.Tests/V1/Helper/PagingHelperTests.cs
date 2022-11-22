@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using HSFPagination = Hackney.Shared.Finance.Pagination;
+using HSFBResponse = Hackney.Shared.Finance.Boundary.Response;
 
 namespace FinancialTransactionsApi.Tests.V1.Helper
 {
@@ -51,9 +53,9 @@ namespace FinancialTransactionsApi.Tests.V1.Helper
         {
             var obj = _fixture.CreateMany<Transaction>(5);
             _paginatedResponse.Results = obj;
-            _paginatedResponse.Metadata = new MetadataModel()
+            _paginatedResponse.Metadata = new HSFBResponse.MetadataModel()
             {
-                Pagination = new Pagination()
+                Pagination = new HSFPagination.PagingDetails()
                 {
                     CurrentPage = 1,
                     PageCount = 1,
