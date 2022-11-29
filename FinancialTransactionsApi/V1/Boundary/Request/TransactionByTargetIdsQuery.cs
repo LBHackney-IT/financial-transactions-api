@@ -16,9 +16,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// </example>
         public List<Guid> TargetIds { get; set; }
 
-        [FromQuery]
-        public string PaginationToken { get; set; }
-
         /// <summary>
         /// Selected start date
         /// </summary>

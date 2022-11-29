@@ -4,11 +4,11 @@ using FinancialTransactionsApi.V1.Controllers;
 using FinancialTransactionsApi.V1.Factories;
 using FinancialTransactionsApi.V1.Gateways;
 using FinancialTransactionsApi.V1.Helpers;
+using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
 using FinancialTransactionsApi.Versioning;
 using Hackney.Core.Authorization;
-using Hackney.Core.DynamoDb;
 using Hackney.Core.Http;
 using Hackney.Core.JWT;
 using Hackney.Core.Sns;
@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,7 +44,6 @@ namespace FinancialTransactionsApi
 
         public IConfiguration Configuration { get; }
         private static List<ApiVersionDescription> _apiVersions { get; set; }
-        //TODO update the below to the name of your API
         private const string ApiName = "financial-transactions-api";
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -118,9 +118,7 @@ namespace FinancialTransactionsApi
                     c.IncludeXmlComments(xmlPath);
             });
 
-            ConfigureLogging(services, Configuration);
-
-            services.ConfigureDynamoDB();
+            services.AddCors();
             services.ConfigureSns();
             services.AddLocalStack(Configuration);
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
@@ -128,10 +126,7 @@ namespace FinancialTransactionsApi
             RegisterUseCases(services);
             RegisterFactories(services);
             ConfigureHackneyCoreDi(services);
-            services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
-                builder
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod()));
+            ConfigureDbContext(services);
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -139,29 +134,16 @@ namespace FinancialTransactionsApi
             });
         }
 
-        private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
+        private static void ConfigureDbContext(IServiceCollection services)
         {
-            // We rebuild the logging stack so as to ensure the console logger is not used in production.
-            // See here: https://weblog.west-wind.com/posts/2018/Dec/31/Dont-let-ASPNET-Core-Default-Console-Logging-Slow-your-App-down
-            services.AddLogging(config =>
-            {
-                // clear out default configuration
-                config.ClearProviders();
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
-                config.AddConfiguration(configuration.GetSection("Logging"));
-                config.AddDebug();
-                config.AddEventSourceLogger();
-
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
-                {
-                    config.AddConsole();
-                }
-            });
+            services.AddDbContext<DatabaseContext>(opt => opt.UseNpgsql(connectionString));
         }
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddScoped<ITransactionGateway, DynamoDbGateway>();
+            services.AddScoped<ITransactionGateway, PostgreDbGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -172,10 +154,6 @@ namespace FinancialTransactionsApi
             services.AddScoped<IUpdateSuspenseAccountUseCase, UpdateSuspenseAccountUseCase>();
             services.AddScoped<IAddBatchUseCase, AddBatchUseCase>();
             services.AddScoped<IPagingHelper, PagingHelper>();
-            services.AddScoped<IExportSelectedItemUseCase, ExportSelectedItemUseCase>();
-            services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
-            services.AddScoped<IFileGeneratorService, FileGeneratorService>();
-            services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
             services.AddScoped<IGetSuspenseAccountUseCase, GetSuspenseAccountUseCase>();
             services.AddScoped<IGetByTargetIdUseCase, GetByTargetIdUseCase>();
             services.AddScoped<IGetAllActiveTransactionsUseCase, GetAllActiveTransactionsUseCase>();

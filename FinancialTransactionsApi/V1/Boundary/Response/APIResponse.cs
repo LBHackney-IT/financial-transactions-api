@@ -13,15 +13,15 @@ namespace FinancialTransactionsApi.V1.Boundary.Response
     ///     Then the Error property will be populated
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class APIResponse<T> where T : class
+    public class ApiResponse<T> where T : class
     {
         public T Results { get; set; }
 
         public long Total { get; set; }
 
-        public APIResponse() { }
+        public ApiResponse() { }
 
-        public APIResponse(T result)
+        public ApiResponse(T result)
         {
             Results = result;
         }

@@ -31,6 +31,7 @@ functions:
      SubHeader: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_header}
      Footer: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_footer}
      SubFooter: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_footer}
+     CONNECTION_STRING: Host=${ssm:/housing-finance/${self:provider.stage}/hfs-postgres-transactions-hostname};Port=${ssm:/housing-finance/${self:provider.stage}/hfs-postgres-port};Database=${ssm:/housing-finance/${self:provider.stage}/hfs-postgres-database};Username=${ssm:/housing-finance/${self:provider.stage}/hfs-postgres-username};Password=${ssm:/housing-finance/${self:provider.stage}/hfs-postgres-password}
     events:
       - http:
           path: /{proxy+}

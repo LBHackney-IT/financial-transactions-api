@@ -1,9 +1,9 @@
 using FinancialTransactionsApi.V1.Boundary.Request;
 using FinancialTransactionsApi.V1.Boundary.Response;
 using FinancialTransactionsApi.V1.Factories;
+using FinancialTransactionsApi.V1.Helpers;
 using FinancialTransactionsApi.V1.Infrastructure;
 using FinancialTransactionsApi.V1.UseCase.Interfaces;
-using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,6 +12,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Hackney.Shared.Finance.Pagination;
+using FTHGeneralModels = FinancialTransactionsApi.V1.Helpers.GeneralModels;
 
 namespace FinancialTransactionsApi.V1.Controllers
 {
@@ -53,9 +55,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <summary>
         /// Get transaction by provided id
         /// </summary>
-        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="id">The value by which we are looking for a transaction</param>
-        ///<param name="targetId">The value by which we are looking for a transaction</param>
         /// <response code="200">Success. Transaction model was received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">Transaction by provided id cannot be found</response>
@@ -66,16 +66,12 @@ namespace FinancialTransactionsApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get([FromHeader(Name = "x-correlation-id")] string correlationId, [FromRoute] Guid id, [FromQuery] Guid targetId)
+        public async Task<IActionResult> Get([FromRoute] Guid id)
         {
-            var transaction = await _getByIdUseCase.ExecuteAsync(id, targetId).ConfigureAwait(false);
 
-            if (transaction == null)
-            {
-                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
-            }
+            var response = await _getByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
 
-            return Ok(transaction);
+            return (response.IsEmpty) ? NotFound($"No transaction exists for this id: {id}") : Ok(response.Value);
         }
 
         /// <summary>
@@ -85,21 +81,27 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="404">Transaction by provided id cannot be found</response>
         /// <response code="500">Internal Server Error</response>
+        /// <param name="targetType">The value by which we are looking for a transaction</param>
         /// <param name="targetId">The value by which we are looking for a transaction</param>
+        /// <param name="startDate">The value by which we are looking for a transaction</param>
+        /// <param name="endDate">The value by which we are looking for a transaction</param>
         /// <returns>List of transactions</returns>
         [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        [Route("{targetId}/tenureId")]
-        public async Task<IActionResult> GetByTargetId([FromRoute] Guid targetId)
+        [Route("targettype/{targetType}/{targetId}")]
+        public async Task<IActionResult> GetByTargetId([FromRoute] string targetType, [FromRoute] Guid targetId, [FromQuery] DateTime? startDate = default(DateTime?), [FromQuery] DateTime? endDate = default(DateTime?))
         {
-            var transactions = await _getByTargetIdUseCase.ExecuteAsync(targetId).ConfigureAwait(false);
-            if (transactions == null || transactions.Count == 0)
-                return NotFound(targetId);
+            if (targetId == Guid.Empty || string.IsNullOrEmpty(targetType))
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transacton type and target Id cannot be null!"));
+            }
 
-            return Ok(transactions);
+            ResponseWrapper<IEnumerable<TransactionResponse>> response = await _getByTargetIdUseCase.ExecuteAsync(targetType, targetId, startDate, endDate).ConfigureAwait(false);
+
+            return (response.IsEmpty) ? NotFound(targetId) : Ok(response.Value);
         }
 
         /// <summary>
@@ -110,7 +112,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <response code="200">Success. Transaction models were received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(PagedResult<TransactionResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResponse<TransactionResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
@@ -129,25 +131,21 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <summary>
         /// Returns ALL non-suspense transactions wthout any filters. Note, that this endpoint has bad performance and will be used only for system needs. For better performance use HousingSearchAPI
         /// </summary>
-        [ProducesResponseType(typeof(PagedResult<TransactionLimitedModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FTHGeneralModels.PaginatedResponse<TransactionResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [Route("active")]
         [HttpGet]
         public async Task<IActionResult> GetAllActiveTransactions([FromQuery] GetActiveTransactionsRequest request)
         {
-            if (request == null)
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Request model cannot be null!"));
-            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, ModelState.GetErrorMessages()));
             }
 
-            var transactions = await _getAllActiveTransactionsUseCase.ExecuteAsync(request).ConfigureAwait(false);
+            var response = await _getAllActiveTransactionsUseCase.ExecuteAsync(request).ConfigureAwait(false);
 
-            return Ok(transactions);
+            return (response.Results == null || !response.Results.Any()) ? NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Transaction by provided data cannot be found!")) : Ok(response);
         }
 
         /// <summary>
@@ -157,7 +155,7 @@ namespace FinancialTransactionsApi.V1.Controllers
         /// <response code="200">Success. Transaction models were received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(PagedResult<TransactionResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResponse<TransactionResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [Route("suspense-account")]
@@ -171,7 +169,7 @@ namespace FinancialTransactionsApi.V1.Controllers
 
             var transactions = await _suspenseAccountUseCase.ExecuteAsync(query).ConfigureAwait(false);
 
-            return Ok(transactions);
+            return Ok(transactions.ToResponse());
         }
 
 
@@ -298,24 +296,21 @@ namespace FinancialTransactionsApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "SuspenseConfirmationRequest model don't have all information in fields!"));
             }
 
-            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, Guid.Empty).ConfigureAwait(false);
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId).ConfigureAwait(false);
 
             if (existTransaction == null)
             {
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (!existTransaction.IsSuspense)
+            if (!existTransaction.IsEmpty && !existTransaction.Value.IsSuspense)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
             }
 
             var lastUpdatedBy = GetUserName(token);
 
-            var domainTransaction = existTransaction.ResponseToDomain(transaction, lastUpdatedBy);
-
-
-            var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);
+            var transactionResponse = await _updateUseCase.ExecuteAsync(null).ConfigureAwait(false);
 
             return Ok(transactionResponse);
         }
@@ -356,14 +351,14 @@ namespace FinancialTransactionsApi.V1.Controllers
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Transaction model don't have all information in fields!"));
             }
-            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId, Guid.Empty).ConfigureAwait(false);
+            var existTransaction = await _getByIdUseCase.ExecuteAsync(transactionId).ConfigureAwait(false);
 
             if (existTransaction == null)
             {
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No transaction by provided Id cannot be found!"));
             }
 
-            if (!existTransaction.IsSuspense)
+            if (!existTransaction.Value.IsSuspense)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Cannot update model with full information!"));
             }
@@ -371,8 +366,6 @@ namespace FinancialTransactionsApi.V1.Controllers
             var lastUpdatedBy = GetUserName(token);
 
             var domainTransaction = transaction.ToDomain();
-            domainTransaction.CreatedBy = existTransaction.CreatedBy;
-            domainTransaction.CreatedAt = existTransaction.CreatedAt;
             domainTransaction.LastUpdatedBy = lastUpdatedBy;
 
             var transactionResponse = await _updateUseCase.ExecuteAsync(domainTransaction).ConfigureAwait(false);

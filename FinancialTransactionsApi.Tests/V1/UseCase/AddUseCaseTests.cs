@@ -45,11 +45,6 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                },
                 CreatedBy = "admin"
             };
 
@@ -94,16 +89,10 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
                 PaidAmount = 123.22M,
-                PaymentReference = "123451",
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                },
                 CreatedBy = "admin"
             };
 
@@ -124,11 +113,6 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
 
             response.FinancialMonth.Should().Be(8);
             response.FinancialYear.Should().Be(2021);
-
-            var curDate = DateTime.UtcNow;
-            response.LastUpdatedBy.Should().Be(expectedResponse.CreatedBy);
-            response.CreatedAt.Should().BeCloseTo(curDate);
-            response.LastUpdatedAt.Should().BeCloseTo(curDate);
 
             _mockGateway.Verify(x => x.AddAsync(It.IsAny<Transaction>()), Times.Once);
         }
@@ -152,11 +136,6 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 TransactionAmount = 186.90M,
                 TransactionSource = "DD",
                 TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = new Guid("1c046cca-e9a7-403a-8b6f-8abafc4ee126"),
-                    FullName = "Hyan Widro"
-                },
                 CreatedBy = "Admin"
             };
 

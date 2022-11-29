@@ -45,7 +45,6 @@ namespace FinancialTransactionsApi.V1.Helpers
             }
 
             throw new ArgumentException("Not found.", nameof(description));
-            // Or return default(T);
         }
     }
 }

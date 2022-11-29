@@ -15,8 +15,6 @@ namespace FinancialTransactionsApi.V1.Boundary.Request
         /// </example>
         public Guid TargetId { get; set; }
 
-        [FromQuery]
-        public string PaginationToken { get; set; }
         /// <summary>
         /// Type of transaction tenancy/property
         /// </summary>

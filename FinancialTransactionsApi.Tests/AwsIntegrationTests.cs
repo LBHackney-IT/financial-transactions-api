@@ -1,7 +1,3 @@
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.SimpleNotificationService;
-using Amazon.SimpleNotificationService.Model;
 using FinancialTransactionsApi.V1.Domain;
 using System;
 using System.Collections.Generic;
@@ -17,13 +13,11 @@ namespace FinancialTransactionsApi.Tests
 
         public HttpClient Client { get; private set; }
         public readonly AwsMockWebApplicationFactory<TStartup> Factory;
-        public IDynamoDBContext DynamoDbContext => Factory?.DynamoDbContext;
-        public IAmazonSimpleNotificationService SimpleNotificationService => Factory?.SimpleNotificationService;
         public SnsEventVerifier<TransactionSns> SnsVerifer { get; private set; }
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-            new TableDef { Name = "Transactions", KeyName = "target_id", RangeName="id", KeyType = KeyType.HASH,RangeType = KeyType.RANGE,  KeyScalarType= ScalarAttributeType.S}
+            new TableDef { Name = "Transactions", KeyName = "target_id", RangeName="id" }
         };
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
@@ -36,10 +30,6 @@ namespace FinancialTransactionsApi.Tests
 
         public AwsIntegrationTests()
         {
-            EnsureEnvVarConfigured("DynamoDb_LocalMode", "true");
-            EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
-            EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "o4fejrd");
-            EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "ez1lwb");
             EnsureEnvVarConfigured("ELASTICSEARCH_DOMAIN_URL", "http://localhost:9200");
             EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:9911");
 
@@ -47,13 +37,12 @@ namespace FinancialTransactionsApi.Tests
             EnsureEnvVarConfigured("SubHeader", "SubHeader");
             EnsureEnvVarConfigured("Footer", "Footer");
             EnsureEnvVarConfigured("SubFooter", "SubFooter");
-            EnsureEnvVarConfigured("REQUIRED_GOOGL_GROUPS", "some-valid-google-group");
+            EnsureEnvVarConfigured("REQUIRED_GOOGL_GROUPS", "e2e-testing-development;HackneyAll;saml-aws-mtfh-developer;saml-aws-developer");
             Factory = new AwsMockWebApplicationFactory<TStartup>(_tables);
 
             Client = Factory.CreateClient();
             Client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(TestToken);
             CleanupActions = new List<Action>();
-            CreateSnsTopic();
         }
         public void Dispose()
         {
@@ -79,23 +68,6 @@ namespace FinancialTransactionsApi.Tests
                 _disposed = true;
             }
         }
-        private void CreateSnsTopic()
-        {
-            var snsAttrs = new Dictionary<string, string>();
-            snsAttrs.Add("FifoTopic", "true");
-            snsAttrs.Add("ContentBasedDeduplication", "true");
-
-            var response = SimpleNotificationService.CreateTopicAsync(new CreateTopicRequest
-            {
-                Name = "transactioncreated.fifo",
-                Attributes = snsAttrs
-            }).Result;
-
-            Environment.SetEnvironmentVariable("TRANSACTION_SNS_ARN", response.TopicArn);
-
-            SnsVerifer = new SnsEventVerifier<TransactionSns>(Factory.AmazonSqs, SimpleNotificationService, response.TopicArn);
-        }
-
     }
 
     public class TableDef
@@ -103,9 +75,6 @@ namespace FinancialTransactionsApi.Tests
         public string Name { get; set; }
         public string KeyName { get; set; }
         public string RangeName { get; set; }
-        public KeyType KeyType { get; set; }
-        public KeyType RangeType { get; set; }
-        public ScalarAttributeType KeyScalarType { get; set; }
     }
 
     [CollectionDefinition("Aws collection", DisableParallelization = true)]

@@ -18,12 +18,8 @@
       "launchUrl": "swagger/index.html",                  
       "environmentVariables": {
         "Sns_LocalMode": "true",
-        "DynamoDb_LocalServiceUrl": "http://localhost:8000",
-        "DynamoDb_LocalAccessKey": "ez1lwb",
         "TRANSACTION_SNS_ARN": "arn:aws:sns:eu-west-2:123450000001:test-topic",
         "Localstack_SnsServiceUrl": "http://localhost:9911",
-        "DynamoDb_LocalSecretKey": "o4fejrd",
-        "DynamoDb_LocalMode": "true",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sqlDebugging": true

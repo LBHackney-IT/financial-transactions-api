@@ -1,15 +1,15 @@
 using FinancialTransactionsApi.V1.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FinancialTransactionsApi.V1.Infrastructure
 {
-
+    [ExcludeFromCodeCoverage]
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext(DbContextOptions options) : base(options)
-        {
-        }
+        public DatabaseContext() { }
+        public DatabaseContext(DbContextOptions options) : base(options) { }
 
-        public DbSet<TransactionDbEntity> TransactionEntities { get; set; }
+        public virtual DbSet<TransactionEntity> Transactions { get; set; }
     }
 }

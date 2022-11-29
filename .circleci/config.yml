@@ -148,11 +148,11 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: build
+          name: build and test
           command: docker-compose build financial-transactions-api-test
-      - run:
-          name: Run tests
-          command: docker-compose run financial-transactions-api-test
+      # - run:
+      #     name: Run tests
+      #     command: docker-compose run financial-transactions-api-test
   assume-role-development:
     executor: docker-python
     steps:

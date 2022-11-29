@@ -1,92 +1,89 @@
-using Amazon.DynamoDBv2.DataModel;
-using FinancialTransactionsApi.V1.Domain;
 using System;
-using FinancialTransactionsApi.V1.Infrastructure.Converters;
-using Hackney.Core.DynamoDb.Converters;
+using System.ComponentModel.DataAnnotations.Schema;
+using FinancialTransactionsApi.V1.Domain;
 
 namespace FinancialTransactionsApi.V1.Infrastructure.Entities
 {
-    [DynamoDBTable("Transactions", LowerCamelCaseProperties = true)]
+    [Table("Transactions")]
     public class TransactionDbEntity
     {
-        [DynamoDBRangeKey]
-        [DynamoDBProperty(AttributeName = "id")]
+        [Column("id")]
         public Guid Id { get; set; }
 
-        [DynamoDBHashKey]
-        [DynamoDBProperty(AttributeName = "target_id")]
+        [Column("target_id")]
         public Guid TargetId { get; set; }
 
-        [DynamoDBProperty(AttributeName = "target_type", Converter = typeof(DynamoDbEnumConverter<TargetType>))]
+        [Column("target_type")]
         public TargetType TargetType { get; set; }
 
-        [DynamoDBProperty(AttributeName = "period_no")]
+        [Column("period_no")]
         public short PeriodNo { get; set; }
 
-        [DynamoDBProperty(AttributeName = "financial_year")]
+        [Column("financial_year")]
         public short FinancialYear { get; set; }
 
-        [DynamoDBProperty(AttributeName = "financial_month")]
+        [Column("financial_month")]
         public short FinancialMonth { get; set; }
 
-        [DynamoDBProperty(AttributeName = "transaction_source")]
+        [Column("transaction_source")]
         public string TransactionSource { get; set; }
 
-        [DynamoDBProperty(AttributeName = "transaction_type", Converter = typeof(DynamoDbEnumConverter<TransactionType>))]
+        [Column("transaction_type")]
         public TransactionType TransactionType { get; set; }
 
-        [DynamoDBProperty(AttributeName = "transaction_date", Converter = typeof(DynamoDbDateTimeConverter))]
+        [Column("transaction_date")]
         public DateTime TransactionDate { get; set; }
 
-        [DynamoDBProperty(AttributeName = "transaction_amount")]
+        [Column("transaction_amount")]
         public decimal TransactionAmount { get; set; }
 
-        [DynamoDBProperty(AttributeName = "payment_reference")]
+        [Column("payment_reference")]
         public string PaymentReference { get; set; }
 
-        [DynamoDBProperty(AttributeName = "bank_account_number")]
+        [Column("bank_account_number")]
         public string BankAccountNumber { get; set; }
 
-        [DynamoDBProperty(AttributeName = "sort_code")]
+        [Column("sort_code")]
         public string SortCode { get; set; }
 
-        [DynamoDBProperty(AttributeName = "is_suspense", Converter = typeof(DynamoDbBooleanConverter))]
+        [Column("is_suspense")]
         public bool IsSuspense => TargetId == Guid.Empty;
 
-        [DynamoDBProperty(AttributeName = "suspense_resolution_info", Converter = typeof(DynamoDbObjectConverter<SuspenseResolutionInfo>))]
+        [NotMapped]
+        [Column("suspense_resolution_info")]
         public SuspenseResolutionInfo SuspenseResolutionInfo { get; set; }
 
-        [DynamoDBProperty(AttributeName = "paid_amount")]
+        [Column("paid_amount")]
         public decimal PaidAmount { get; set; }
 
-        [DynamoDBProperty(AttributeName = "charged_amount")]
+        [Column("charged_amount")]
         public decimal ChargedAmount { get; set; }
 
-        [DynamoDBProperty(AttributeName = "balance_amount")]
+        [Column("balance_amount")]
         public decimal BalanceAmount { get; set; }
 
-        [DynamoDBProperty(AttributeName = "housing_benefit_amount")]
+        [Column("housing_benefit_amount")]
         public decimal HousingBenefitAmount { get; set; }
 
-        [DynamoDBProperty(AttributeName = "address")]
+        [Column("address")]
         public string Address { get; set; }
 
-        [DynamoDBProperty(AttributeName = "sender", Converter = typeof(DynamoDbObjectConverter<Sender>))]
+        [Column("sender")]
         public Sender Sender { get; set; }
 
-        [DynamoDBProperty(AttributeName = "fund")]
+        [Column("fund")]
         public string Fund { get; set; }
 
-        [DynamoDBProperty(AttributeName = "last_updated_by")]
+        [Column("last_updated_by")]
         public string LastUpdatedBy { get; set; }
 
-        [DynamoDBProperty(AttributeName = "last_updated_at")]
+        [Column("last_updated_at")]
         public DateTime LastUpdatedAt { get; set; }
 
-        [DynamoDBProperty(AttributeName = "created_at")]
+        [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 
-        [DynamoDBProperty(AttributeName = "created_by")]
+        [Column("created_by")]
         public string CreatedBy { get; set; }
     }
 }

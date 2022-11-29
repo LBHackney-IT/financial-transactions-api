@@ -45,11 +45,6 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 FinancialMonth = 8,
                 FinancialYear = 2021,
                 TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                },
                 CreatedAt = new DateTime(2021, 8, 1),
                 CreatedBy = "admin",
                 LastUpdatedBy = "new admin"
@@ -93,18 +88,12 @@ namespace FinancialTransactionsApi.Tests.V1.UseCase
                 HousingBenefitAmount = 123.12M,
                 BankAccountNumber = "12345678",
                 PaidAmount = 123.22M,
-                PaymentReference = "123451",
                 PeriodNo = 2,
                 TransactionAmount = 126.83M,
                 TransactionSource = "DD",
                 FinancialMonth = 8,
                 FinancialYear = 2021,
                 TransactionType = TransactionType.ArrangementInterest,
-                Sender = new Sender()
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "Kain Hyawrd"
-                },
                 SuspenseResolutionInfo = new SuspenseResolutionInfo()
                 {
                     ResolutionDate = DateTime.UtcNow,
